@@ -13,11 +13,8 @@
 #include "keyboard.h"
 #include "renderer.h"
 #include "input.h"
-<<<<<<< HEAD
 #include "bullet.h"
-=======
 #include "joypad.h"
->>>>>>> fb32f48247c50d4da8cf21fbcdb792ca45f41af8
 
 //=============================================================================
 // ƒ}ƒNƒ’è‹`
