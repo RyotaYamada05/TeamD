@@ -13,20 +13,27 @@
 #include "keyboard.h"
 #include "renderer.h"
 #include "input.h"
+#include "bullet.h"
+#include "joypad.h"
 
 //=============================================================================
 // マクロ定義
 //=============================================================================
-#define PLAYER_SPEED	(5.0f)				// プレイヤーの移動量
-#define PLAYER_JUMP		(5.0f)				// ジャンプの処理
-#define GRAVITY_POWAR	(0.25f)				// 重力の強さ
+#define PLAYER_SPEED			(5.0f)				// プレイヤーの移動量
+#define PLAYER_DUSH				(10.0f)				// プレイヤーのダッシュ
+#define PLAYER_DUSH_INTER		(80)				// ダッシュができる長さ
+#define DUSH_NONE_TIME			(100)				// ダッシュできない時間
+#define PLAYER_JUMP				(5.0f)				// ジャンプの処理
+#define GRAVITY_POWAR			(0.05f)				// 重力の強さ
+#define PLAYER_FALL				(-8.0f)				// 急降下の処理
 
 //=============================================================================
 // static初期化
 //=============================================================================
 LPD3DXMESH CPlayer::m_pMesh = NULL;
 LPD3DXBUFFER CPlayer::m_pBuffMat = NULL;	//マテリアル情報へのポインタ
-DWORD CPlayer::m_nNumMat = 0;	//マテリアル情報の数
+DWORD CPlayer::m_nNumMat = 0;				//マテリアル情報の数
+int CPlayer::m_nPlayerAll = 0;
 
 //=============================================================================
 // クリエイト
@@ -36,6 +43,9 @@ CPlayer * CPlayer::Create(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 	// 初期化処理
 	CPlayer *pPlayer = new CPlayer;
 	pPlayer->Init(pos, size);
+
+	// プレイヤーの番号を代入
+	pPlayer->m_nPlayerNum = m_nPlayerAll++;
 
 	return pPlayer;
 }
@@ -47,7 +57,7 @@ HRESULT CPlayer::LoadModel(void)
 {
 	LPDIRECT3DDEVICE9 pD3DDevice = CManager::GetRenderer()->GetDevice();
 
-	// テクスチャの生成
+	// モデルの生成
 	D3DXLoadMeshFromX("data/model/box.x",
 		D3DXMESH_SYSTEMMEM,
 		pD3DDevice,
@@ -55,9 +65,7 @@ HRESULT CPlayer::LoadModel(void)
 		&m_pBuffMat,
 		NULL,
 		&m_nNumMat,
-		&m_pMesh
-
-	);
+		&m_pMesh);
 
 	// 正常終了
 	return S_OK;
@@ -88,7 +96,11 @@ CPlayer::CPlayer()
 	pScore = NULL;
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_nDushFlame = 0;
+	m_nDushInterCnt = 0;
 	m_bJump = false;
+	m_bDush = false;
+	m_bDushInter = false;
 }
 
 //=============================================================================
@@ -96,7 +108,7 @@ CPlayer::CPlayer()
 //=============================================================================
 CPlayer::~CPlayer()
 {
-
+	m_nPlayerAll = 0;
 }
 
 //=============================================================================
@@ -146,12 +158,23 @@ void CPlayer::Uninit(void)
 //=============================================================================
 void CPlayer::Update(void)
 {
+	// キーボード更新
+	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
+
+	if (pKeyboard->GetTrigger(DIK_V))
+	{
+		CBullet::Create(m_pos, D3DXVECTOR3(200.0f, 200.0f, 0.0f), CBullet::BULLET_USER_PL1);
+	}
 	// プレイヤーの制御
 	PlayerControl();
 
-	// 重力をかける
-	m_move.y -= GRAVITY_POWAR;
-	m_pos.y += m_move.y;		// 落下
+	// ダッシュしていないとき
+	if (m_bDush == false)
+	{
+		// 重力をかける
+		m_move.y -= GRAVITY_POWAR;
+		m_pos.y += m_move.y;		// 落下
+	}
 
 	// 地面の制限
 	GroundLimit();
@@ -165,6 +188,7 @@ void CPlayer::Update(void)
 //=============================================================================
 void CPlayer::Draw(void)
 {
+	// 描画処理
 	CModel::Draw();
 }
 
@@ -173,11 +197,21 @@ void CPlayer::Draw(void)
 //=============================================================================
 void CPlayer::PlayerControl()
 {
-	// プレイヤーの移動処理
-	Walk();
+	// ダッシュしていないとき
+	if (m_bDush == false)
+	{
+		// プレイヤーの移動処理
+		Walk();
+	}
 
 	// ジャンプの処理
 	Jump();
+
+	// 急降下の処理
+	Fall();
+
+	// 回避の処理
+	Dush();
 }
 
 //=============================================================================
@@ -187,6 +221,18 @@ void CPlayer::Walk(void)
 {
 	// キーボード更新
 	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
+
+	// ジョイパッドの取得
+	DIJOYSTATE js = CInputJoypad::GetStick(m_nPlayerNum);
+
+	if (js.lX != 0.0f || js.lY != 0)
+	{
+		float fAngle = atan2f((float)js.lX, (float)js.lY);
+
+		// ジョイパッド操作
+		m_pos.x += sinf(fAngle)* PLAYER_SPEED;
+		m_pos.z -= cosf(fAngle)* PLAYER_SPEED;
+	}
 
 	// Wキーを押したとき
 	if (pKeyboard->GetPress(DIK_W))
@@ -221,8 +267,9 @@ void CPlayer::Jump(void)
 	// キーボード更新
 	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
 
-	// SPACEキーを押したとき
-	if (pKeyboard->GetTrigger(DIK_SPACE) && m_bJump == false)
+	// SPACEキーを押したとき・コントローラのYを押したとき
+	if (CManager::GetJoypad()->GetJoystickTrigger(1, m_nPlayerNum) && m_bJump == false 
+		|| pKeyboard->GetTrigger(DIK_SPACE) && m_bJump == false )
 	{
 		// ジャンプの処理
 		m_move.y = 0.0f;
@@ -246,5 +293,132 @@ void CPlayer::GroundLimit(void)
 		m_pos.y = 0.0f;
 		m_bJump = false;
 	}
+}
 
+//=============================================================================
+// 急降下
+//=============================================================================
+void CPlayer::Fall(void)
+{
+	// キーボード更新
+	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
+
+	// SPACEキーを押したとき
+	if (pKeyboard->GetTrigger(DIK_B) && m_bJump == true ||
+		CManager::GetJoypad()->GetJoystickTrigger(2, m_nPlayerNum) && m_bJump == true)
+	{
+		// ジャンプの処理
+		m_move.y = 0.0f;
+		m_move.y = PLAYER_FALL;
+	}
+}
+
+//=============================================================================
+// ダッシュ
+//=============================================================================
+void CPlayer::Dush(void)
+{
+	// キーボード更新
+	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
+
+	// ジャンプが使えるとき
+	if (m_bDushInter == false)
+	{
+		// Xボタンの時
+		if (CManager::GetJoypad()->GetJoystickTrigger(0, m_nPlayerNum))
+		{
+			// ジョイパッドの取得
+			DIJOYSTATE js = CInputJoypad::GetStick(m_nPlayerNum);
+
+			if (js.lX != 0.0f || js.lY != 0)
+			{
+				m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+				float fAngle = atan2f((float)js.lX, (float)js.lY);
+
+				// ジョイパッド操作
+				m_move.x += sinf(-D3DX_PI /2)* PLAYER_DUSH;
+				m_move.z -= cosf(-D3DX_PI /2)* PLAYER_DUSH;
+				m_bDush = true;
+
+			}
+		}
+
+		// Bボタンの時
+		if (CManager::GetJoypad()->GetJoystickTrigger(3, m_nPlayerNum))
+		{
+			// ジョイパッドの取得
+			DIJOYSTATE js = CInputJoypad::GetStick(m_nPlayerNum);
+
+			if (js.lX != 0.0f || js.lY != 0)
+			{
+				m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+				float fAngle = atan2f((float)js.lX, (float)js.lY);
+
+				// ジョイパッド操作
+				m_move.x += sinf(D3DX_PI / 2)* PLAYER_DUSH;
+				m_move.z -= cosf(D3DX_PI / 2)* PLAYER_DUSH;
+				m_bDush = true;
+
+			}
+		}
+
+
+		// Wキーを押したとき
+		if (pKeyboard->GetPress(DIK_W) && pKeyboard->GetTrigger(DIK_RSHIFT))
+		{
+			m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+			m_move.z += cosf(0)*PLAYER_DUSH;
+			m_bDush = true;
+		}
+		// Sキーを押したとき
+		if (pKeyboard->GetPress(DIK_S) && pKeyboard->GetTrigger(DIK_RSHIFT))
+		{
+			m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+			m_move.z += cosf(D3DX_PI)*PLAYER_DUSH;
+			m_bDush = true;
+		}
+		// Aキーを押したとき
+		if (pKeyboard->GetPress(DIK_A) && pKeyboard->GetTrigger(DIK_RSHIFT))
+		{
+			m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+			m_move.x -= sinf(D3DX_PI / 2)*PLAYER_DUSH;
+			m_bDush = true;
+		}
+		// Dキーを押したとき
+		if (pKeyboard->GetPress(DIK_D) && pKeyboard->GetTrigger(DIK_RSHIFT))
+		{
+			m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+			m_move.x += sinf(D3DX_PI / 2)*PLAYER_DUSH;
+			m_bDush = true;
+		}
+	}
+	else
+	{
+		m_move.x = 0.0f;
+		m_move.z = 0.0f;
+
+		m_nDushInterCnt++;
+	}
+
+	// ダッシュしているとき
+	if (m_bDush == true)
+	{
+		// ダッシュが終わるまでをカウント
+		m_nDushFlame++;
+	}
+
+	// ダッシュが終わるフレーム
+	if (m_nDushFlame >= PLAYER_DUSH_INTER)
+	{
+		m_nDushFlame = 0;
+		m_bDush = false;
+		m_bDushInter = true;
+	}
+
+	// ダッシュができるようになるフレーム
+	if (m_nDushInterCnt >= DUSH_NONE_TIME)
+	{
+		m_nDushInterCnt = 0;
+		m_bDushInter = false;
+	}
 }

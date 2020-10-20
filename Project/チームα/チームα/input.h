@@ -25,13 +25,11 @@ public:
 	//=========================================================================
 	CInput();
 	virtual ~CInput();
-	virtual HRESULT InIt(HINSTANCE hInstance, HWND hWnd);
+	virtual HRESULT Init(HINSTANCE hInstance, HWND hWnd);
 	virtual void Uninit(void);
 	virtual void Update(void) = 0;
 
-	virtual BOOL GetPress(int nKey) = 0;
-	virtual BOOL GetTrigger(int nKey) = 0;
-	virtual BOOL GetRelease(int nKey) = 0;
+
 	static LPDIRECTINPUT8 GetInput(void) { return m_pInput; }
 
 protected:

@@ -31,10 +31,10 @@ CInputKeyboard::~CInputKeyboard()
 //=============================================================================
 //キーボードクラスの初期化処理
 //=============================================================================
-HRESULT CInputKeyboard::InIt(HINSTANCE hInstance, HWND hWnd)
+HRESULT CInputKeyboard::Init(HINSTANCE hInstance, HWND hWnd)
 {
 	//入力処理クラスの初期化処理呼び出し
-	CInput::InIt(hInstance, hWnd);
+	CInput::Init(hInstance, hWnd);
 
 	//入力デバイス（キーボード）の作成
 	if (FAILED(m_pInput->CreateDevice(GUID_SysKeyboard, &m_pDevice, NULL)))

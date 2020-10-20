@@ -151,6 +151,9 @@ void CScene3D::Uninit(void)
 		m_pVtxBuff->Release();
 		m_pVtxBuff = NULL;
 	}
+
+	//オブジェクト破棄
+	Release();
 }
 
 //=============================================================================
