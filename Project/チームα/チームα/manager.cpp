@@ -23,6 +23,7 @@
 #include "result.h"
 #include "fade.h"
 #include "player.h"
+#include "meshfield.h"
 
 //=============================================================================
 //Ã“Iƒƒ“ƒo•Ï”éŒ¾
@@ -190,6 +191,7 @@ void CManager::LoadAll(void)
 	CBoard::Load();
 	CTitle::Load();
 	CResult::Load();
+	CMeshField::Load();
 }
 
 //=============================================================================
@@ -200,6 +202,7 @@ void CManager::UnLoadAll(void)
 	CScene3D::UnLoad();
 	CBoard::UnLoad();
 	CPlayer::Unload();
+	CMeshField::UnLoad();
 }
 
 void CManager::SetMode(MODE_TYPE mode)

@@ -14,12 +14,13 @@
 #include "scene.h"
 
 //***************************************************************************************
-// 
+// 前方宣言
 //***************************************************************************************
 class CCamera;
 class CLight;
 class CTurn;
 class CDarts;
+class CMeshField;
 
 //***************************************************************************************
 // インクルードファイル
@@ -40,6 +41,7 @@ public:
 private:
 	static CCamera *m_pCamera;
 	static CLight *m_pLight;
+	static CMeshField *m_pMeshField;
 	CDarts *m_pDarts;
 	CTurn *m_pTurn;
 	LPD3DXFONT m_pFont;
