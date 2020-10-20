@@ -22,6 +22,7 @@ class CFade;
 class CTitle;
 class CGame;
 class CResult;
+class CInputJoypad;
 
 //=============================================================================
 //マネージャークラス
@@ -61,6 +62,8 @@ public:
 	static CInputKeyboard *GetKeyboard(void);
 	static CConection *GetConection(void);
 	static CFade *GetFade(void);
+	static CInputJoypad *GetJoypad(void);
+
 private:
 	//=========================================================================
 	//メンバ変数宣言
@@ -73,7 +76,7 @@ private:
 	static CTitle *m_pTitle;
 	static CGame *m_pGame;
 	static CResult *m_pResult;
-
+	static CInputJoypad *m_pJoypad;
 };
 
 #endif
