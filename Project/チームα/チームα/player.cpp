@@ -13,6 +13,7 @@
 #include "keyboard.h"
 #include "renderer.h"
 #include "input.h"
+#include "bullet.h"
 
 //=============================================================================
 // マクロ定義
@@ -154,6 +155,13 @@ void CPlayer::Uninit(void)
 //=============================================================================
 void CPlayer::Update(void)
 {
+	// キーボード更新
+	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
+
+	if (pKeyboard->GetTrigger(DIK_V))
+	{
+		CBullet::Create(m_pos, D3DXVECTOR3(200.0f, 200.0f, 0.0f), CBullet::BULLET_USER_PL1);
+	}
 	// プレイヤーの制御
 	PlayerControl();
 
