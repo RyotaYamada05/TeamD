@@ -68,7 +68,7 @@ HRESULT CMeshField::Load(void)
 	LPDIRECT3DDEVICE9 pDevice = pRenderer->GetDevice();
 
 	// テクスチャの読み込み
-	D3DXCreateTextureFromFile(pDevice, "date/TEXTURE/WARNING.png",
+	D3DXCreateTextureFromFile(pDevice, "data/Texture/stone_00124.jpg",
 		&m_apTexture[0]);
 
 	return S_OK;
@@ -274,4 +274,8 @@ void CMeshField::Draw(void)
 
 	// ポリゴンの描画
 	pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP, 0, 0, m_nNumVertex, 0, m_nNumPolygon);
+
+	// 頂点フォーマットの設定
+	pDevice->SetTexture(0, NULL);
+
 }

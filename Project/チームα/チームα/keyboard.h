@@ -24,7 +24,7 @@ public:
 	//=========================================================================
 	CInputKeyboard();
 	~CInputKeyboard();
-	HRESULT InIt(HINSTANCE hInstance, HWND hWnd);
+	HRESULT Init(HINSTANCE hInstance, HWND hWnd);
 	void Uninit(void);
 	void Update(void);
 

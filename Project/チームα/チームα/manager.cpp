@@ -24,6 +24,8 @@
 #include "fade.h"
 #include "player.h"
 #include "meshfield.h"
+#include "bg.h"
+#include "joypad.h"
 
 //=============================================================================
 //静的メンバ変数宣言
@@ -36,6 +38,7 @@ CFade *CManager::m_pFade = NULL;
 CTitle *CManager::m_pTitle = NULL;
 CGame *CManager::m_pGame = NULL;
 CResult *CManager::m_pResult = NULL;
+CInputJoypad *CManager::m_pJoypad = NULL;
 
 //=============================================================================
 //コンストラクタ
@@ -75,11 +78,25 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindow)
 	//メモリが確保できたら
 	if (m_pInput != NULL)
 	{
-		if (FAILED(m_pInput->InIt(hInstance, hWnd)))
+		if (FAILED(m_pInput->Init(hInstance, hWnd)))
 		{
 			return -1;
 		}
 	}
+
+
+	//入力処理クラスのインスタンス生成
+	m_pJoypad = new CInputJoypad;
+
+	//メモリが確保できたら
+	if (m_pJoypad != NULL)
+	{
+		if (FAILED(m_pJoypad->Init(hInstance, hWnd)))
+		{
+			return -1;
+		}
+	}
+
 
 	m_pConection = new CConection;
 	if (m_pConection != NULL)
@@ -128,6 +145,18 @@ void CManager::Uninit(void)
 		m_pInput = NULL;
 	}
 
+	if (m_pJoypad != NULL)
+	{
+		//入力処理クラスの終了処理呼び出し
+		m_pJoypad->Uninit();
+
+		//メモリの削除
+		delete m_pInput;
+
+		//メモリのクリア
+		m_pJoypad = NULL;
+	}
+
 	if (m_pRenderer != NULL)
 	{
 		//レンダラークラスの終了処理呼び出し
@@ -151,6 +180,13 @@ void CManager::Update(void)
 		//入力処理クラスの更新処理呼び出し
 		m_pInput->Update();
 	}
+
+	if (m_pJoypad != NULL)
+	{
+		//入力処理クラスの更新処理呼び出し
+		m_pJoypad->Update();
+	}
+
 
 	if (m_pRenderer != NULL)
 	{
@@ -192,6 +228,7 @@ void CManager::LoadAll(void)
 	CTitle::Load();
 	CResult::Load();
 	CMeshField::Load();
+	CBg::Load();
 }
 
 //=============================================================================
@@ -203,6 +240,7 @@ void CManager::UnLoadAll(void)
 	CBoard::UnLoad();
 	CPlayer::Unload();
 	CMeshField::UnLoad();
+	CBg::UnLoad();
 }
 
 void CManager::SetMode(MODE_TYPE mode)
@@ -303,4 +341,9 @@ CConection *CManager::GetConection(void)
 CFade * CManager::GetFade(void)
 {
 	return m_pFade;
+}
+
+CInputJoypad * CManager::GetJoypad(void)
+{
+	return m_pJoypad;
 }
