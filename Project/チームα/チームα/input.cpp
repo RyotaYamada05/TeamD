@@ -29,7 +29,7 @@ CInput::~CInput()
 //=============================================================================
 //“ü—Íˆ—ƒNƒ‰ƒX‚Ì‰Šú‰»ˆ—
 //=============================================================================
-HRESULT CInput::InIt(HINSTANCE hInstance, HWND hWnd)
+HRESULT CInput::Init(HINSTANCE hInstance, HWND hWnd)
 {
 	if (m_pInput == NULL)
 	{

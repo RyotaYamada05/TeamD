@@ -46,7 +46,7 @@ HRESULT CCamera::Init(void)
 	m_fMove = 5.0f;
 	m_fDistance = DISTANCE;
 	m_rot.y = 0.0f;
-	m_posV = D3DXVECTOR3(0.0f, 150.0f, -m_fDistance);	//位置zはm_fDistance分-方向へ設定する
+	m_posV = D3DXVECTOR3(0.0f, 300.0f, -m_fDistance);	//位置zはm_fDistance分-方向へ設定する
 	m_posR = D3DXVECTOR3(0.0f, 30.0f, 0.0f);	//注視点は全て0座標を見る
 	m_posU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 
@@ -70,7 +70,7 @@ void CCamera::Uninit(void)
 void CCamera::Update(void)
 {
 	//キーボードクラス情報の取得
-	CInput *pInput = CManager::GetKeyboard();
+	CInputKeyboard *pInput = CManager::GetKeyboard();
 
 	//注視点の左旋回
 	if (pInput->GetPress(DIK_Q))

@@ -13,24 +13,26 @@
 #include "keyboard.h"
 #include "renderer.h"
 #include "input.h"
+#include "joypad.h"
 
 //=============================================================================
 // マクロ定義
 //=============================================================================
 #define PLAYER_SPEED			(5.0f)				// プレイヤーの移動量
 #define PLAYER_DUSH				(10.0f)				// プレイヤーのダッシュ
-#define PLAYER_DUSH_INTER		(50)				// ダッシュができる長さ
+#define PLAYER_DUSH_INTER		(80)				// ダッシュができる長さ
 #define DUSH_NONE_TIME			(100)				// ダッシュできない時間
 #define PLAYER_JUMP				(5.0f)				// ジャンプの処理
-#define GRAVITY_POWAR			(0.1f)				// 重力の強さ
-#define PLAYER_FALL				(10.0f)				// 急降下の処理
+#define GRAVITY_POWAR			(0.05f)				// 重力の強さ
+#define PLAYER_FALL				(-8.0f)				// 急降下の処理
 
 //=============================================================================
 // static初期化
 //=============================================================================
 LPD3DXMESH CPlayer::m_pMesh = NULL;
 LPD3DXBUFFER CPlayer::m_pBuffMat = NULL;	//マテリアル情報へのポインタ
-DWORD CPlayer::m_nNumMat = 0;	//マテリアル情報の数
+DWORD CPlayer::m_nNumMat = 0;				//マテリアル情報の数
+int CPlayer::m_nPlayerAll = 0;
 
 //=============================================================================
 // クリエイト
@@ -40,6 +42,9 @@ CPlayer * CPlayer::Create(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 	// 初期化処理
 	CPlayer *pPlayer = new CPlayer;
 	pPlayer->Init(pos, size);
+
+	// プレイヤーの番号を代入
+	pPlayer->m_nPlayerNum = m_nPlayerAll++;
 
 	return pPlayer;
 }
@@ -51,7 +56,7 @@ HRESULT CPlayer::LoadModel(void)
 {
 	LPDIRECT3DDEVICE9 pD3DDevice = CManager::GetRenderer()->GetDevice();
 
-	// テクスチャの生成
+	// モデルの生成
 	D3DXLoadMeshFromX("data/model/box.x",
 		D3DXMESH_SYSTEMMEM,
 		pD3DDevice,
@@ -59,9 +64,7 @@ HRESULT CPlayer::LoadModel(void)
 		&m_pBuffMat,
 		NULL,
 		&m_nNumMat,
-		&m_pMesh
-
-	);
+		&m_pMesh);
 
 	// 正常終了
 	return S_OK;
@@ -104,7 +107,7 @@ CPlayer::CPlayer()
 //=============================================================================
 CPlayer::~CPlayer()
 {
-
+	m_nPlayerAll = 0;
 }
 
 //=============================================================================
@@ -211,6 +214,18 @@ void CPlayer::Walk(void)
 	// キーボード更新
 	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
 
+	// ジョイパッドの取得
+	DIJOYSTATE js = CInputJoypad::GetStick(m_nPlayerNum);
+
+	if (js.lX != 0.0f || js.lY != 0)
+	{
+		float fAngle = atan2f((float)js.lX, (float)js.lY);
+
+		// ジョイパッド操作
+		m_pos.x += sinf(fAngle)* PLAYER_SPEED;
+		m_pos.z -= cosf(fAngle)* PLAYER_SPEED;
+	}
+
 	// Wキーを押したとき
 	if (pKeyboard->GetPress(DIK_W))
 	{
@@ -244,8 +259,9 @@ void CPlayer::Jump(void)
 	// キーボード更新
 	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
 
-	// SPACEキーを押したとき
-	if (pKeyboard->GetTrigger(DIK_SPACE) && m_bJump == false)
+	// SPACEキーを押したとき・コントローラのYを押したとき
+	if (CManager::GetJoypad()->GetJoystickTrigger(1, m_nPlayerNum) && m_bJump == false 
+		|| pKeyboard->GetTrigger(DIK_SPACE) && m_bJump == false )
 	{
 		// ジャンプの処理
 		m_move.y = 0.0f;
@@ -280,24 +296,65 @@ void CPlayer::Fall(void)
 	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
 
 	// SPACEキーを押したとき
-	if (pKeyboard->GetTrigger(DIK_B) && m_bJump == true)
+	if (pKeyboard->GetTrigger(DIK_B) && m_bJump == true ||
+		CManager::GetJoypad()->GetJoystickTrigger(2, m_nPlayerNum) && m_bJump == true)
 	{
 		// ジャンプの処理
 		m_move.y = 0.0f;
-		m_move.y = -PLAYER_FALL;
+		m_move.y = PLAYER_FALL;
 	}
 }
 
 //=============================================================================
-// 回避
+// ダッシュ
 //=============================================================================
 void CPlayer::Dush(void)
 {
 	// キーボード更新
 	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
 
+	// ジャンプが使えるとき
 	if (m_bDushInter == false)
 	{
+		// Xボタンの時
+		if (CManager::GetJoypad()->GetJoystickTrigger(0, m_nPlayerNum))
+		{
+			// ジョイパッドの取得
+			DIJOYSTATE js = CInputJoypad::GetStick(m_nPlayerNum);
+
+			if (js.lX != 0.0f || js.lY != 0)
+			{
+				m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+				float fAngle = atan2f((float)js.lX, (float)js.lY);
+
+				// ジョイパッド操作
+				m_move.x += sinf(-D3DX_PI /2)* PLAYER_DUSH;
+				m_move.z -= cosf(-D3DX_PI /2)* PLAYER_DUSH;
+				m_bDush = true;
+
+			}
+		}
+
+		// Bボタンの時
+		if (CManager::GetJoypad()->GetJoystickTrigger(3, m_nPlayerNum))
+		{
+			// ジョイパッドの取得
+			DIJOYSTATE js = CInputJoypad::GetStick(m_nPlayerNum);
+
+			if (js.lX != 0.0f || js.lY != 0)
+			{
+				m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+				float fAngle = atan2f((float)js.lX, (float)js.lY);
+
+				// ジョイパッド操作
+				m_move.x += sinf(D3DX_PI / 2)* PLAYER_DUSH;
+				m_move.z -= cosf(D3DX_PI / 2)* PLAYER_DUSH;
+				m_bDush = true;
+
+			}
+		}
+
+
 		// Wキーを押したとき
 		if (pKeyboard->GetPress(DIK_W) && pKeyboard->GetTrigger(DIK_RSHIFT))
 		{
