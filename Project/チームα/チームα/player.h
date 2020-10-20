@@ -44,7 +44,8 @@ public:
 	void Walk(void);												// プレイヤーの歩く処理
 	void Jump(void);												// ジャンプの処理
 	void GroundLimit(void);											// 地面の制限
-
+	void Fall(void);												// 急降下
+	void Dush(void);												// ダッシュ
 private:
 	CScore *pScore;							// スコアの情報
 	D3DXVECTOR3 m_pos;						// 座標
@@ -52,7 +53,11 @@ private:
 	static LPD3DXMESH m_pMesh;				// メッシュ情報へのポインタ
 	static LPD3DXBUFFER m_pBuffMat;			// マテリアル情報へのポインタ
 	static DWORD m_nNumMat;					// マテリアル情報の数
+	int m_nDushFlame;						// ダッシュのフレーム
+	int m_nDushInterCnt;					// ダッシュできないときのカウント
 	bool m_bJump;							// ジャンプのフラグ
+	bool m_bDush;							// ダッシュの処理
+	bool m_bDushInter;						// ダッシュのインターバル
 };
 
 #endif
