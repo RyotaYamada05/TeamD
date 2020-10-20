@@ -1,12 +1,12 @@
 //=======================================================================================
 //
-// 背景描画処理 [bg.cpp]
-// Author : 伊藤　航
+// ゲーム処理 [bg.cpp]
+// Author : Konishi Yuuto
 //
 //=======================================================================================
 
 //=======================================================================================
-// 
+// インクルード
 //=======================================================================================
 #include "game.h"
 #include "camera.h"
@@ -17,14 +17,17 @@
 #include "conection.h"
 #include "renderer.h"
 #include "player.h"
-//=======================================================================================
-// 
-//=======================================================================================
-CCamera *CGame::m_pCamera = NULL;	//カメラクラスのポインタ変数
-CLight *CGame::m_pLight = NULL;	//ライトクラスのポインタ変数
+#include "meshfield.h"
 
 //=======================================================================================
-// 
+// static初期化
+//=======================================================================================
+CCamera *CGame::m_pCamera = NULL;			// カメラクラスのポインタ変数
+CLight *CGame::m_pLight = NULL;				// ライトクラスのポインタ変数
+CMeshField *CGame::m_pMeshField = NULL;		// メッシュフィールド
+
+//=======================================================================================
+// コンストラクタ
 //=======================================================================================
 CGame::CGame()
 {
@@ -32,7 +35,7 @@ CGame::CGame()
 }
 
 //=======================================================================================
-// 
+// デストラクタ
 //=======================================================================================
 CGame::~CGame()
 {
@@ -40,7 +43,7 @@ CGame::~CGame()
 }
 
 //=======================================================================================
-// 
+// クリエイト
 //=======================================================================================
 CGame* CGame::Create(void)
 {
@@ -52,7 +55,7 @@ CGame* CGame::Create(void)
 }
 
 //=======================================================================================
-// 
+// 初期化処理
 //=======================================================================================
 HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 {
@@ -77,11 +80,19 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 		}
 	}
 
+	// プレイヤー
 	CPlayer::Create(D3DXVECTOR3(0.0f, 50.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-	LPDIRECT3DDEVICE9 pD3DDevice = CManager::GetRenderer()->GetDevice();
 
+	// メッシュフィールド
+	if (m_pMeshField == NULL)
+	{
+		m_pMeshField = CMeshField::Create();
+	}
+
+	LPDIRECT3DDEVICE9 pD3DDevice = CManager::GetRenderer()->GetDevice();
 	D3DXCreateFont(pD3DDevice, 18, 0, 0, 0, FALSE, SHIFTJIS_CHARSET,
 		OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, "Terminal", &m_pFont);
+
 	//CBillboard::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(50.0f, 50.0f, 0.0f));
 	//CScene3D::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(50.0f, 50.0f, 0.0f));
 
@@ -105,6 +116,13 @@ void CGame::Uninit(void)
 		//メモリのクリア
 		m_pCamera = NULL;
 	}
+
+	// メッシュフィールド
+	if (m_pMeshField != NULL)
+	{
+		m_pMeshField->Uninit();
+	}
+
 	CManager::GetConection()->Uninit();
 }
 
@@ -119,6 +137,13 @@ void CGame::Update(void)
 		//カメラクラスの更新処理
 		m_pCamera->Update();
 	}
+
+	// メッシュフィールド
+	if (m_pMeshField != NULL)
+	{
+		m_pMeshField->Update();
+	}
+
 	CManager::GetConection()->Update();
 
 }
@@ -133,6 +158,11 @@ void CGame::Draw(void)
 		m_pCamera->SetCamera();
 	}
 
+	// メッシュフィールド
+	if (m_pMeshField != NULL)
+	{
+		m_pMeshField->Draw();
+	}
 
 	//RECT rect = { 0, 100, SCREEN_WIDTH, SCREEN_HEIGHT };
 	//char str[256];

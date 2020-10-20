@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿  title.cpp
   tcp_client.cpp
   shader.cpp
@@ -26,3 +27,8 @@
   コードを生成中...
   チームα.vcxproj -> C:\Users\student\Desktop\TeamD\TeamD\Project\チームα\Debug\チームα.exe
   チームα.vcxproj -> C:\Users\student\Desktop\TeamD\TeamD\Project\チームα\Debug\チームα.pdb (Full PDB)
+=======
+﻿  player.cpp
+  チームα.vcxproj -> C:\Users\student\Desktop\チームα\Debug\チームα.exe
+  チームα.vcxproj -> C:\Users\student\Desktop\チームα\Debug\チームα.pdb (Full PDB)
+>>>>>>> 31191ed1911c8f33927817e19c61de9f228a46ec

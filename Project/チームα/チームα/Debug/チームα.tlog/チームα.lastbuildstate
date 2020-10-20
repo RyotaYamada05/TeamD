@@ -1,2 +1,6 @@
 #TargetFrameworkVersion=v4.0:PlatformToolSet=v140:EnableManagedIncrementalBuild=false:VCToolArchitecture=Native32Bit:WindowsTargetPlatformVersion=8.1
+<<<<<<< HEAD
 Debug|Win32|C:\Users\student\Desktop\TeamD\TeamD\Project\チームα\|
+=======
+Debug|Win32|C:\Users\student\Desktop\チームα\|
+>>>>>>> 31191ed1911c8f33927817e19c61de9f228a46ec

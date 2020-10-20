@@ -17,9 +17,13 @@
 //=============================================================================
 // マクロ定義
 //=============================================================================
-#define PLAYER_SPEED	(5.0f)				// プレイヤーの移動量
-#define PLAYER_JUMP		(5.0f)				// ジャンプの処理
-#define GRAVITY_POWAR	(0.25f)				// 重力の強さ
+#define PLAYER_SPEED			(5.0f)				// プレイヤーの移動量
+#define PLAYER_DUSH				(10.0f)				// プレイヤーのダッシュ
+#define PLAYER_DUSH_INTER		(50)				// ダッシュができる長さ
+#define DUSH_NONE_TIME			(100)				// ダッシュできない時間
+#define PLAYER_JUMP				(5.0f)				// ジャンプの処理
+#define GRAVITY_POWAR			(0.1f)				// 重力の強さ
+#define PLAYER_FALL				(10.0f)				// 急降下の処理
 
 //=============================================================================
 // static初期化
@@ -88,7 +92,11 @@ CPlayer::CPlayer()
 	pScore = NULL;
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_nDushFlame = 0;
+	m_nDushInterCnt = 0;
 	m_bJump = false;
+	m_bDush = false;
+	m_bDushInter = false;
 }
 
 //=============================================================================
@@ -149,9 +157,13 @@ void CPlayer::Update(void)
 	// プレイヤーの制御
 	PlayerControl();
 
-	// 重力をかける
-	m_move.y -= GRAVITY_POWAR;
-	m_pos.y += m_move.y;		// 落下
+	// ダッシュしていないとき
+	if (m_bDush == false)
+	{
+		// 重力をかける
+		m_move.y -= GRAVITY_POWAR;
+		m_pos.y += m_move.y;		// 落下
+	}
 
 	// 地面の制限
 	GroundLimit();
@@ -165,6 +177,7 @@ void CPlayer::Update(void)
 //=============================================================================
 void CPlayer::Draw(void)
 {
+	// 描画処理
 	CModel::Draw();
 }
 
@@ -173,11 +186,21 @@ void CPlayer::Draw(void)
 //=============================================================================
 void CPlayer::PlayerControl()
 {
-	// プレイヤーの移動処理
-	Walk();
+	// ダッシュしていないとき
+	if (m_bDush == false)
+	{
+		// プレイヤーの移動処理
+		Walk();
+	}
 
 	// ジャンプの処理
 	Jump();
+
+	// 急降下の処理
+	Fall();
+
+	// 回避の処理
+	Dush();
 }
 
 //=============================================================================
@@ -246,5 +269,91 @@ void CPlayer::GroundLimit(void)
 		m_pos.y = 0.0f;
 		m_bJump = false;
 	}
+}
 
+//=============================================================================
+// 急降下
+//=============================================================================
+void CPlayer::Fall(void)
+{
+	// キーボード更新
+	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
+
+	// SPACEキーを押したとき
+	if (pKeyboard->GetTrigger(DIK_B) && m_bJump == true)
+	{
+		// ジャンプの処理
+		m_move.y = 0.0f;
+		m_move.y = -PLAYER_FALL;
+	}
+}
+
+//=============================================================================
+// 回避
+//=============================================================================
+void CPlayer::Dush(void)
+{
+	// キーボード更新
+	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
+
+	if (m_bDushInter == false)
+	{
+		// Wキーを押したとき
+		if (pKeyboard->GetPress(DIK_W) && pKeyboard->GetTrigger(DIK_RSHIFT))
+		{
+			m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+			m_move.z += cosf(0)*PLAYER_DUSH;
+			m_bDush = true;
+		}
+		// Sキーを押したとき
+		if (pKeyboard->GetPress(DIK_S) && pKeyboard->GetTrigger(DIK_RSHIFT))
+		{
+			m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+			m_move.z += cosf(D3DX_PI)*PLAYER_DUSH;
+			m_bDush = true;
+		}
+		// Aキーを押したとき
+		if (pKeyboard->GetPress(DIK_A) && pKeyboard->GetTrigger(DIK_RSHIFT))
+		{
+			m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+			m_move.x -= sinf(D3DX_PI / 2)*PLAYER_DUSH;
+			m_bDush = true;
+		}
+		// Dキーを押したとき
+		if (pKeyboard->GetPress(DIK_D) && pKeyboard->GetTrigger(DIK_RSHIFT))
+		{
+			m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+			m_move.x += sinf(D3DX_PI / 2)*PLAYER_DUSH;
+			m_bDush = true;
+		}
+	}
+	else
+	{
+		m_move.x = 0.0f;
+		m_move.z = 0.0f;
+
+		m_nDushInterCnt++;
+	}
+
+	// ダッシュしているとき
+	if (m_bDush == true)
+	{
+		// ダッシュが終わるまでをカウント
+		m_nDushFlame++;
+	}
+
+	// ダッシュが終わるフレーム
+	if (m_nDushFlame >= PLAYER_DUSH_INTER)
+	{
+		m_nDushFlame = 0;
+		m_bDush = false;
+		m_bDushInter = true;
+	}
+
+	// ダッシュができるようになるフレーム
+	if (m_nDushInterCnt >= DUSH_NONE_TIME)
+	{
+		m_nDushInterCnt = 0;
+		m_bDushInter = false;
+	}
 }
