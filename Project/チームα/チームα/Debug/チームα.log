@@ -1,2 +1,28 @@
-﻿  player.cpp
-LINK : fatal error LNK1201: プログラム データベース 'C:\Users\student\Desktop\GitHub\TeamD\Project\チームα\Debug\チームα.pdb' に書き込み中にエラーが発生しました。ディスク容量の不足、無効なパス、または特権の不足が原因でないことを確認してください。
+﻿  title.cpp
+  tcp_client.cpp
+  shader.cpp
+  scene3D.cpp
+  scene2d.cpp
+  scene.cpp
+  result.cpp
+  renderer.cpp
+  polygon.cpp
+  player.cpp
+  model.cpp
+  meshfield.cpp
+  manager.cpp
+  main.cpp
+  light.cpp
+  keyboard.cpp
+  input.cpp
+  game.cpp
+  fade.cpp
+  conection.cpp
+  コードを生成中...
+  コンパイル中...
+  camera.cpp
+  board.cpp
+  billboard.cpp
+  コードを生成中...
+  チームα.vcxproj -> C:\Users\GSP041\Desktop\TeamD\Project\チームα\Debug\チームα.exe
+  チームα.vcxproj -> C:\Users\GSP041\Desktop\TeamD\Project\チームα\Debug\チームα.pdb (Full PDB)
