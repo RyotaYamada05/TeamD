@@ -85,6 +85,7 @@ HRESULT CBullet::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size, const BULLE
 	SetObjType(CScene::OBJTYPE_PLAYER);
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 10.0f);
 
+
 	return S_OK;
 }
 

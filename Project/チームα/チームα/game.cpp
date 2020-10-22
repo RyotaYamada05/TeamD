@@ -99,7 +99,7 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 	}
 	if (m_apPlayer[1] == NULL)
 	{
-		m_apPlayer[1] = CPlayer::Create(D3DXVECTOR3(0.0f, 50.0f, -500.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+		m_apPlayer[1] = CPlayer::Create(D3DXVECTOR3(0.0f, 50.0f, 500.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 	}
 
 	// メッシュフィールド
@@ -164,12 +164,6 @@ void CGame::Uninit(void)
 	if (m_pBg != NULL)
 	{
 		m_pBg->Uninit();
-	}
-
-	for (int nCount = 0; nCount < MAX_PLAYER; nCount++)
-	{
-		// プレイヤーの描画
-		m_apPlayer[nCount] = NULL;
 	}
 
 	CManager::GetConection()->Uninit();
