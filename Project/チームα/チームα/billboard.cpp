@@ -59,10 +59,10 @@ HRESULT CBillboard::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 	//頂点座標設定の設定
-	pVtx[0].pos = D3DXVECTOR3(m_Pos.x - m_size.x / 2, m_Pos.y + m_size.y / 2, 0.0f);
-	pVtx[1].pos = D3DXVECTOR3(m_Pos.x + m_size.x / 2, m_Pos.y + m_size.y / 2, 0.0f);
-	pVtx[2].pos = D3DXVECTOR3(m_Pos.x - m_size.x / 2, m_Pos.y - m_size.y / 2, 0.0f);
-	pVtx[3].pos = D3DXVECTOR3(m_Pos.x + m_size.x / 2, m_Pos.y - m_size.y / 2, 0.0f);
+	pVtx[0].pos = D3DXVECTOR3(- m_size.x / 2, + m_size.y / 2, 0.0f);
+	pVtx[1].pos = D3DXVECTOR3(+ m_size.x / 2, + m_size.y / 2, 0.0f);
+	pVtx[2].pos = D3DXVECTOR3(- m_size.x / 2, - m_size.y / 2, 0.0f);
+	pVtx[3].pos = D3DXVECTOR3(+ m_size.x / 2, - m_size.y / 2, 0.0f);
 
 	//各頂点の法線の設定（※ベクトルの大きさは１にする必要がある）
 	pVtx[0].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
@@ -185,10 +185,10 @@ void CBillboard::SetPos(D3DXVECTOR3 pos)
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 	//頂点座標設定の設定
-	pVtx[0].pos = D3DXVECTOR3(m_Pos.x - m_size.x / 2, m_Pos.y + m_size.y / 2, 0.0f);
-	pVtx[1].pos = D3DXVECTOR3(m_Pos.x + m_size.x / 2, m_Pos.y + m_size.y / 2, 0.0f);
-	pVtx[2].pos = D3DXVECTOR3(m_Pos.x - m_size.x / 2, m_Pos.y - m_size.y / 2, 0.0f);
-	pVtx[3].pos = D3DXVECTOR3(m_Pos.x + m_size.x / 2, m_Pos.y - m_size.y / 2, 0.0f);
+	pVtx[0].pos = D3DXVECTOR3(- m_size.x / 2, + m_size.y / 2, 0.0f);
+	pVtx[1].pos = D3DXVECTOR3(+ m_size.x / 2, + m_size.y / 2, 0.0f);
+	pVtx[2].pos = D3DXVECTOR3(- m_size.x / 2, - m_size.y / 2, 0.0f);
+	pVtx[3].pos = D3DXVECTOR3(+ m_size.x / 2, - m_size.y / 2, 0.0f);
 
 	//頂点バッファのアンロック
 	m_pVtxBuff->Unlock();
