@@ -1,2 +1,5 @@
-﻿  player.cpp
-LINK : fatal error LNK1201: プログラム データベース 'C:\Users\student\Desktop\GitHub\TeamD\Project\チームα\Debug\チームα.pdb' に書き込み中にエラーが発生しました。ディスク容量の不足、無効なパス、または特権の不足が原因でないことを確認してください。
+﻿  game.cpp
+c:\users\student\desktop\チーム制作 ブランチ\teamd\project\チームα\チームα\time.h(40): warning C4373: 'CTime::Init': 仮想関数は 'CScene::Init' をオーバーライドします。前バージョンのコンパイラは、パラメーターの違いが const/volatile 修飾子に限られる場合はオーバーライドしませんでした。
+  c:\users\student\desktop\チーム制作 ブランチ\teamd\project\チームα\チームα\scene.h(47): note: 'CScene::Init' の宣言を確認してください
+  チームα.vcxproj -> C:\Users\student\Desktop\チーム制作 ブランチ\TeamD\Project\チームα\Debug\チームα.exe
+  チームα.vcxproj -> C:\Users\student\Desktop\チーム制作 ブランチ\TeamD\Project\チームα\Debug\チームα.pdb (Full PDB)

@@ -17,12 +17,14 @@
 #include "conection.h"
 #include "renderer.h"
 #include "player.h"
+#include "time.h"
+#include "gauge.h"
+#include "life.h"
 //=======================================================================================
 // 
 //=======================================================================================
 CCamera *CGame::m_pCamera = NULL;	//カメラクラスのポインタ変数
-CLight *CGame::m_pLight = NULL;	//ライトクラスのポインタ変数
-
+CLight *CGame::m_pLight = NULL;		//ライトクラスのポインタ変数
 //=======================================================================================
 // 
 //=======================================================================================
@@ -79,6 +81,17 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 
 	CPlayer::Create(D3DXVECTOR3(0.0f, 50.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 	LPDIRECT3DDEVICE9 pD3DDevice = CManager::GetRenderer()->GetDevice();
+
+	//タイム生成
+	CTime::Create(D3DXVECTOR3(50.0f, 50.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+
+	//ライフ生成
+	//１Ｐのライフゲージ
+	CLife::Create(D3DXVECTOR3(300, 100.0f, 0.0f), D3DXVECTOR3(MAX_LIFE, 20.0f, 0.0f), D3DCOLOR_RGBA(255, 140, 0, 255), CLife::LIFETYPE_FAST_PLAYER);
+	CLife::Create(D3DXVECTOR3(300, 200.0f, 0.0f), D3DXVECTOR3(MAX_LIFE, 20.0f, 0.0f), D3DCOLOR_RGBA(60, 179, 113, 255), CLife::LIFETYPE_FAST_PLAYER);
+	//２Ｐのライフゲージ
+	CLife::Create(D3DXVECTOR3(800, 100.0f, 0.0f), D3DXVECTOR3(MAX_LIFE, 20.0f, 0.0f), D3DCOLOR_RGBA(255, 140, 0, 255), CLife::LIFETYPE_SECOND_PLAYER);
+	CLife::Create(D3DXVECTOR3(800, 200.0f, 0.0f), D3DXVECTOR3(MAX_LIFE, 20.0f, 0.0f), D3DCOLOR_RGBA(60, 179, 113, 255), CLife::LIFETYPE_SECOND_PLAYER);
 
 	D3DXCreateFont(pD3DDevice, 18, 0, 0, 0, FALSE, SHIFTJIS_CHARSET,
 		OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, "Terminal", &m_pFont);
