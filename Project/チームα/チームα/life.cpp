@@ -139,7 +139,7 @@ void CLife::Update(void)
 	//ƒ‰ƒCƒt‚ğŒ¸‚ç‚·ˆ—
 	if (0 < size.x)
 	{
-		if (m_type == m_typeDecrease)
+	//	if (m_type == m_typeDecrease)
 		{
 			if (m_bLife == true)
 			{

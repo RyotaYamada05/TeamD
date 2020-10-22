@@ -7,6 +7,7 @@
 #include "bullet.h"
 #include "player.h"
 #include "game.h"
+#include "life.h"
 
 //=============================================================================
 //マクロ定義
@@ -139,9 +140,13 @@ void CBullet::Draw(void)
 	CBillboard::Draw();
 }
 
+//=============================================================================
+//バレットクラスの当たり判定
+//=============================================================================
 bool CBullet::Collision(void)
 {
 	CPlayer * pPlayer = NULL;
+
 	switch (m_user)
 	{
 	case BULLET_USER_PL1:
@@ -167,6 +172,13 @@ bool CBullet::Collision(void)
 		targetPos.z >= m_pos.z - m_size.x / 2 &&
 		targetPos.z <= m_pos.z + m_size.x / 2)
 	{
+		for (int nCount = 0; nCount < LIFE_NUM; nCount++)
+		{
+			//　プレイヤーのライフを減らす
+			pPlayer->GetLife(nCount)->Decrease(50, true, CLife::LIFETYPE_NONE);
+		}
+
+		m_nLife = 0;
 		return true;
 	}
 

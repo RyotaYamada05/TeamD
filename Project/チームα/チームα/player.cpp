@@ -15,6 +15,7 @@
 #include "input.h"
 #include "bullet.h"
 #include "joypad.h"
+#include "life.h"
 
 //=============================================================================
 // マクロ定義
@@ -43,10 +44,12 @@ CPlayer * CPlayer::Create(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 {
 	// 初期化処理
 	CPlayer *pPlayer = new CPlayer;
-	pPlayer->Init(pos, size);
 
 	// プレイヤーの番号を代入
 	pPlayer->m_nPlayerNum = m_nPlayerAll++;
+
+	pPlayer->Init(pos, size);
+
 
 	return pPlayer;
 }
@@ -94,6 +97,7 @@ void CPlayer::Unload(void)
 CPlayer::CPlayer()
 {
 	pScore = NULL;
+	memset(m_pLife, 0, sizeof(m_pLife));
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_nDushFlame = 0;
@@ -125,6 +129,53 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 	CModel::BindModel(model);
 
 	m_pos = pos;
+
+	switch (m_nPlayerNum)
+	{
+	case 0:
+		//１Ｐのライフゲージ
+		if (m_pLife[0] == NULL)
+		{
+			m_pLife[0] = CLife::Create(D3DXVECTOR3(200.0f, 100.0f, 0.0f),
+				D3DXVECTOR3(MAX_LIFE, 20.0f, 0.0f), D3DCOLOR_RGBA(255, 140, 0, 255),
+				CLife::LIFETYPE_FAST_PLAYER);
+		}
+
+		//１Ｐのライフゲージ
+		if (m_pLife[1] == NULL)
+		{
+			m_pLife[1] = CLife::Create(D3DXVECTOR3(750.0f, 150.0f, 0.0f),
+				D3DXVECTOR3(MAX_LIFE, 20.0f, 0.0f), D3DCOLOR_RGBA(60, 179, 113, 255),
+				CLife::LIFETYPE_FAST_PLAYER);
+		}
+		break;
+
+	case 1:
+		//１Ｐのライフゲージ
+		if (m_pLife[0] == NULL)
+		{
+			m_pLife[0] = CLife::Create(D3DXVECTOR3(200.0f, 150.0f, 0.0f),
+				D3DXVECTOR3(MAX_LIFE, 20.0f, 0.0f), D3DCOLOR_RGBA(60, 179, 113, 255),
+				CLife::LIFETYPE_FAST_PLAYER);
+		}
+
+		//１Ｐのライフゲージ
+		if (m_pLife[1] == NULL)
+		{
+			m_pLife[1] = CLife::Create(D3DXVECTOR3(750.0f, 100.0f, 0.0f),
+				D3DXVECTOR3(MAX_LIFE, 20.0f, 0.0f), D3DCOLOR_RGBA(255, 140, 0, 255),
+				CLife::LIFETYPE_FAST_PLAYER);
+		}
+		break;
+
+			
+	default:
+		break;
+	}
+
+
+//	CLife::Create(D3DXVECTOR3(300, 200.0f, 0.0f), D3DXVECTOR3(MAX_LIFE, 20.0f, 0.0f), D3DCOLOR_RGBA(60, 179, 113, 255), CLife::LIFETYPE_FAST_PLAYER);
+
 
 	// 初期化
 	CModel::Init(m_pos, rot);
@@ -170,13 +221,29 @@ void CPlayer::Update(void)
 	// 地面の制限
 	GroundLimit();
 
-	//R2トリガーまたはVキーを押したら
-	if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_R2_TRIGGER, m_nPlayerNum) ||
-		pKeyboard->GetTrigger(DIK_V))
+	switch (m_nPlayerNum)
 	{
-		//バレットの生成
-		CBullet::Create(m_pos, D3DXVECTOR3(100.0f, 100.0f, 0.0f), CBullet::BULLET_USER_PL1);
+	case 0:
+		//R2トリガーまたはVキーを押したら
+		if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_R2_TRIGGER, m_nPlayerNum) ||
+			pKeyboard->GetTrigger(DIK_V))
+		{
+			//バレットの生成
+			CBullet::Create(m_pos, D3DXVECTOR3(100.0f, 100.0f, 0.0f), CBullet::BULLET_USER_PL1);
+		}
+		break;
+
+	case 1:
+		//R2トリガーまたはVキーを押したら
+		if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_R2_TRIGGER, m_nPlayerNum) ||
+			pKeyboard->GetTrigger(DIK_V))
+		{
+			//バレットの生成
+			CBullet::Create(m_pos, D3DXVECTOR3(100.0f, 100.0f, 0.0f), CBullet::BULLET_USER_PL2);
+		}
+		break;
 	}
+
 
 	// 座標情報を与える
 	CModel::SetPos(m_pos);
@@ -424,4 +491,9 @@ void CPlayer::Dush(void)
 		m_nDushInterCnt = 0;
 		m_bDushInter = false;
 	}
+}
+
+CLife * CPlayer::GetLife(int nNumber)
+{
+	return m_pLife[nNumber];
 }
