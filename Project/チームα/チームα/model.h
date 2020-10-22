@@ -21,9 +21,10 @@ public:
 	typedef struct
 	{
 		LPD3DXMESH pMesh;			//メッシュ情報へのポインタ
-		LPD3DXBUFFER pBuffer;	//頂点バッファへのポインタ
+		LPD3DXBUFFER pBuffer;		//頂点バッファへのポインタ
 		DWORD dwNumMat;				//マテリアル情報の数
 	}MODEL;
+
 	//=========================================================================
 	//メンバ関数宣言
 	//=========================================================================
@@ -44,7 +45,7 @@ public:
 	void SetPos(const D3DXVECTOR3 pos);
 	D3DXVECTOR3 GetPos(void)const;
 	void SetRot(const D3DXVECTOR3 rot);
-	D3DXVECTOR3 GetPos(void);					// 座標の情報
+					// 座標の情報
 private:
 	//=========================================================================
 	//メンバ変数宣言

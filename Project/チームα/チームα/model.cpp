@@ -185,8 +185,3 @@ void CModel::SetRot(const D3DXVECTOR3 rot)
 {
 	m_rot = rot;
 }
-
-D3DXVECTOR3 CModel::GetPos(void)
-{
-	return m_pos;
-}

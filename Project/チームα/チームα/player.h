@@ -15,17 +15,19 @@
 //=============================================================================
 // マクロ定義
 //=============================================================================
-#define THROWING_COUNTS (3)	// 投げることができる回数
+#define THROWING_COUNTS (3)		// 投げることができる回数
+#define LIFE_NUM		(2)		// 表示するライフの数
 
 //=============================================================================
 // 前方宣言
 //=============================================================================
 class CScore;
+class CLife;
 
 //=============================================================================
 // ターンクラス
 //=============================================================================
-class CPlayer :public  CModel
+class CPlayer : public CModel
 {
 public:
 	CPlayer();							// コンストラクタ
@@ -44,15 +46,28 @@ public:
 	void Walk(void);												// プレイヤーの歩く処理
 	void Jump(void);												// ジャンプの処理
 	void GroundLimit(void);											// 地面の制限
+	void Fall(void);												// 急降下
+	void Dush(void);												// ダッシュ
+
+	CLife *GetLife(int nNumber);											// ライフの情報
+
+
 
 private:
 	CScore *pScore;							// スコアの情報
+	CLife *m_pLife[LIFE_NUM];				// ライフのポインタ
 	D3DXVECTOR3 m_pos;						// 座標
 	D3DXVECTOR3 m_move;						// 移動
+	int m_nDushFlame;						// ダッシュのフレーム
+	int m_nDushInterCnt;					// ダッシュできないときのカウント
+	int m_nPlayerNum;						// プレイヤーの番号
+	bool m_bJump;							// ジャンプのフラグ
+	bool m_bDush;							// ダッシュの処理
+	bool m_bDushInter;						// ダッシュのインターバル
 	static LPD3DXMESH m_pMesh;				// メッシュ情報へのポインタ
 	static LPD3DXBUFFER m_pBuffMat;			// マテリアル情報へのポインタ
 	static DWORD m_nNumMat;					// マテリアル情報の数
-	bool m_bJump;							// ジャンプのフラグ
+	static int m_nPlayerAll;				// プレイヤーの数
 };
 
 #endif

@@ -13,13 +13,15 @@
 #include "manager.h"
 
 //=============================================================================
-// グローバル変数
+// static初期化
 //=============================================================================
+LPDIRECT3DTEXTURE9 CMeshField::m_apTexture[MAX_MESHFIELD_TEXTURE] = {};
 
-
+//=============================================================================
+// コンストラクタ
+//=============================================================================
 CMeshField::CMeshField()
 {
-	m_pTexture = NULL;		// テクスチャのポインタ
 	m_pVtxBuff = NULL;		// 頂点バッファへのポインタ
 	m_pIdxBuff = NULL;
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);					// 位置
@@ -33,11 +35,66 @@ CMeshField::CMeshField()
 
 }
 
+//=============================================================================
+// デストラクタ
+//=============================================================================
 CMeshField::~CMeshField()
 {
 }
 
-void CMeshField::Init(void)
+//=============================================================================
+// ポリゴン生成
+//=============================================================================
+CMeshField * CMeshField::Create(void)
+{
+	CMeshField *pMeshField = new CMeshField;
+
+	if (pMeshField != NULL)
+	{
+		pMeshField->Init();
+	}
+
+	return pMeshField;
+}
+
+//=============================================================================
+// テクスチャロード
+//=============================================================================
+HRESULT CMeshField::Load(void)
+{
+	// レンダラーの情報を受け取る
+	CRenderer *pRenderer = NULL;
+	pRenderer = CManager::GetRenderer();
+	LPDIRECT3DDEVICE9 pDevice = pRenderer->GetDevice();
+
+	// テクスチャの読み込み
+	D3DXCreateTextureFromFile(pDevice, "data/Texture/stone_00124.jpg",
+		&m_apTexture[0]);
+
+	return S_OK;
+}
+
+//=============================================================================
+// テクスチャアンロード
+//=============================================================================
+void CMeshField::UnLoad(void)
+{
+	for (int nCount = 0; nCount < MAX_MESHFIELD_TEXTURE; nCount++)
+	{
+		// テクスチャの開放
+		if (m_apTexture[nCount] != NULL)
+		{
+			m_apTexture[nCount]->Release();
+			m_apTexture[nCount] = NULL;
+		}
+	}
+
+}
+
+//=============================================================================
+// 初期化処理
+//=============================================================================
+HRESULT CMeshField::Init(void)
 {
 	// Rendererクラスからデバイスを取得
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
@@ -59,11 +116,6 @@ void CMeshField::Init(void)
 
 	m_fOne_SizeW = FIELD_WIDTH_SIZE * 2 / FIELD_WIDTH;
 	m_fOne_SizeH = FIELD_HEIGHT_SIZE * 2 / FIELD_HEIGHT;
-
-	//テクスチャの読み込み
-	D3DXCreateTextureFromFile(pDevice, "TEXTURE/ground000.jpg", &m_pTexture);
-
-	// data/TEXTURE/carpet_texture4.jpg
 
 	// オブジェクトの頂点バッファを生成
 	pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * m_nNumVertex,
@@ -135,18 +187,14 @@ void CMeshField::Init(void)
 	// 頂点データをアンロックする
 	m_pIdxBuff->Unlock();
 
-
+	return S_OK;
 }
 
+//=============================================================================
+// 終了処理
+//=============================================================================
 void CMeshField::Uninit(void)
 {
-	// 頂点バッファの開放
-	if (m_pTexture != NULL)
-	{
-		m_pTexture->Release();
-		m_pTexture = NULL;
-	}
-
 	// 頂点バッファの開放
 	if (m_pVtxBuff != NULL)
 	{
@@ -163,10 +211,16 @@ void CMeshField::Uninit(void)
 
 }
 
+//=============================================================================
+// 更新処理
+//=============================================================================
 void CMeshField::Update(void)
 {
 }
 
+//=============================================================================
+// 描画処理
+//=============================================================================
 void CMeshField::Draw(void)
 {
 	// Rendererクラスからデバイスを取得
@@ -216,8 +270,12 @@ void CMeshField::Draw(void)
 	pDevice->SetFVF(FVF_VERTEX_3D);
 
 	// 頂点フォーマットの設定
-	pDevice->SetTexture(0, m_pTexture);
+	pDevice->SetTexture(0, m_apTexture[0]);
 
 	// ポリゴンの描画
 	pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP, 0, 0, m_nNumVertex, 0, m_nNumPolygon);
+
+	// 頂点フォーマットの設定
+	pDevice->SetTexture(0, NULL);
+
 }

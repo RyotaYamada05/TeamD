@@ -27,7 +27,7 @@ public:
 	//‚P‚o‚Æ‚Q‚oƒ‰ƒCƒt‚Ìƒ^ƒCƒv•ª‚¯
 	typedef enum
 	{
-		LIFETYPE_NON = 0,
+		LIFETYPE_NONE = 0,
 		LIFETYPE_FAST_PLAYER,		//‚P‚o‘¤•\Ž¦
 		LIFETYPE_SECOND_PLAYER,		//‚Q‚o‘ŠŽè‘¤•\Ž¦
 		LIFETYPE_PLAYER_MAX

@@ -1,12 +1,12 @@
 //=======================================================================================
 //
-// 背景描画処理 [bg.cpp]
-// Author : 伊藤　航
+// ゲーム処理 [bg.cpp]
+// Author : Konishi Yuuto
 //
 //=======================================================================================
 
 //=======================================================================================
-// 
+// インクルード
 //=======================================================================================
 #include "game.h"
 #include "camera.h"
@@ -17,24 +17,29 @@
 #include "conection.h"
 #include "renderer.h"
 #include "player.h"
+#include "meshfield.h"
+#include "bg.h"
+#include "joypad.h"
+
 #include "time.h"
 #include "gauge.h"
 #include "life.h"
 //=======================================================================================
-// 
+// static初期化
 //=======================================================================================
-CCamera *CGame::m_pCamera = NULL;	//カメラクラスのポインタ変数
-CLight *CGame::m_pLight = NULL;		//ライトクラスのポインタ変数
-//=======================================================================================
-// 
+CCamera *CGame::m_pCamera[MAX_PLAYER] = {};			// カメラクラスのポインタ変数
+CLight *CGame::m_pLight = NULL;						// ライトクラスのポインタ変数
+CMeshField *CGame::m_pMeshField = NULL;				// メッシュフィールド
+CBg *CGame::m_pBg = NULL;							// 背景のポインタ
+CPlayer *CGame::m_apPlayer[MAX_PLAYER] = {};			// プレイヤーのポインタ//=======================================================================================
+// コンストラクタ
 //=======================================================================================
 CGame::CGame()
 {
-	m_pDarts = NULL;
 }
 
 //=======================================================================================
-// 
+// デストラクタ
 //=======================================================================================
 CGame::~CGame()
 {
@@ -42,35 +47,43 @@ CGame::~CGame()
 }
 
 //=======================================================================================
-// 
+// クリエイト
 //=======================================================================================
 CGame* CGame::Create(void)
 {
+	// メモリ確保
 	CGame* pGame = new CGame();
 
+	// 初期化処理
 	pGame->Init(D3DXVECTOR3(0.0f,0.0f,0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
 	return pGame;
 }
 
 //=======================================================================================
-// 
+// 初期化処理
 //=======================================================================================
 HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 {
-	//カメラクラスのインスタンス生成
-	m_pCamera = new CCamera;
-	if (m_pCamera != NULL)
+	for (int nCount = 0; nCount < MAX_PLAYER; nCount++)
 	{
-		if (FAILED(m_pCamera->Init()))
+		//カメラクラスのインスタンス生成
+		m_pCamera[nCount] = new CCamera;
+
+		if (m_pCamera[nCount] != NULL)
 		{
-			return -1;
+			// カメラの初期化
+			if (FAILED(m_pCamera[nCount]->Init()))
+			{
+				return -1;
+			}
 		}
 	}
 
 	//ライトクラスの生成
 	m_pLight = new CLight;
 
+	// ライトの初期化処理
 	if (m_pLight != NULL)
 	{
 		if (FAILED(m_pLight->Init()))
@@ -79,22 +92,43 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 		}
 	}
 
-	CPlayer::Create(D3DXVECTOR3(0.0f, 50.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-	LPDIRECT3DDEVICE9 pD3DDevice = CManager::GetRenderer()->GetDevice();
+	// プレイヤーの生成
+	if (m_apPlayer[0] == NULL)
+	{
+		m_apPlayer[0] = CPlayer::Create(D3DXVECTOR3(0.0f, 50.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	}
+	if (m_apPlayer[1] == NULL)
+	{
+		m_apPlayer[1] = CPlayer::Create(D3DXVECTOR3(0.0f, 50.0f, 500.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	}
 
+	// メッシュフィールド
+	if (m_pMeshField == NULL)
+	{
+		m_pMeshField = CMeshField::Create();
+	}
+
+	// 背景
+	if (m_pBg == NULL)
+	{
+		m_pBg = CBg::Create();
+	}
+
+	LPDIRECT3DDEVICE9 pD3DDevice = CManager::GetRenderer()->GetDevice();
 	//タイム生成
 	CTime::Create(D3DXVECTOR3(50.0f, 50.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
 	//ライフ生成
 	//１Ｐのライフゲージ
-	CLife::Create(D3DXVECTOR3(300, 100.0f, 0.0f), D3DXVECTOR3(MAX_LIFE, 20.0f, 0.0f), D3DCOLOR_RGBA(255, 140, 0, 255), CLife::LIFETYPE_FAST_PLAYER);
-	CLife::Create(D3DXVECTOR3(300, 200.0f, 0.0f), D3DXVECTOR3(MAX_LIFE, 20.0f, 0.0f), D3DCOLOR_RGBA(60, 179, 113, 255), CLife::LIFETYPE_FAST_PLAYER);
-	//２Ｐのライフゲージ
-	CLife::Create(D3DXVECTOR3(800, 100.0f, 0.0f), D3DXVECTOR3(MAX_LIFE, 20.0f, 0.0f), D3DCOLOR_RGBA(255, 140, 0, 255), CLife::LIFETYPE_SECOND_PLAYER);
-	CLife::Create(D3DXVECTOR3(800, 200.0f, 0.0f), D3DXVECTOR3(MAX_LIFE, 20.0f, 0.0f), D3DCOLOR_RGBA(60, 179, 113, 255), CLife::LIFETYPE_SECOND_PLAYER);
+	//CLife::Create(D3DXVECTOR3(300, 100.0f, 0.0f), D3DXVECTOR3(MAX_LIFE, 20.0f, 0.0f), D3DCOLOR_RGBA(255, 140, 0, 255), CLife::LIFETYPE_FAST_PLAYER);
+	//CLife::Create(D3DXVECTOR3(300, 200.0f, 0.0f), D3DXVECTOR3(MAX_LIFE, 20.0f, 0.0f), D3DCOLOR_RGBA(60, 179, 113, 255), CLife::LIFETYPE_FAST_PLAYER);
+	////２Ｐのライフゲージ
+	//CLife::Create(D3DXVECTOR3(800, 100.0f, 0.0f), D3DXVECTOR3(MAX_LIFE, 20.0f, 0.0f), D3DCOLOR_RGBA(255, 140, 0, 255), CLife::LIFETYPE_SECOND_PLAYER);
+	//CLife::Create(D3DXVECTOR3(800, 200.0f, 0.0f), D3DXVECTOR3(MAX_LIFE, 20.0f, 0.0f), D3DCOLOR_RGBA(60, 179, 113, 255), CLife::LIFETYPE_SECOND_PLAYER);
 
 	D3DXCreateFont(pD3DDevice, 18, 0, 0, 0, FALSE, SHIFTJIS_CHARSET,
 		OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, "Terminal", &m_pFont);
+
 	//CBillboard::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(50.0f, 50.0f, 0.0f));
 	//CScene3D::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(50.0f, 50.0f, 0.0f));
 
@@ -102,69 +136,100 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 }
 
 //=======================================================================================
-// 
+// 終了処理
 //=======================================================================================
 void CGame::Uninit(void)
 {
-	
-	if (m_pCamera != NULL)
+	for (int nCount = 0; nCount < MAX_PLAYER; nCount++)
 	{
-		//カメラクラスの終了処理呼び出し
-		m_pCamera->Uninit();
+		if (m_pCamera[nCount] != NULL)
+		{
+			//カメラクラスの終了処理呼び出し
+			m_pCamera[nCount]->Uninit();
 
-		//メモリの破棄
-		delete m_pCamera;
+			//メモリの破棄
+			delete[] *m_pCamera;
 
-		//メモリのクリア
-		m_pCamera = NULL;
+			//メモリのクリア
+			m_pCamera[nCount] = NULL;
+		}
 	}
+	// メッシュフィールド
+	if (m_pMeshField != NULL)
+	{
+		m_pMeshField->Uninit();
+	}
+
+	// 背景
+	if (m_pBg != NULL)
+	{
+		m_pBg->Uninit();
+	}
+
 	CManager::GetConection()->Uninit();
 }
 
 //=======================================================================================
-// 
+// 更新処理
 //=======================================================================================
 void CGame::Update(void)
 {
-	
-	if (m_pCamera != NULL)
+	for (int nCount = 0; nCount < MAX_PLAYER; nCount++)
 	{
-		//カメラクラスの更新処理
-		m_pCamera->Update();
+		if (m_pCamera[nCount] != NULL)
+		{
+			//カメラクラスの更新処理
+			m_pCamera[nCount]->Update();
+		}
 	}
-	CManager::GetConection()->Update();
 
+	// メッシュフィールド
+	if (m_pMeshField != NULL)
+	{
+		m_pMeshField->Update();
+	}
+
+	CManager::GetConection()->Update();
 }
 
 //=======================================================================================
-// 
+// 描画処理
 //=======================================================================================
 void CGame::Draw(void)
 {
-	if (m_pCamera != NULL)
+	// メッシュフィールド
+	if (m_pMeshField != NULL)
 	{
-		m_pCamera->SetCamera();
+		m_pMeshField->Draw();
 	}
 
-
-	//RECT rect = { 0, 100, SCREEN_WIDTH, SCREEN_HEIGHT };
-	//char str[256];
-
-	////D3DXVECTOR3 pos = CManager::GetConection()->GetPos();
-	//int nScore = CManager::GetConection()->GetScore();
-
-	//wsprintf(str, "SCORE : %d\n", nScore);
-
-	//// テキスト描画
-	//m_pFont->DrawText(NULL, str, -1, &rect, DT_LEFT, D3DCOLOR_ARGB(0xff, 0xff, 0xff, 0xff));
+	// 背景
+	if (m_pBg != NULL)
+	{
+		m_pBg->Draw();
+	}
 }
 
-CCamera * CGame::GetCamera(void)
+//=======================================================================================
+// カメラの情報
+//=======================================================================================
+CCamera * CGame::GetCamera(int nCount)
 {
-	return m_pCamera;
+	return m_pCamera[nCount];
 }
 
+//=======================================================================================
+// ライトの情報
+//=======================================================================================
 CLight * CGame::GetLight(void)
 {
 	return m_pLight;
+}
+
+//=======================================================================================
+// プレイヤーの情報
+//=======================================================================================
+CPlayer * CGame::GetPlayer(int nCount)
+{
+	return m_apPlayer[nCount];
 }

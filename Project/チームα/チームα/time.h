@@ -37,7 +37,7 @@ public:
 	CTime();
 	~CTime();
 	static CTime *Create(D3DXVECTOR3 pos, const D3DXVECTOR3 size);
-	HRESULT Init(D3DXVECTOR3 pos, const D3DXVECTOR3 size);
+	HRESULT Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size);
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);

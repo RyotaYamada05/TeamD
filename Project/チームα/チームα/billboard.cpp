@@ -20,6 +20,7 @@ CBillboard *CBillboard::m_apBillboard[MAX_BILLBOARD] = {};	// 出現させるビルボー
 CBillboard::CBillboard()
 {
 	m_Pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);				// 位置情報
+	m_size = D3DXVECTOR3(0.0f, 0.0f, 0.0f);				//サイズ
 	m_Dir = D3DXVECTOR3(0.0f, 0.0f, 0.0f);				// 方向7
 	m_pVtxBuff = NULL;									// 頂点バッファへのポインタ
 	m_pTexture = NULL;									// ポリゴンのテクスチャ
@@ -52,20 +53,22 @@ HRESULT CBillboard::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 
 	VERTEX_3D*pVtx = NULL;
 
+	m_Pos = pos;
+	m_size = size;
 	//頂点バッファをロック
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 	//頂点座標設定の設定
-	pVtx[0].pos = D3DXVECTOR3(pos.x - size.x / 2, pos.y + size.y / 2, 0.0f);
-	pVtx[1].pos = D3DXVECTOR3(pos.x + size.x / 2, pos.y + size.y / 2, 0.0f);
-	pVtx[2].pos = D3DXVECTOR3(pos.x - size.x / 2, pos.y - size.y / 2, 0.0f);
-	pVtx[3].pos = D3DXVECTOR3(pos.x + size.x / 2, pos.y - size.y / 2, 0.0f);
+	pVtx[0].pos = D3DXVECTOR3(m_Pos.x - m_size.x / 2, m_Pos.y + m_size.y / 2, 0.0f);
+	pVtx[1].pos = D3DXVECTOR3(m_Pos.x + m_size.x / 2, m_Pos.y + m_size.y / 2, 0.0f);
+	pVtx[2].pos = D3DXVECTOR3(m_Pos.x - m_size.x / 2, m_Pos.y - m_size.y / 2, 0.0f);
+	pVtx[3].pos = D3DXVECTOR3(m_Pos.x + m_size.x / 2, m_Pos.y - m_size.y / 2, 0.0f);
 
 	//各頂点の法線の設定（※ベクトルの大きさは１にする必要がある）
-	pVtx[0].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
-	pVtx[1].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
-	pVtx[2].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
-	pVtx[3].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+	pVtx[0].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
+	pVtx[1].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
+	pVtx[2].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
+	pVtx[3].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
 
 	//頂点カラーの設定（0～255の数値で設定）
 	pVtx[0].col = D3DCOLOR_RGBA(255, 255, 255, 255);
@@ -113,8 +116,11 @@ void CBillboard::Draw(void)
 	D3DXMATRIX mtxRot, mtxTrans;
 	DWORD ambient;
 
+	//現在アンビエント情報を保存
 	pDevice->GetRenderState(D3DRS_AMBIENT, &ambient);
 	pDevice->SetRenderState(D3DRS_AMBIENT, 0xffffffff);
+
+	//ライティングをOFFにする
 	pDevice->LightEnable(0, FALSE);
 
 	//ワールドマトリクスの初期化
@@ -164,6 +170,36 @@ void CBillboard::Draw(void)
 
 	pDevice->SetRenderState(D3DRS_AMBIENT, ambient);
 	pDevice->LightEnable(0, TRUE);
+}
+
+//=====================================================
+// 位置の設定
+//=====================================================
+void CBillboard::SetPos(D3DXVECTOR3 pos)
+{
+	m_Pos = pos;
+
+	VERTEX_3D*pVtx = NULL;
+
+	//頂点バッファをロック
+	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+
+	//頂点座標設定の設定
+	pVtx[0].pos = D3DXVECTOR3(m_Pos.x - m_size.x / 2, m_Pos.y + m_size.y / 2, 0.0f);
+	pVtx[1].pos = D3DXVECTOR3(m_Pos.x + m_size.x / 2, m_Pos.y + m_size.y / 2, 0.0f);
+	pVtx[2].pos = D3DXVECTOR3(m_Pos.x - m_size.x / 2, m_Pos.y - m_size.y / 2, 0.0f);
+	pVtx[3].pos = D3DXVECTOR3(m_Pos.x + m_size.x / 2, m_Pos.y - m_size.y / 2, 0.0f);
+
+	//頂点バッファのアンロック
+	m_pVtxBuff->Unlock();
+}
+
+//=====================================================
+// 位置の取得
+//=====================================================
+D3DXVECTOR3 CBillboard::GetPos(void)
+{
+	return m_Pos;
 }
 
 //=====================================================

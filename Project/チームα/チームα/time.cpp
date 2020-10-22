@@ -41,7 +41,7 @@ CTime::~CTime()
 //=============================================================================
 // 初期化処理
 //=============================================================================
-HRESULT CTime::Init(D3DXVECTOR3 pos, const D3DXVECTOR3 size)
+HRESULT CTime::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 {
 	// ナンバーテクスチャをロード
 	CNumber::Load();

@@ -13,7 +13,8 @@
 //=============================================================================
 //マクロ定義
 //=============================================================================
-#define DISTANCE (300.0f)	//視点～注視点の距離
+#define DISTANCE (1000.0f)			//視点～注視点の距離
+int CCamera::m_nCountAll = 0;		// カメラの数
 
 //=============================================================================
 //カメラクラスのコンストラクタ
@@ -21,14 +22,15 @@
 CCamera::CCamera()
 {
 	//各メンバ変数のクリア
-	m_posV = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	//カメラの座標
-	m_posVDest = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	//カメラの座標（目的地）
-	m_posR = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	//注視点
-	m_posRDest = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	//注視点（目的地）
-	m_posU = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	//上方向ベクトル
-	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	//向き
-	m_fDistance = 0.0f;	//視点～注視点の距離
-	m_fMove = 0.0f;	//移動量
+	m_posV = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// カメラの座標
+	m_posVDest = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// カメラの座標（目的地）
+	m_posR = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 注視点
+	m_posRDest = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 注視点（目的地）
+	m_posU = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 上方向ベクトル
+	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 向き
+	m_fDistance = 0.0f;							// 視点～注視点の距離
+	m_fMove = 0.0f;								// 移動量
+	m_nNum = m_nCountAll++;						// カメラの番号
 }
 
 //=============================================================================
@@ -43,16 +45,89 @@ CCamera::~CCamera()
 //=============================================================================
 HRESULT CCamera::Init(void)
 {
-	m_fMove = 5.0f;
-	m_fDistance = DISTANCE;
-	m_rot.y = 0.0f;
-	m_posV = D3DXVECTOR3(0.0f, 150.0f, -m_fDistance);	//位置zはm_fDistance分-方向へ設定する
-	m_posR = D3DXVECTOR3(0.0f, 30.0f, 0.0f);	//注視点は全て0座標を見る
-	m_posU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+	// レンダラーの情報を受け取る
+	CRenderer *pRenderer = NULL;
+	pRenderer = CManager::GetRenderer();
+	LPDIRECT3DDEVICE9 pDevice = pRenderer->GetDevice();
 
-	m_fDistance = sqrtf(
-		powf((m_posV.x - m_posR.x), 2) +
-		powf((m_posV.z - m_posR.z), 2));
+	// ビューポートの設定
+	//D3DVIEWPORT9 view_port[2];
+
+	switch (m_nNum)
+	{
+	case 0:
+		m_fMove = 5.0f;
+		m_fDistance = DISTANCE;
+		m_rot.y = 0.0f;
+		m_posV = D3DXVECTOR3(0.0f, 300.0f, m_fDistance);	//位置zはm_fDistance分-方向へ設定する
+		m_posR = D3DXVECTOR3(0.0f, 30.0f, 0.0f);	//注視点は全て0座標を見る
+		m_posU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+
+		m_fDistance = sqrtf(
+			powf((m_posV.x - m_posR.x), 2) +
+			powf((m_posV.z - m_posR.z), 2));
+
+
+		//// ビューポートの左上座標
+		//view_port[0].X = 0;
+		//view_port[0].Y = 0;
+
+		//// ビューポートの幅
+		//view_port[0].Width = SCREEN_WIDTH / 2;
+
+		//// ビューポートの高さ
+		//view_port[0].Height = SCREEN_HEIGHT;
+
+		//// ビューポート深度設定
+		//view_port[0].MinZ = 0.0f;
+		//view_port[0].MaxZ = 1.0f;
+
+		//// ビューポート設定
+		//if (FAILED(pDevice->SetViewport(&view_port[0])))
+		//{
+		//	return false;
+		//}
+
+		break;
+
+	case 1:
+		m_fMove = 5.0f;
+		m_fDistance = DISTANCE;
+		m_rot.y = 0.0f;
+		m_posV = D3DXVECTOR3(0.0f, 300.0f, -m_fDistance);	// 位置zはm_fDistance分-方向へ設定する
+		m_posR = D3DXVECTOR3(0.0f, 30.0f, 0.0f);			// 注視点は全て0座標を見る
+		m_posU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+
+		m_fDistance = sqrtf(
+			powf((m_posV.x - m_posR.x), 2) +
+			powf((m_posV.z - m_posR.z), 2));
+
+
+		//// ビューポートの左上座標
+		//view_port[1].X = SCREEN_WIDTH / 2;
+		//view_port[1].Y = 0;
+
+		//// ビューポートの幅
+		//view_port[1].Width = SCREEN_WIDTH;
+
+		//// ビューポートの高さ
+		//view_port[1].Height = SCREEN_HEIGHT;
+
+		//// ビューポート深度設定
+		//view_port[1].MinZ = 0.0f;
+		//view_port[1].MaxZ = 1.0f;
+
+		//// ビューポート設定
+		//if (FAILED(pDevice->SetViewport(&view_port[1])))
+		//{
+		//	return false;
+		//}
+
+		break;
+
+	default:
+		break;
+	}
 
 	return S_OK;
 }
@@ -62,6 +137,7 @@ HRESULT CCamera::Init(void)
 //=============================================================================
 void CCamera::Uninit(void)
 {
+	m_nCountAll = 0;
 }
 
 //=============================================================================
@@ -70,7 +146,7 @@ void CCamera::Uninit(void)
 void CCamera::Update(void)
 {
 	//キーボードクラス情報の取得
-	CInput *pInput = CManager::GetKeyboard();
+	CInputKeyboard *pInput = CManager::GetKeyboard();
 
 	//注視点の左旋回
 	if (pInput->GetPress(DIK_Q))
@@ -137,11 +213,26 @@ void CCamera::SetCamera(void)
 	//プロジェクションマトリックスの作成
 	D3DXMatrixPerspectiveFovLH(&m_mtxProjection,
 		D3DXToRadian(45.0f),
-		(float)SCREEN_WIDTH / (float)SCREEN_HEIGHT,
+		(float)SCREEN_WIDTH / (float)SCREEN_HEIGHT / 2,
 		10.0f,
-		1000000.0f);
+		100000.0f);
 
 	//プロジェクションマトリックスの設定
 	pDevice->SetTransform(D3DTS_PROJECTION,
 		&m_mtxProjection);
+}
+
+D3DXVECTOR3 CCamera::GetposV(void)
+{
+	return m_posV;
+}
+
+D3DXVECTOR3 CCamera::GetposR(void)
+{
+	return m_posR;
+}
+
+D3DXMATRIX CCamera::GetMtxView(void)
+{
+	return m_mtxView;
 }
