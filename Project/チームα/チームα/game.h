@@ -15,6 +15,9 @@
 //***************************************************************************************
 // マクロ定義
 //***************************************************************************************
+#ifdef VIIEW_PORT_TEST
+#endif // VIIEW_PORT_TEST
+#define MAX_CAMERA (2)			// カメラの数
 #define MAX_PLAYER (2)			// プレイヤーの数
 
 //***************************************************************************************
@@ -35,7 +38,7 @@ public:
 	CGame();
 	~CGame();
 	static CGame* Create();
-	static CCamera *GetCamera(void);
+	static CCamera *GetCamera(int nCount);
 	static CLight *GetLight(void);
 	static CPlayer *GetPlayer(int nCount);
 
@@ -45,7 +48,7 @@ public:
 	void Draw(void);
 
 private:
-	static CCamera *m_pCamera;					// カメラのポインタ
+	static CCamera *m_pCamera[MAX_CAMERA];		// カメラのポインタ
 	static CLight *m_pLight;					// ライトのポインタ
 	static CMeshField *m_pMeshField;			// メッシュフィールドのポインタ
 	static CBg *m_pBg;							// 背景のポインタ

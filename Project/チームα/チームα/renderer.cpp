@@ -8,6 +8,14 @@
 #include "scene.h"
 #include "fade.h"
 #include "shader.h"
+#include "manager.h"
+
+//=============================================================================
+//マクロ定義
+//=============================================================================
+#define MAX_VIEWPORT (1)	//画面分割最大数
+
+int CRenderer::m_nCurrentScreenId;
 
 //=============================================================================
 //レンダリングクラスのコンストラクタ
@@ -125,8 +133,15 @@ HRESULT CRenderer::Init(HWND hWnd, bool bWindow)
 		}
 	}
 
+	// ビューポート設定
+	SetUpViewport(0);
+
+#ifdef VIIEW_PORT_TEST
+
 	// ビューポートの設定
 	D3DVIEWPORT9 view_port;
+
+	D3DXVECTOR2 offset = ScreenPos(nScreenId);
 
 	// ビューポートの左上座標
 	view_port.X = 0;
@@ -147,6 +162,8 @@ HRESULT CRenderer::Init(HWND hWnd, bool bWindow)
 	{
 		return false;
 	}
+
+#endif // VIIEW_PORT_TEST
 
 	ShowWindow(hWnd, SW_SHOW);
 	UpdateWindow(hWnd);
@@ -210,6 +227,24 @@ void CRenderer::Uninit(void)
 //=============================================================================
 void CRenderer::Update(void)
 {
+	CManager::MODE_TYPE mode = CManager::GetMode();
+
+	if (mode == CManager::MODE_TYPE_GAME)
+	{
+		// 分割画面の分
+		for (int nCount = 0; nCount < MAX_VIEWPORT; nCount++)
+		{
+			// ビューポート設定
+			SetUpViewport(nCount);
+
+			m_pD3DDevice->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 0), 0.0f, 0);
+		}
+	}
+	else
+	{
+
+	}
+
 	CScene::AllUpdate();
 }
 
@@ -218,14 +253,32 @@ void CRenderer::Update(void)
 //=============================================================================
 void CRenderer::Draw(void)
 {
-	// バックバッファ＆Ｚバッファのクリア
-	m_pD3DDevice->Clear(0, NULL, (D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER), D3DCOLOR_RGBA(0, 255, 255, 0), 1.0f, 0);
-
 	// Direct3Dによる描画の開始
 	if (SUCCEEDED(m_pD3DDevice->BeginScene()))
 	{
-		//オブジェクトクラスの全描画処理呼び出し
-		CScene::AllDraw();
+
+		CManager::MODE_TYPE mode = CManager::GetMode();
+		if (mode == CManager::MODE_TYPE_GAME)
+		{
+			// 分割画面の分
+			for (int nCount = 0; nCount < MAX_VIEWPORT; nCount++)
+			{
+				// ビューポート設定
+				SetUpViewport(nCount);
+
+				// バックバッファ＆Ｚバッファのクリア
+				m_pD3DDevice->Clear(0, NULL, (D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER), D3DCOLOR_RGBA(0, 255, 255, 0), 1.0f, 0);
+
+				CScene::AllDraw();
+			}
+		}
+		else
+		{
+			// バックバッファ＆Ｚバッファのクリア
+			m_pD3DDevice->Clear(0, NULL, (D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER), D3DCOLOR_RGBA(0, 255, 255, 0), 1.0f, 0);
+
+			CScene::AllDraw();
+		}
 
 		CFade *pFade = CManager::GetFade();
 
@@ -307,6 +360,54 @@ void CRenderer::Draw(void)
 
 	// バックバッファとフロントバッファの入れ替え
 	m_pD3DDevice->Present(NULL, NULL, NULL, NULL);
+}
+
+D3DXVECTOR2 CRenderer::ScreenPos(int nScreenId)
+{
+	D3DXVECTOR2 pos[MAX_VIEWPORT] =
+	{
+		D3DXVECTOR2(0.0f, 0.0f),
+		//D3DXVECTOR2(SCREEN_WIDTH / MAX_VIEWPORT, 0.0f),
+	};
+
+	return pos[nScreenId];
+}
+
+bool CRenderer::SetUpViewport(int nScreenId)
+{
+	// スクリーン番号の更新
+	m_nCurrentScreenId = nScreenId;
+
+	// ビューポートの設定
+	D3DVIEWPORT9 view_port;
+
+	D3DXVECTOR2 ViewportPos = ScreenPos(nScreenId);
+
+	// ビューポートの左上座標
+	view_port.X = ViewportPos.x;
+	view_port.Y = ViewportPos.y;
+
+	// ビューポートの幅
+	view_port.Width = SCREEN_WIDTH;
+
+	// ビューポートの高さ
+	view_port.Height = SCREEN_HEIGHT;
+
+	// ビューポート深度設定
+	view_port.MinZ = 0.0f;
+	view_port.MaxZ = 1.0f;
+
+	// ビューポート設定
+	if (FAILED(m_pD3DDevice->SetViewport(&view_port)))
+	{
+		return false;
+	}
+	return true;
+}
+
+int CRenderer::ScreenId(void)
+{
+	return m_nCurrentScreenId;
 }
 
 //=============================================================================

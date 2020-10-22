@@ -32,6 +32,9 @@ public:
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
+	D3DXVECTOR2 ScreenPos(int nScreenId);
+	bool SetUpViewport(int nScreenId);
+	static int ScreenId(void);
 
 	LPDIRECT3DDEVICE9 GetDevice(void);
 
@@ -44,6 +47,8 @@ private:
 	LPDIRECT3D9 m_pD3DInterface;				// DirectXインターフェース
 	D3DPRESENT_PARAMETERS *m_pD3DPresentParam;	// プレゼンテーションパラメータ
 	CShader *m_pShader;							// シェーダのポインタ
+
+	static int m_nCurrentScreenId;
 };
 
 #endif

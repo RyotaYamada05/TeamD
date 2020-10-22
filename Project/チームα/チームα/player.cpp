@@ -422,3 +422,8 @@ void CPlayer::Dush(void)
 		m_bDushInter = false;
 	}
 }
+
+D3DXVECTOR3 CPlayer::GetPos(void)
+{
+	return m_pos;
+}

@@ -24,11 +24,11 @@
 //=======================================================================================
 // static初期化
 //=======================================================================================
-CCamera *CGame::m_pCamera = NULL;					// カメラクラスのポインタ変数
+CCamera *CGame::m_pCamera[MAX_CAMERA] = {};			// カメラクラスのポインタ変数
 CLight *CGame::m_pLight = NULL;						// ライトクラスのポインタ変数
 CMeshField *CGame::m_pMeshField = NULL;				// メッシュフィールド
 CBg *CGame::m_pBg = NULL;							// 背景のポインタ
-CPlayer *CGame::m_apPlayer[MAX_PLAYER] = {};			// プレイヤーのポインタ
+CPlayer *CGame::m_apPlayer[MAX_PLAYER] = {};		// プレイヤーのポインタ
 
 //=======================================================================================
 // コンストラクタ
@@ -65,13 +65,17 @@ CGame* CGame::Create(void)
 HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 {
 	//カメラクラスのインスタンス生成
-	m_pCamera = new CCamera;
-	if (m_pCamera != NULL)
+	for (int nCount = 0; nCount < MAX_CAMERA; nCount++)
 	{
-		// カメラの初期化
-		if (FAILED(m_pCamera->Init()))
+		m_pCamera[nCount] = CCamera::Create();
+
+		if (m_pCamera[nCount] != NULL)
 		{
-			return -1;
+			// カメラの初期化
+			if (FAILED(m_pCamera[nCount]->Init()))
+			{
+				return -1;
+			}
 		}
 	}
 
@@ -124,17 +128,13 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 //=======================================================================================
 void CGame::Uninit(void)
 {
-	
-	if (m_pCamera != NULL)
+	for (int nCount = 0; nCount < MAX_CAMERA; nCount++)
 	{
-		//カメラクラスの終了処理呼び出し
-		m_pCamera->Uninit();
-
-		//メモリの破棄
-		delete m_pCamera;
-
-		//メモリのクリア
-		m_pCamera = NULL;
+		if (m_pCamera[nCount] != NULL)
+		{
+			//カメラクラスの終了処理呼び出し
+			m_pCamera[nCount]->Uninit();
+		}
 	}
 
 	// メッシュフィールド
@@ -163,10 +163,13 @@ void CGame::Uninit(void)
 //=======================================================================================
 void CGame::Update(void)
 {
-	if (m_pCamera != NULL)
+	for (int nCount = 0; nCount < MAX_CAMERA; nCount++)
 	{
-		//カメラクラスの更新処理
-		m_pCamera->Update();
+		if (m_pCamera[nCount] != NULL)
+		{
+			//カメラクラスの更新処理
+			m_pCamera[nCount]->Update();
+		}
 	}
 
 	// メッシュフィールド
@@ -194,9 +197,12 @@ void CGame::Update(void)
 //=======================================================================================
 void CGame::Draw(void)
 {
-	if (m_pCamera != NULL)
+	for (int nCount = 0; nCount < MAX_CAMERA; nCount++)
 	{
-		m_pCamera->SetCamera();
+		if (m_pCamera[nCount] != NULL)
+		{
+			m_pCamera[nCount]->SetCamera();
+		}
 	}
 
 	// メッシュフィールド
@@ -221,9 +227,9 @@ void CGame::Draw(void)
 //=======================================================================================
 // カメラの情報
 //=======================================================================================
-CCamera * CGame::GetCamera(void)
+CCamera * CGame::GetCamera(int nCount)
 {
-	return m_pCamera;
+	return m_pCamera[nCount];
 }
 
 //=======================================================================================
