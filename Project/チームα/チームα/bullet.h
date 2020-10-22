@@ -23,7 +23,7 @@ public:
 	//=========================================================================
 	typedef enum
 	{
-		BULLET_USER_NONE = -1,	
+		BULLET_USER_NONE = -1,
 		BULLET_USER_PL1,	//PL1
 		BULLET_USER_PL2,	//PL2
 		BULLET_USER_MAX		//Å‘å”
@@ -40,6 +40,8 @@ public:
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
+	bool Collision(void);
+
 private:
 	//=========================================================================
 	//ƒƒ“ƒo•Ï”éŒ¾

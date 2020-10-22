@@ -161,10 +161,9 @@ void CPlayer::Update(void)
 	// キーボード更新
 	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
 
-	if (pKeyboard->GetTrigger(DIK_V))
-	{
-		CBullet::Create(m_pos, D3DXVECTOR3(200.0f, 200.0f, 0.0f), CBullet::BULLET_USER_PL1);
-	}
+	//位置の取得
+	m_pos = CModel::GetPos();
+	
 	// プレイヤーの制御
 	PlayerControl();
 
@@ -178,6 +177,14 @@ void CPlayer::Update(void)
 
 	// 地面の制限
 	GroundLimit();
+
+	//R2トリガーまたはVキーを押したら
+	if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_R2_TRIGGER, m_nPlayerNum) ||
+		pKeyboard->GetTrigger(DIK_V))
+	{
+		//バレットの生成
+		CBullet::Create(m_pos, D3DXVECTOR3(100.0f, 100.0f, 0.0f), CBullet::BULLET_USER_PL1);
+	}
 
 	// 座標情報を与える
 	CModel::SetPos(m_pos);
@@ -278,7 +285,7 @@ void CPlayer::Jump(void)
 	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
 
 	// SPACEキーを押したとき・コントローラのYを押したとき
-	if (CManager::GetJoypad()->GetJoystickTrigger(1, m_nPlayerNum) && m_bJump == false 
+	if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_Y, m_nPlayerNum) && m_bJump == false
 		|| pKeyboard->GetTrigger(DIK_SPACE) && m_bJump == false )
 	{
 			// ジャンプの処理
@@ -315,7 +322,7 @@ void CPlayer::Fall(void)
 
 	// SPACEキーを押したとき
 	if (pKeyboard->GetTrigger(DIK_B) && m_bJump == true ||
-		CManager::GetJoypad()->GetJoystickTrigger(2, m_nPlayerNum) && m_bJump == true)
+		CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_A, m_nPlayerNum) && m_bJump == true)
 	{
 		// ジャンプの処理
 		m_move.y = 0.0f;
@@ -335,7 +342,7 @@ void CPlayer::Dush(void)
 	if (m_bDushInter == false)
 	{
 		// Xボタンの時
-		if (CManager::GetJoypad()->GetJoystickTrigger(0, m_nPlayerNum))
+		if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_X, m_nPlayerNum))
 		{
 			// ジョイパッドの取得
 			DIJOYSTATE js = CInputJoypad::GetStick(m_nPlayerNum);
@@ -346,15 +353,15 @@ void CPlayer::Dush(void)
 				float fAngle = atan2f((float)js.lX, (float)js.lY);
 
 				// ジョイパッド操作
-				m_move.x += sinf(-D3DX_PI /2)* PLAYER_DUSH;
-				m_move.z -= cosf(-D3DX_PI /2)* PLAYER_DUSH;
+				m_move.x += sinf(-D3DX_PI / 2)* PLAYER_DUSH;
+				m_move.z -= cosf(-D3DX_PI / 2)* PLAYER_DUSH;
 				m_bDush = true;
 
 			}
 		}
 
 		// Bボタンの時
-		if (CManager::GetJoypad()->GetJoystickTrigger(3, m_nPlayerNum))
+		if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_B, m_nPlayerNum))
 		{
 			// ジョイパッドの取得
 			DIJOYSTATE js = CInputJoypad::GetStick(m_nPlayerNum);

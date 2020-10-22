@@ -5,6 +5,8 @@
 //
 //=============================================================================
 #include "bullet.h"
+#include "player.h"
+#include "game.h"
 
 //=============================================================================
 //マクロ定義
@@ -78,9 +80,11 @@ HRESULT CBullet::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size, const BULLE
 	m_nAtk = BULLET_ATK;
 
 	//ビルボードの初期化
-	CBillboard::Init(m_pos, m_size);
+	CBillboard::Init(pos, m_size);
 
-	m_move = D3DXVECTOR3(10.0f, 0.0f, 0.0f);
+	SetObjType(CScene::OBJTYPE_PLAYER);
+	m_move = D3DXVECTOR3(0.0f, 0.0f, 10.0f);
+
 	return S_OK;
 }
 
@@ -107,6 +111,12 @@ void CBullet::Update(void)
 	//位置の設定
 	SetPos(m_pos);
 
+	if (Collision() == true)
+	{
+		Uninit();
+		return;
+	}
+
 	//ライフが0以下の時
 	if (m_nLife <= 0)
 	{
@@ -126,4 +136,38 @@ void CBullet::Draw(void)
 {
 	//ビルボードの描画処理呼び出し
 	CBillboard::Draw();
+}
+
+bool CBullet::Collision(void)
+{
+	CPlayer * pPlayer = NULL;
+	switch (m_user)
+	{
+	case BULLET_USER_PL1:
+
+		//プレイヤークラスへキャスト
+		pPlayer = CGame::GetPlayer(1);
+
+		break;
+	case BULLET_USER_PL2:
+		//プレイヤークラスへキャスト
+		pPlayer = CGame::GetPlayer(0);
+
+		break;
+	}
+
+	//位置の取得
+	D3DXVECTOR3 targetPos = pPlayer->GetPos();
+
+	if (targetPos.x >= m_pos.x - m_size.x / 2 &&
+		targetPos.x <= m_pos.x + m_size.x / 2 &&
+		targetPos.y >= m_pos.y - m_size.y / 2 &&
+		targetPos.y <= m_pos.y + m_size.y / 2 &&
+		targetPos.z >= m_pos.z - m_size.x / 2 &&
+		targetPos.z <= m_pos.z + m_size.x / 2)
+	{
+		return true;
+	}
+
+	return false;
 }
