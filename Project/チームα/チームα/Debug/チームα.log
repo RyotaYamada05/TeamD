@@ -1,7 +1,7 @@
 ﻿  title.cpp
   time.cpp
-c:\users\student\desktop\マージ用フォルダ\マージ\project\チームα\チームα\time.cpp(133): warning C4244: '引数': 'int' から 'float' への変換です。データが失われる可能性があります。
-c:\users\student\desktop\マージ用フォルダ\マージ\project\チームα\チームα\time.cpp(133): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+c:\users\student\desktop\あｓだ\teamd\project\チームα\チームα\time.cpp(133): warning C4244: '引数': 'int' から 'float' への変換です。データが失われる可能性があります。
+c:\users\student\desktop\あｓだ\teamd\project\チームα\チームα\time.cpp(133): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
   tcp_client.cpp
   shader.cpp
   scene3D.cpp
@@ -33,5 +33,6 @@ c:\users\student\desktop\マージ用フォルダ\マージ\project\チームα\
   billboard.cpp
   bg.cpp
   コードを生成中...
-  チームα.vcxproj -> C:\Users\student\Desktop\マージ用フォルダ\マージ\Project\チームα\Debug\チームα.exe
-  チームα.vcxproj -> C:\Users\student\Desktop\マージ用フォルダ\マージ\Project\チームα\Debug\チームα.pdb (Full PDB)
+  LINK : 前回のインクリメンタル リンクで C:\Users\student\Desktop\あｓだ\TeamD\Project\チームα\Debug\チームα.exe が見つからなかったか、ビルドされませんでした。フル リンクを行います。
+  チームα.vcxproj -> C:\Users\student\Desktop\あｓだ\TeamD\Project\チームα\Debug\チームα.exe
+  チームα.vcxproj -> C:\Users\student\Desktop\あｓだ\TeamD\Project\チームα\Debug\チームα.pdb (Full PDB)
