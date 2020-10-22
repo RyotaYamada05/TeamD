@@ -18,8 +18,8 @@
 //=============================================================================
 // マクロ定義
 //=============================================================================
-#define PLAYER_SPEED			(5.0f)				// プレイヤーの移動量
-#define PLAYER_DUSH				(10.0f)				// プレイヤーのダッシュ
+#define PLAYER_SPEED			(10.0f)				// プレイヤーの移動量
+#define PLAYER_DUSH				(15.0f)				// プレイヤーのダッシュ
 #define PLAYER_DUSH_INTER		(80)				// ダッシュができる長さ
 #define DUSH_NONE_TIME			(100)				// ダッシュできない時間
 #define PLAYER_JUMP				(5.0f)				// ジャンプの処理
@@ -221,9 +221,19 @@ void CPlayer::Walk(void)
 	{
 		float fAngle = atan2f((float)js.lX, (float)js.lY);
 
-		// ジョイパッド操作
-		m_pos.x += sinf(fAngle)* PLAYER_SPEED;
-		m_pos.z -= cosf(fAngle)* PLAYER_SPEED;
+		if (m_nPlayerNum == 0)
+		{
+			// ジョイパッド操作
+			m_pos.x += sinf(-fAngle)* PLAYER_SPEED;
+			m_pos.z += cosf(-fAngle)* PLAYER_SPEED;
+		}
+		else
+		{
+			// ジョイパッド操作
+			m_pos.x += sinf(+fAngle)* PLAYER_SPEED;
+			m_pos.z += cosf(+fAngle)* -PLAYER_SPEED;
+
+		}
 	}
 
 	// Wキーを押したとき
@@ -263,10 +273,10 @@ void CPlayer::Jump(void)
 	if (CManager::GetJoypad()->GetJoystickTrigger(1, m_nPlayerNum) && m_bJump == false 
 		|| pKeyboard->GetTrigger(DIK_SPACE) && m_bJump == false )
 	{
-		// ジャンプの処理
-		m_move.y = 0.0f;
-		m_move.y = PLAYER_JUMP;
-		m_bJump = true;
+			// ジャンプの処理
+			m_move.y = 0.0f;
+			m_move.y = PLAYER_JUMP;
+			m_bJump = true;
 	}
 
 	// 移動量加算

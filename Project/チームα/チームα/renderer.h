@@ -33,8 +33,9 @@ public:
 	void Update(void);
 	void Draw(void);
 
+	bool SetUpViewport(int nNumber);
 	LPDIRECT3DDEVICE9 GetDevice(void);
-
+	D3DVIEWPORT9 GetViewPort(int nCount);
 private:
 	//=========================================================================
 	//メンバ関数宣言
@@ -44,6 +45,8 @@ private:
 	LPDIRECT3D9 m_pD3DInterface;				// DirectXインターフェース
 	D3DPRESENT_PARAMETERS *m_pD3DPresentParam;	// プレゼンテーションパラメータ
 	CShader *m_pShader;							// シェーダのポインタ
+	D3DVIEWPORT9 m_view_port[2];
+
 };
 
 #endif
