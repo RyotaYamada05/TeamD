@@ -40,6 +40,8 @@ public:
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
+	bool Collision(void);
+
 private:
 	//=========================================================================
 	//ƒƒ“ƒo•Ï”éŒ¾

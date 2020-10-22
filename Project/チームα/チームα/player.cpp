@@ -26,11 +26,12 @@
 #define PLAYER_JUMP				(5.0f)				// ジャンプの処理
 #define GRAVITY_POWAR			(0.05f)				// 重力の強さ
 #define PLAYER_FALL				(-8.0f)				// 急降下の処理
+#define GROUND_RIMIT			(0.0f)				// 地面の制限
 
 //=============================================================================
 // static初期化
 //=============================================================================
-LPD3DXMESH CPlayer::m_pMesh = NULL;
+LPD3DXMESH CPlayer::m_pMesh = NULL;			//メッシュ情報へのポインタ
 LPD3DXBUFFER CPlayer::m_pBuffMat = NULL;	//マテリアル情報へのポインタ
 DWORD CPlayer::m_nNumMat = 0;				//マテリアル情報の数
 int CPlayer::m_nPlayerAll = 0;
@@ -58,7 +59,7 @@ HRESULT CPlayer::LoadModel(void)
 	LPDIRECT3DDEVICE9 pD3DDevice = CManager::GetRenderer()->GetDevice();
 
 	// モデルの生成
-	D3DXLoadMeshFromX("data/model/box.x",
+	D3DXLoadMeshFromX("data/model/TestBox1.x",
 		D3DXMESH_SYSTEMMEM,
 		pD3DDevice,
 		NULL,
@@ -69,7 +70,6 @@ HRESULT CPlayer::LoadModel(void)
 
 	// 正常終了
 	return S_OK;
-
 }
 
 void CPlayer::Unload(void)
@@ -124,10 +124,12 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 	//モデル情報を設定
 	CModel::BindModel(model);
 
-	// 初期化
-	CModel::Init(pos, rot);
 	m_pos = pos;
 
+	// 初期化
+	CModel::Init(m_pos, rot);
+	
+	SetObjType(CScene::OBJTYPE_PLAYER);
 	return S_OK;
 }
 
@@ -136,19 +138,6 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 //=============================================================================
 void CPlayer::Uninit(void)
 {
-	//メッシュの破棄
-	if (m_pMesh != NULL)
-	{
-		m_pMesh->Release();
-		m_pMesh = NULL;
-	}
-	//マテリアルの破棄
-	if (m_pBuffMat != NULL)
-	{
-		m_pBuffMat->Release();
-		m_pBuffMat = NULL;
-	}
-
 	// 終了処理
 	CModel::Uninit();
 }
@@ -161,10 +150,9 @@ void CPlayer::Update(void)
 	// キーボード更新
 	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
 
-	if (pKeyboard->GetTrigger(DIK_V))
-	{
-		CBullet::Create(m_pos, D3DXVECTOR3(200.0f, 200.0f, 0.0f), CBullet::BULLET_USER_PL1);
-	}
+	//位置の取得
+	m_pos = CModel::GetPos();
+
 	// プレイヤーの制御
 	PlayerControl();
 
@@ -176,8 +164,19 @@ void CPlayer::Update(void)
 		m_pos.y += m_move.y;		// 落下
 	}
 
+	//位置へ移動量を加算
+	m_pos += m_move;
+
 	// 地面の制限
 	GroundLimit();
+
+	//R2トリガーまたはVキーを押したら
+	if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_R2_TRIGGER, m_nPlayerNum) || 
+		pKeyboard->GetTrigger(DIK_V))
+	{
+		//バレットの生成
+		CBullet::Create(m_pos, D3DXVECTOR3(100.0f, 100.0f, 0.0f), CBullet::BULLET_USER_PL1);
+	}
 
 	// 座標情報を与える
 	CModel::SetPos(m_pos);
@@ -247,16 +246,13 @@ void CPlayer::Walk(void)
 	// Aキーを押したとき
 	if (pKeyboard->GetPress(DIK_A))
 	{
-		m_pos.x -= sinf(D3DX_PI / 2)*PLAYER_SPEED;
+		m_pos.x += sinf(-D3DX_PI / 2)*PLAYER_SPEED;
 	}
 	// Dキーを押したとき
 	if (pKeyboard->GetPress(DIK_D))
 	{
 		m_pos.x += sinf(D3DX_PI / 2)*PLAYER_SPEED;
 	}
-
-	// 移動量加算
-	m_pos += m_move;
 }
 
 //=============================================================================
@@ -268,17 +264,14 @@ void CPlayer::Jump(void)
 	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
 
 	// SPACEキーを押したとき・コントローラのYを押したとき
-	if (CManager::GetJoypad()->GetJoystickTrigger(1, m_nPlayerNum) && m_bJump == false 
-		|| pKeyboard->GetTrigger(DIK_SPACE) && m_bJump == false )
+	if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_Y, m_nPlayerNum) && m_bJump == false
+		|| pKeyboard->GetTrigger(DIK_SPACE) && m_bJump == false)
 	{
 		// ジャンプの処理
 		m_move.y = 0.0f;
 		m_move.y = PLAYER_JUMP;
 		m_bJump = true;
 	}
-
-	// 移動量加算
-	m_pos += m_move;
 }
 
 //=============================================================================
@@ -287,10 +280,10 @@ void CPlayer::Jump(void)
 void CPlayer::GroundLimit(void)
 {
 	// 着地の処理
-	if (m_pos.y <= 0.0f)
+	if (m_pos.y <= GROUND_RIMIT)
 	{
-		m_move.y = 0.0f;
-		m_pos.y = 0.0f;
+		m_move.y = GROUND_RIMIT;
+		m_pos.y = GROUND_RIMIT;
 		m_bJump = false;
 	}
 }
@@ -305,7 +298,7 @@ void CPlayer::Fall(void)
 
 	// SPACEキーを押したとき
 	if (pKeyboard->GetTrigger(DIK_B) && m_bJump == true ||
-		CManager::GetJoypad()->GetJoystickTrigger(2, m_nPlayerNum) && m_bJump == true)
+		CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_A, m_nPlayerNum) && m_bJump == true)
 	{
 		// ジャンプの処理
 		m_move.y = 0.0f;
@@ -325,7 +318,7 @@ void CPlayer::Dush(void)
 	if (m_bDushInter == false)
 	{
 		// Xボタンの時
-		if (CManager::GetJoypad()->GetJoystickTrigger(0, m_nPlayerNum))
+		if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_X, m_nPlayerNum))
 		{
 			// ジョイパッドの取得
 			DIJOYSTATE js = CInputJoypad::GetStick(m_nPlayerNum);
@@ -344,7 +337,7 @@ void CPlayer::Dush(void)
 		}
 
 		// Bボタンの時
-		if (CManager::GetJoypad()->GetJoystickTrigger(3, m_nPlayerNum))
+		if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_B, m_nPlayerNum))
 		{
 			// ジョイパッドの取得
 			DIJOYSTATE js = CInputJoypad::GetStick(m_nPlayerNum);

@@ -26,6 +26,27 @@
 class CInputJoypad : public CInput
 {
 public:
+	//=============================================================================
+	//ジョイスティックのボタン用の列挙型定義
+	//=============================================================================
+	typedef enum
+	{
+		JOY_BUTTON_X = 0,		//Xボタン
+		JOY_BUTTON_Y,			//Yボタン
+		JOY_BUTTON_A,			//Aボタン
+		JOY_BUTTON_B,			//Bボタン
+		JOY_BUTTON_L_TRIGGER,	//Lトリガーボタン
+		JOY_BUTTON_R_TRIGGER,	//Rトリガーボタン
+		JOY_BUTTON_L2_TRIGGER,	//Lトリガーボタン2
+		JOY_BUTTON_R2_TRIGGER,	//Rトリガーボタン2
+		JOY_BUTTON_L3,			//Lボタン
+		JOY_BUTTON_R3,			//Rボタン
+		JOY_BUTTON_SELECT,		//SELECTボタン
+		JOY_BUTTON_START,		//STARTボタン
+		JOY_BUTTON_HOME,		//HOMEボタン
+		JOY_BUTTON_MAX,			//最大ボタン数
+	}JOY_BUTTON;
+
 	//メンバ関数
 	CInputJoypad();
 	virtual ~CInputJoypad();

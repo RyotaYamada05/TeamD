@@ -46,6 +46,7 @@ public:
 	void GroundLimit(void);											// 地面の制限
 	void Fall(void);												// 急降下
 	void Dush(void);												// ダッシュ
+
 private:
 	CScore *pScore;							// スコアの情報
 	D3DXVECTOR3 m_pos;						// 座標

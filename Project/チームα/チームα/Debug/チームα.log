@@ -1,3 +1,31 @@
-﻿  player.cpp
-  チームα.vcxproj -> C:\Users\student\Desktop\TeamD\TeamD\Project\チームα\Debug\チームα.exe
-  チームα.vcxproj -> C:\Users\student\Desktop\TeamD\TeamD\Project\チームα\Debug\チームα.pdb (Full PDB)
+﻿  title.cpp
+  tcp_client.cpp
+  shader.cpp
+  scene3D.cpp
+  scene2d.cpp
+  scene.cpp
+  result.cpp
+  renderer.cpp
+  polygon.cpp
+  player.cpp
+  model.cpp
+  meshfield.cpp
+  manager.cpp
+  main.cpp
+  light.cpp
+  keyboard.cpp
+  joypad.cpp
+  input.cpp
+  game.cpp
+  fade.cpp
+  コードを生成中...
+  コンパイル中...
+  conection.cpp
+  camera.cpp
+  bullet.cpp
+  board.cpp
+  billboard.cpp
+  bg.cpp
+  コードを生成中...
+  チームα.vcxproj -> C:\Users\student\Desktop\TeamD\Project\チームα\Debug\チームα.exe
+  チームα.vcxproj -> C:\Users\student\Desktop\TeamD\Project\チームα\Debug\チームα.pdb (Full PDB)

@@ -65,13 +65,13 @@ HRESULT CRenderer::Init(HWND hWnd, bool bWindow)
 	if (m_pD3DInterface == NULL)
 	{
 		// 作成失敗
-		return false;
+		return E_FAIL;
 	}
 
 	m_pD3DPresentParam = new D3DPRESENT_PARAMETERS;
 	if (m_pD3DPresentParam == NULL)
 	{
-		return false;
+		return E_FAIL;
 	}
 	ZeroMemory(m_pD3DPresentParam, sizeof(D3DPRESENT_PARAMETERS));
 
@@ -145,7 +145,7 @@ HRESULT CRenderer::Init(HWND hWnd, bool bWindow)
 	// ビューポート設定
 	if (FAILED(m_pD3DDevice->SetViewport(&view_port)))
 	{
-		return false;
+		return E_FAIL;
 	}
 
 	ShowWindow(hWnd, SW_SHOW);

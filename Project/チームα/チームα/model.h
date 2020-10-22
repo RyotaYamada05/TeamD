@@ -45,7 +45,7 @@ public:
 	void SetPos(const D3DXVECTOR3 pos);
 	D3DXVECTOR3 GetPos(void)const;
 	void SetRot(const D3DXVECTOR3 rot);
-	D3DXVECTOR3 GetPos(void);					// À•W‚Ìî•ñ
+					// À•W‚Ìî•ñ
 private:
 	//=========================================================================
 	//ƒƒ“ƒo•Ï”éŒ¾

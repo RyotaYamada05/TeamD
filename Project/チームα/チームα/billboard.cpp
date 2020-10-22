@@ -65,10 +65,10 @@ HRESULT CBillboard::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 	pVtx[3].pos = D3DXVECTOR3(m_Pos.x + m_size.x / 2, m_Pos.y - m_size.y / 2, 0.0f);
 
 	//各頂点の法線の設定（※ベクトルの大きさは１にする必要がある）
-	pVtx[0].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
-	pVtx[1].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
-	pVtx[2].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
-	pVtx[3].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+	pVtx[0].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
+	pVtx[1].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
+	pVtx[2].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
+	pVtx[3].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
 
 	//頂点カラーの設定（0～255の数値で設定）
 	pVtx[0].col = D3DCOLOR_RGBA(255, 255, 255, 255);
@@ -116,8 +116,11 @@ void CBillboard::Draw(void)
 	D3DXMATRIX mtxRot, mtxTrans;
 	DWORD ambient;
 
+	//現在アンビエント情報を保存
 	pDevice->GetRenderState(D3DRS_AMBIENT, &ambient);
 	pDevice->SetRenderState(D3DRS_AMBIENT, 0xffffffff);
+
+	//ライティングをOFFにする
 	pDevice->LightEnable(0, FALSE);
 
 	//ワールドマトリクスの初期化
