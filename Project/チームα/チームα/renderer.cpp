@@ -8,6 +8,8 @@
 #include "scene.h"
 #include "fade.h"
 #include "shader.h"
+#include "camera.h"
+#include "game.h"
 
 //=============================================================================
 //レンダリングクラスのコンストラクタ
@@ -98,13 +100,13 @@ HRESULT CRenderer::Init(HWND hWnd, bool bWindow)
 	// デバイスの生成
 	// ディスプレイアダプタを表すためのデバイスを作成
 	// 描画と頂点処理をハードウェアで行なう
-	if (FAILED(m_pD3D->CreateDevice(D3DADAPTER_DEFAULT,
-		D3DDEVTYPE_HAL,
-		hWnd,
-		D3DCREATE_HARDWARE_VERTEXPROCESSING,
-		&d3dpp, &m_pD3DDevice)))
-	{
-		// 上記の設定が失敗したら
+	if (FAILED(m_pD3D->CreateDevice(D3DADAPTER_DEFAULT,				// D3DDEVTYPE_HAL：ハードウェアでラスタ化とシェーディングを行い、(座標変換と照明計算)を行う
+		D3DDEVTYPE_HAL,												// D3DDEVTYPE_REF:リファレンスラスタライザ。ドライバのバグをチェックできる
+		hWnd,														// D3DCREATE_PUREDEVICE                :ラスタ化、座標変換、照明計算、シェーディングを指定、上のフラグの修飾子
+		D3DCREATE_HARDWARE_VERTEXPROCESSING,						// D3DCREATE_SOFTWARE_VERTEXPROCESSING：ソフトウェアによる頂点処理を指定
+		&d3dpp, &m_pD3DDevice)))									// D3DCREATE_HARDWARE_VERTEXPROCESSING：ハードウェアによる頂点処理。
+	{																// D3DCREATE_MIXED_VERTEXPROCESSING   ：ミックス(ソフトウェアとハードウェアの両方)による頂点処理を指定します。
+		// 上記の設定が失敗したら								
 		// 描画をハードウェアで行い、頂点処理はCPUで行なう
 		if (FAILED(m_pD3D->CreateDevice(D3DADAPTER_DEFAULT,
 			D3DDEVTYPE_HAL,
@@ -123,29 +125,6 @@ HRESULT CRenderer::Init(HWND hWnd, bool bWindow)
 				return E_FAIL;
 			}
 		}
-	}
-
-	// ビューポートの設定
-	D3DVIEWPORT9 view_port;
-
-	// ビューポートの左上座標
-	view_port.X = 0;
-	view_port.Y = 0;
-
-	// ビューポートの幅
-	view_port.Width = SCREEN_WIDTH;
-
-	// ビューポートの高さ
-	view_port.Height = SCREEN_HEIGHT;
-
-	// ビューポート深度設定
-	view_port.MinZ = 0.0f;
-	view_port.MaxZ = 1.0f;
-	
-	// ビューポート設定
-	if (FAILED(m_pD3DDevice->SetViewport(&view_port)))
-	{
-		return false;
 	}
 
 	ShowWindow(hWnd, SW_SHOW);
@@ -189,7 +168,6 @@ HRESULT CRenderer::Init(HWND hWnd, bool bWindow)
 //=============================================================================
 void CRenderer::Uninit(void)
 {
-
 	// デバイスの破棄
 	if (m_pD3DDevice != NULL)
 	{
@@ -224,69 +202,96 @@ void CRenderer::Draw(void)
 	// Direct3Dによる描画の開始
 	if (SUCCEEDED(m_pD3DDevice->BeginScene()))
 	{
-		//オブジェクトクラスの全描画処理呼び出し
-		CScene::AllDraw();
-
-		CFade *pFade = CManager::GetFade();
-
-		if (pFade != NULL)
+		for (int nCount = 0; nCount < 2; nCount++)
 		{
-			pFade->Draw();
+
+			// 射影行列/ビュー/ワールド
+			D3DXMATRIX matProj, matView, matWorld;
+			D3DXMATRIX trans;
+
+			if (CGame::GetCamera(nCount) != NULL)
+			{
+				CCamera *pCamera = CGame::GetCamera(nCount);
+				pCamera->SetCamera();
+
+				D3DXVECTOR3 posV = pCamera->GetposV();
+				D3DXVECTOR3 posR = pCamera->GetposR();
+
+				D3DXMatrixLookAtLH(&matView,
+					&posV,								// カメラ座標
+					&posR,								// 注視点座標
+					&D3DXVECTOR3(0.0f, 1.0f, 0.0f));	// カメラの上の向きのベクトル
+
+				SetUpViewport(nCount);
+
+				// バックバッファ＆Ｚバッファのクリア
+				m_pD3DDevice->Clear(0, NULL, (D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER), D3DCOLOR_RGBA(0, 255, 255, 0), 1.0f, 0);
+			}
+
+			//オブジェクトクラスの全描画処理呼び出し
+			CScene::AllDraw();
+
+			//ライティングを無効にする。
+			m_pD3DDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
+
+			// WVPを持つ一時的な行列を作成し、
+			// 次に転置して、格納する
+			D3DXMatrixTranspose(&trans, &(matWorld * matView * matProj));
+
+			// 行列のアドレスを送る（メモリ内では4行の4浮動小数点)
+			// レジスタr0で始まる全部で4つのレジスタに置く
+			m_pD3DDevice->SetVertexShaderConstantF(
+				0,				// 開始レジスタ番号
+				trans,			// 値のアドレス
+				4);				// ロードする4成分値の数
+
+			// 色の設定
+			float fteal[4] = { 0.0f, 1.0f, 0.7f, 0.0f };	// rgbaの値
+
+			// レジスタc12を指定する
+			m_pD3DDevice->SetVertexShaderConstantF(
+				12,				// 設定する定数レジスタ
+				fteal,			// 値の配列
+				1);				// ロードする4成分値の数
+
+			//射影座標変換・透過変換の設定
+			D3DXMatrixPerspectiveFovLH(&matProj,
+				D3DX_PI / 4.0f,
+				4.0f / 3.0f,
+				0.1f,
+				500.0f);
+
+			m_pD3DDevice->SetTransform(D3DTS_PROJECTION, &matProj);
+
+			//ビュー座標変換
+			D3DXMatrixIdentity(&matView);
+			m_pD3DDevice->SetTransform(D3DTS_VIEW, &matView);
+
+			//ワールド座標変換
+			D3DXMatrixIdentity(&matWorld);
+			m_pD3DDevice->SetTransform(D3DTS_WORLD, &matWorld);
+
+
+			//メモリを確保できていたら
+			if (m_pShader != NULL)
+			{
+				m_pShader->Draw(matProj);
+			}
+
+			//ライティングを無効にする。
+			m_pD3DDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
+
+			
+			CFade *pFade = CManager::GetFade();
+
+			if (pFade != NULL)
+			{
+				pFade->Draw();
+			}
+
+			// バックバッファとフロントバッファの入れ替え
+	//		m_pD3DDevice->Present(NULL, NULL, NULL, NULL);
 		}
-
-		//ライティングを無効にする。
-		m_pD3DDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
-
-		// 射影行列/ビュー/ワールド
-		D3DXMATRIX matProj, matView, matWorld;
-
-		D3DXMATRIX trans;
-
-		// WVPを持つ一時的な行列を作成し、
-		// 次に転置して、格納する
-		D3DXMatrixTranspose(&trans, &(matWorld * matView * matProj));
-
-		// 行列のアドレスを送る（メモリ内では4行の4浮動小数点)
-		// レジスタr0で始まる全部で4つのレジスタに置く
-		m_pD3DDevice->SetVertexShaderConstantF(
-			0,				// 開始レジスタ番号
-			trans,			// 値のアドレス
-			4);				// ロードする4成分値の数
-
-		// 色の設定
-		float fteal[4] = { 0.0f, 1.0f, 0.7f, 0.0f };	// rgbaの値
-
-		// レジスタc12を指定する
-		m_pD3DDevice->SetVertexShaderConstantF(
-			12,				// 設定する定数レジスタ
-			fteal,			// 値の配列
-			1);				// ロードする4成分値の数
-
-		//射影座標変換
-		D3DXMatrixPerspectiveFovLH(&matProj,
-			D3DX_PI / 4.0f,
-			4.0f / 3.0f,
-			0.1f,
-			500.0f);
-
-		m_pD3DDevice->SetTransform(D3DTS_PROJECTION, &matProj);
-
-		//ビュー座標変換
-		D3DXMatrixIdentity(&matView);
-		m_pD3DDevice->SetTransform(D3DTS_VIEW, &matView);
-
-		//ワールド座標変換
-		D3DXMatrixIdentity(&matWorld);
-		m_pD3DDevice->SetTransform(D3DTS_WORLD, &matWorld);
-
-		//メモリを確保できていたら
-		if (m_pShader != NULL)
-		{
-			m_pShader->Draw(matProj);
-		}
-
-		//ライティングを無効にする。
-		m_pD3DDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
 
 		// Direct3Dによる描画の終了
 		m_pD3DDevice->EndScene();
@@ -304,9 +309,63 @@ void CRenderer::Draw(void)
 	m_pD3DDevice->SetMaterial(&material);
 	m_pD3DDevice->SetRenderState(D3DRS_AMBIENT, 0x44444444);
 
-
 	// バックバッファとフロントバッファの入れ替え
 	m_pD3DDevice->Present(NULL, NULL, NULL, NULL);
+}
+
+bool CRenderer::SetUpViewport(int nNumber)
+{
+	switch (nNumber)
+	{
+	case 0:
+		// ビューポートの左上座標
+		m_view_port[nNumber].X = 0;
+		m_view_port[nNumber].Y = 0;
+
+		// ビューポートの幅
+		m_view_port[nNumber].Width = SCREEN_WIDTH / 2;
+
+		// ビューポートの高さ
+		m_view_port[nNumber].Height = SCREEN_HEIGHT;
+
+		// ビューポート深度設定
+		m_view_port[nNumber].MinZ = 0.0f;
+		m_view_port[nNumber].MaxZ = 1.0f;
+
+		// ビューポート設定
+		if (FAILED(m_pD3DDevice->SetViewport(&m_view_port[nNumber])))
+		{
+			return false;
+		}
+		break;
+
+	case 1:
+		// ビューポートの左上座標
+		m_view_port[nNumber].X = SCREEN_WIDTH / 2;
+		m_view_port[nNumber].Y = 0;
+
+		// ビューポートの幅
+		m_view_port[nNumber].Width = SCREEN_WIDTH / 2;
+
+		// ビューポートの高さ
+		m_view_port[nNumber].Height = SCREEN_HEIGHT;
+
+		// ビューポート深度設定
+		m_view_port[nNumber].MinZ = 0.0f;
+		m_view_port[nNumber].MaxZ = 1.0f;
+
+		// ビューポート設定
+		if (FAILED(m_pD3DDevice->SetViewport(&m_view_port[nNumber])))
+		{
+			return false;
+		}
+
+		break;
+
+	default:
+		break;
+	}
+	return true;
 }
 
 //=============================================================================
@@ -315,6 +374,11 @@ void CRenderer::Draw(void)
 LPDIRECT3DDEVICE9 CRenderer::GetDevice(void)
 {
 	return m_pD3DDevice;
+}
+
+D3DVIEWPORT9 CRenderer::GetViewPort(int nCount)
+{
+	return m_view_port[nCount];
 }
 
 

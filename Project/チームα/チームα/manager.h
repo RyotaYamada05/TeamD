@@ -37,7 +37,7 @@ public:
 	{
 		MODE_TYPE_NONE = 0, 
 		MODE_TYPE_TITLE,	//タイトルモード
-		MODE_TYPE_GAME,	//ゲームモード
+		MODE_TYPE_GAME,		//ゲームモード
 		MODE_TYPE_RESULT,	//リザルトモード
 		MODE_TYPE_MAX,
 	}MODE_TYPE;
