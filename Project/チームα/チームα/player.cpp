@@ -130,40 +130,43 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 
 	m_pos = pos;
 
+	//ライフのロード
+	CLife::Load();
+
 	switch (m_nPlayerNum)
 	{
 	case 0:
 		//１Ｐのライフゲージ
 		if (m_pLife[0] == NULL)
 		{
-			m_pLife[0] = CLife::Create(D3DXVECTOR3(200.0f, 100.0f, 0.0f),
-				D3DXVECTOR3(MAX_LIFE, 20.0f, 0.0f), D3DCOLOR_RGBA(255, 140, 0, 255),
+			m_pLife[0] = CLife::Create(D3DXVECTOR3(130.0f,30.0f, 0.0f),
+				D3DXVECTOR3(MAX_LIFE, LIFE_SIZE_PLAYER_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255),
 				CLife::LIFETYPE_FAST_PLAYER);
 		}
 
 		//１Ｐのライフゲージ
 		if (m_pLife[1] == NULL)
 		{
-			m_pLife[1] = CLife::Create(D3DXVECTOR3(750.0f, 150.0f, 0.0f),
-				D3DXVECTOR3(MAX_LIFE, 20.0f, 0.0f), D3DCOLOR_RGBA(60, 179, 113, 255),
-				CLife::LIFETYPE_FAST_PLAYER);
+			m_pLife[1] = CLife::Create(D3DXVECTOR3(860.0f, 65.0f, 0.0f),
+				D3DXVECTOR3(MAX_LIFE, LIFE_SIZE_ENEMY_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255),
+				CLife::LIFETYPE_SECOND_PLAYER);
 		}
 		break;
 
 	case 1:
-		//１Ｐのライフゲージ
+		//２Ｐのライフゲージ
 		if (m_pLife[0] == NULL)
 		{
-			m_pLife[0] = CLife::Create(D3DXVECTOR3(200.0f, 150.0f, 0.0f),
-				D3DXVECTOR3(MAX_LIFE, 20.0f, 0.0f), D3DCOLOR_RGBA(60, 179, 113, 255),
-				CLife::LIFETYPE_FAST_PLAYER);
+			m_pLife[0] = CLife::Create(D3DXVECTOR3(130.0f, 65.0f, 0.0f),
+				D3DXVECTOR3(MAX_LIFE, LIFE_SIZE_ENEMY_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255),
+				CLife::LIFETYPE_SECOND_PLAYER);
 		}
 
-		//１Ｐのライフゲージ
+		//２Ｐのライフゲージ
 		if (m_pLife[1] == NULL)
 		{
-			m_pLife[1] = CLife::Create(D3DXVECTOR3(750.0f, 100.0f, 0.0f),
-				D3DXVECTOR3(MAX_LIFE, 20.0f, 0.0f), D3DCOLOR_RGBA(255, 140, 0, 255),
+			m_pLife[1] = CLife::Create(D3DXVECTOR3(860.0f, 30.0f, 0.0f),
+				D3DXVECTOR3(MAX_LIFE, LIFE_SIZE_PLAYER_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255),
 				CLife::LIFETYPE_FAST_PLAYER);
 		}
 		break;
@@ -179,8 +182,9 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 
 	// 初期化
 	CModel::Init(m_pos, rot);
-	
+
 	SetObjType(CScene::OBJTYPE_PLAYER);
+
 	return S_OK;
 }
 
@@ -191,6 +195,9 @@ void CPlayer::Uninit(void)
 {
 	// 終了処理
 	CModel::Uninit();
+
+	//ライフのアンロード
+	CLife::Unload();
 }
 
 //=============================================================================
@@ -243,7 +250,6 @@ void CPlayer::Update(void)
 		}
 		break;
 	}
-
 
 	// 座標情報を与える
 	CModel::SetPos(m_pos);

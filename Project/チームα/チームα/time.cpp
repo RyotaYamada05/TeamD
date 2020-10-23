@@ -54,11 +54,15 @@ HRESULT CTime::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 	{
 		if (nCount < 2)
 		{
-			m_apNumber[nCount] = CNumber::Create(D3DXVECTOR3(pos.x / 2 + nCount*50.0f, pos.y, 0.0f), D3DXVECTOR3(TIME_S_SIZE_X, TIME_S_SIZE_Y, 0.0f));
+			m_apNumber[nCount] = CNumber::Create(D3DXVECTOR3(pos.x + nCount*50.0f, pos.y, 0.0f), D3DXVECTOR3(TIME_S_SIZE_X, TIME_S_SIZE_Y, 0.0f));
+		}
+		else if (nCount < 3)
+		{
+			m_apNumber[nCount] = CNumber::Create(D3DXVECTOR3(pos.x + nCount*45.0f, pos.y+10, 0.0f), D3DXVECTOR3(TIME_MS_SIZE_X, TIME_MS_SIZE_Y, 0.0f));
 		}
 		else
 		{
-			m_apNumber[nCount] = CNumber::Create(D3DXVECTOR3(pos.x / 2 + nCount*50.0f, pos.y, 0.0f), D3DXVECTOR3(TIME_MS_SIZE_X, TIME_MS_SIZE_Y, 0.0f));
+			m_apNumber[nCount] = CNumber::Create(D3DXVECTOR3(pos.x + nCount*40.0f, pos.y + 10, 0.0f), D3DXVECTOR3(TIME_MS_SIZE_X, TIME_MS_SIZE_Y, 0.0f));
 		}
 		
 	}

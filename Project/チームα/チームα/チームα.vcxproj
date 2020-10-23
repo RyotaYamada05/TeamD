@@ -180,6 +180,7 @@
     <ClCompile Include="tcp_client.cpp" />
     <ClCompile Include="time.cpp" />
     <ClCompile Include="title.cpp" />
+    <ClCompile Include="ui.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bg.h" />
@@ -212,6 +213,7 @@
     <ClInclude Include="tcp_client.h" />
     <ClInclude Include="time.h" />
     <ClInclude Include="title.h" />
+    <ClInclude Include="ui.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
