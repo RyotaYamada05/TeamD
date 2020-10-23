@@ -14,7 +14,7 @@
 //================================================
 //静的メンバ変数宣言
 //================================================
-LPDIRECT3DTEXTURE9 CLife::m_pTexture = NULL;
+LPDIRECT3DTEXTURE9 CLife::m_apTexture[LIFE_TYPE] = {};
 
 //================================================
 //クリエイト処理
@@ -40,8 +40,13 @@ HRESULT CLife::Load(void)
 
 	//テクスチャの読み込み
 	D3DXCreateTextureFromFile(pDevice,
-		"Data/TEXTURE/siro.png", //ファイルの読み込み
-		&m_pTexture);
+		"data/Texture/Life001.png", //ファイルの読み込み
+		&m_apTexture[LIFETYPE_FAST_PLAYER]);
+
+	//テクスチャの読み込み
+	D3DXCreateTextureFromFile(pDevice,
+		"data/Texture/Life002.png", //ファイルの読み込み
+		&m_apTexture[LIFETYPE_SECOND_PLAYER]);
 
 	return S_OK;
 }
@@ -51,11 +56,14 @@ HRESULT CLife::Load(void)
 //================================================
 void CLife::Unload(void)
 {
-	//テクスチャの開放
-	if (m_pTexture != NULL)
+	for (int nCount = 0; nCount < LIFE_TYPE; nCount++)
 	{
-		m_pTexture->Release();
-		m_pTexture = NULL;
+		//テクスチャの開放
+		if (m_apTexture[nCount] != NULL)
+		{
+			m_apTexture[nCount]->Release();
+			m_apTexture[nCount] = NULL;
+		}
 	}
 }
 //================================================
@@ -88,9 +96,9 @@ HRESULT CLife::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size, const D3DXCOL
 
 	CGauge::Init(pos, size);	//CGaugeの初期化
 
-	CGauge::BindTexture(m_pTexture); //テクスチャーの取得
+	CGauge::BindTexture(m_apTexture[type]); //テクスチャーの取得
 
-									 //位置設定
+	//位置設定
 	CGauge::SetPos(D3DXVECTOR3(m_pos.x, m_pos.y, m_pos.z));
 
 	//サイズ設定
@@ -139,32 +147,52 @@ void CLife::Update(void)
 	//ライフを減らす処理
 	if (0 < size.x)
 	{
-	//	if (m_type == m_typeDecrease)
+		if (m_bLife == true)
 		{
-			if (m_bLife == true)
+			m_nCounterLife++;
+
+			size.x--;
+
+			//自分のライフの色が変わったとき
+			if (m_type == LIFETYPE_FAST_PLAYER)
 			{
-				m_nCounterLife++;
-				//m_col = D3DCOLOR_RGBA(0.0f,0.0f,0.0f,0.0f);
-				size.x--;
-				if (m_nCounterLife == m_nCount)
+				col = D3DCOLOR_RGBA(255, 0, 0, 255);
+			}
+			//相手のライフの色が変わったとき
+			if (m_type == LIFETYPE_SECOND_PLAYER)
+			{
+				col = D3DCOLOR_RGBA(0, 50, 255, 255);
+			}
+
+			if (m_nCounterLife == m_nCount)
+			{
+				m_bLife = false;
+				m_nCounterLife = 0;
+
+				//自分のライフの色を元に戻す
+				if (m_type == LIFETYPE_FAST_PLAYER)
 				{
-					m_bLife = false;
-					m_nCounterLife = 0;
+					col = D3DCOLOR_RGBA(255, 255, 255, 255);
+				}
+				//相手のライフの色を元に戻す
+				if (m_type == LIFETYPE_SECOND_PLAYER)
+				{
+					col = D3DCOLOR_RGBA(255, 255, 255, 255);
 				}
 			}
 		}
 	}
 
 	//ライフが半分以下になると点滅するようにする
-	if (size.x < 200)
+	if (size.x < HALF_LIFE)
 	{
 		m_nCounter++;
 
-		if (m_nCounter == 10)
+		if (m_nCounter == 15)
 		{
-			col.a = 0.5f;
+			col.a = 0.8f;
 		}
-		else if (m_nCounter == 20)
+		else if (m_nCounter == 30)
 		{
 			col.a = 1.0f;
 

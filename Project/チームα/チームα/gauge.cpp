@@ -152,6 +152,9 @@ void CGauge::Draw(void)
 	pD3DDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP,
 		0,
 		NUM_POLYGON);
+
+	// テクスチャの設定
+	pD3DDevice->SetTexture(0, NULL);
 }
 
 //======================================================

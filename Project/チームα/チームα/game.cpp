@@ -24,6 +24,8 @@
 #include "time.h"
 #include "gauge.h"
 #include "life.h"
+#include "ui.h"
+
 //=======================================================================================
 // static初期化
 //=======================================================================================
@@ -31,7 +33,7 @@ CCamera *CGame::m_apCamera[MAX_PLAYER] = {};			// カメラクラスのポインタ変数
 CLight *CGame::m_pLight = NULL;						// ライトクラスのポインタ変数
 CMeshField *CGame::m_pMeshField = NULL;				// メッシュフィールド
 CBg *CGame::m_pBg = NULL;							// 背景のポインタ
-CPlayer *CGame::m_apPlayer[MAX_PLAYER] = {};		// プレイヤーのポインタ
+CPlayer *CGame::m_apPlayer[MAX_PLAYER] = {};			// プレイヤーのポインタ
 
 //=======================================================================================
 // コンストラクタ
@@ -84,6 +86,25 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 		}
 	}
 
+	//Uiのロード
+	CUi::Load();
+	//UIライフゲージの生成
+	CUi::Create(D3DXVECTOR3(330.0f, 30.0f, 0.0f), D3DXVECTOR3(UI_LIFE_SIZE_X / 2, UI_LIFE_SIZE_PLAYERY, 0.0f), CUi::UITTYPE_LIFE);
+	CUi::Create(D3DXVECTOR3(1060.0f, 30.0f, 0.0f), D3DXVECTOR3(UI_LIFE_SIZE_X / 2, UI_LIFE_SIZE_PLAYERY, 0.0f), CUi::UITTYPE_LIFE);
+
+	CUi::Create(D3DXVECTOR3(330.0f, 65.0f, 0.0f), D3DXVECTOR3(UI_LIFE_SIZE_X / 2, UI_LIFE_SIZE_ENEMYY, 0.0f), CUi::UITTYPE_LIFE);
+	CUi::Create(D3DXVECTOR3(1060.0f, 65.0f, 0.0f), D3DXVECTOR3(UI_LIFE_SIZE_X / 2, UI_LIFE_SIZE_ENEMYY, 0.0f), CUi::UITTYPE_LIFE);
+
+	//UIのタイム生成
+	CUi::Create(D3DXVECTOR3(640.0f, 50.0f, 0.0f), D3DXVECTOR3(UI_TIME_SIZE_X, UI_TIME_SIZE_Y, 0.0f), CUi::UITYPE_TIME);
+
+	//UIのプレイヤー・エネミー文字の生成
+	CUi::Create(D3DXVECTOR3(70.0f, 30.0f, 0.0f), D3DXVECTOR3(UI_PLAYER_SIZE_X, UI_PLAYER_SIZE_Y, 0.0f), CUi::UITYPE_PLAYER);
+	CUi::Create(D3DXVECTOR3(75.0f, 65.0f, 0.0f), D3DXVECTOR3(UI_ENEMY_SIZE_X, UI_ENEMY_SIZE_Y, 0.0f), CUi::UITYPE_ENEMY);
+
+	CUi::Create(D3DXVECTOR3(800.0f, 30.0f, 0.0f), D3DXVECTOR3(UI_PLAYER_SIZE_X, UI_PLAYER_SIZE_Y, 0.0f), CUi::UITYPE_PLAYER);
+	CUi::Create(D3DXVECTOR3(805.0f, 65.0f, 0.0f), D3DXVECTOR3(UI_ENEMY_SIZE_X, UI_ENEMY_SIZE_Y, 0.0f), CUi::UITYPE_ENEMY);
+
 	// プレイヤーの生成
 	if (m_apPlayer[0] == NULL)
 	{
@@ -106,17 +127,11 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 		m_pBg = CBg::Create();
 	}
 
-	LPDIRECT3DDEVICE9 pD3DDevice = CManager::GetRenderer()->GetDevice();
 	//タイム生成
-	CTime::Create(D3DXVECTOR3(50.0f, 50.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	CTime::Create(D3DXVECTOR3(585.0f, 55.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
-	//ライフ生成
-	//１Ｐのライフゲージ
-	//CLife::Create(D3DXVECTOR3(300, 100.0f, 0.0f), D3DXVECTOR3(MAX_LIFE, 20.0f, 0.0f), D3DCOLOR_RGBA(255, 140, 0, 255), CLife::LIFETYPE_FAST_PLAYER);
-	//CLife::Create(D3DXVECTOR3(300, 200.0f, 0.0f), D3DXVECTOR3(MAX_LIFE, 20.0f, 0.0f), D3DCOLOR_RGBA(60, 179, 113, 255), CLife::LIFETYPE_FAST_PLAYER);
-	////２Ｐのライフゲージ
-	//CLife::Create(D3DXVECTOR3(800, 100.0f, 0.0f), D3DXVECTOR3(MAX_LIFE, 20.0f, 0.0f), D3DCOLOR_RGBA(255, 140, 0, 255), CLife::LIFETYPE_SECOND_PLAYER);
-	//CLife::Create(D3DXVECTOR3(800, 200.0f, 0.0f), D3DXVECTOR3(MAX_LIFE, 20.0f, 0.0f), D3DCOLOR_RGBA(60, 179, 113, 255), CLife::LIFETYPE_SECOND_PLAYER);
+
+	LPDIRECT3DDEVICE9 pD3DDevice = CManager::GetRenderer()->GetDevice();
 
 	D3DXCreateFont(pD3DDevice, 18, 0, 0, 0, FALSE, SHIFTJIS_CHARSET,
 		OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, "Terminal", &m_pFont);
@@ -146,6 +161,9 @@ void CGame::Uninit(void)
 			m_apCamera[nCount] = NULL;
 		}
 	}
+	//ui
+	CUi::Unload();
+
 	// メッシュフィールド
 	if (m_pMeshField != NULL)
 	{
