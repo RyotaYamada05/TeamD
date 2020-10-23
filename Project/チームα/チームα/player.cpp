@@ -15,6 +15,8 @@
 #include "input.h"
 #include "bullet.h"
 #include "joypad.h"
+#include "camera.h"
+#include "game.h"
 
 //=============================================================================
 // マクロ定義
@@ -227,11 +229,41 @@ void CPlayer::Walk(void)
 
 	if (js.lX != 0.0f || js.lY != 0)
 	{
-		float fAngle = atan2f((float)js.lX, (float)js.lY);
+		float fAngle = CGame::GetCamera(m_nPlayerNum)->Getφ();
 
-		// ジョイパッド操作
-		m_pos.x += sinf(fAngle)* PLAYER_SPEED;
-		m_pos.z -= cosf(fAngle)* PLAYER_SPEED;
+		if (js.lX < -50.0f)
+		{
+			// ジョイパッド操作
+			m_pos.x += sinf(fAngle)* PLAYER_SPEED;
+			m_pos.z -= cosf(fAngle)* PLAYER_SPEED;
+		}
+		else if (js.lX > 50.0f)
+		{
+			// ジョイパッド操作
+			m_pos.x -= sinf(fAngle)* PLAYER_SPEED;
+			m_pos.z += cosf(fAngle)* PLAYER_SPEED;
+		}
+		else
+		{
+
+		}
+
+		if (js.lY < -50.0f)
+		{
+			// ジョイパッド操作
+			m_pos.x -= cosf(fAngle)* PLAYER_SPEED;
+			m_pos.z -= sinf(fAngle)* PLAYER_SPEED;
+		}
+		else if (js.lY > 50.0f)
+		{
+			// ジョイパッド操作
+			m_pos.x += cosf(fAngle)* PLAYER_SPEED;
+			m_pos.z += sinf(fAngle)* PLAYER_SPEED;
+		}
+		else
+		{
+
+		}
 	}
 
 	// Wキーを押したとき

@@ -24,7 +24,7 @@
 //=======================================================================================
 // static初期化
 //=======================================================================================
-CCamera *CGame::m_pCamera[MAX_CAMERA] = {};			// カメラクラスのポインタ変数
+CCamera *CGame::m_apCamera[MAX_CAMERA] = {};			// カメラクラスのポインタ変数
 CLight *CGame::m_pLight = NULL;						// ライトクラスのポインタ変数
 CMeshField *CGame::m_pMeshField = NULL;				// メッシュフィールド
 CBg *CGame::m_pBg = NULL;							// 背景のポインタ
@@ -67,12 +67,12 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 	//カメラクラスのインスタンス生成
 	for (int nCount = 0; nCount < MAX_CAMERA; nCount++)
 	{
-		m_pCamera[nCount] = CCamera::Create();
+		m_apCamera[nCount] = CCamera::Create();
 
-		if (m_pCamera[nCount] != NULL)
+		if (m_apCamera[nCount] != NULL)
 		{
 			// カメラの初期化
-			if (FAILED(m_pCamera[nCount]->Init()))
+			if (FAILED(m_apCamera[nCount]->Init()))
 			{
 				return -1;
 			}
@@ -130,10 +130,10 @@ void CGame::Uninit(void)
 {
 	for (int nCount = 0; nCount < MAX_CAMERA; nCount++)
 	{
-		if (m_pCamera[nCount] != NULL)
+		if (m_apCamera[nCount] != NULL)
 		{
 			//カメラクラスの終了処理呼び出し
-			m_pCamera[nCount]->Uninit();
+			m_apCamera[nCount]->Uninit();
 		}
 	}
 
@@ -165,10 +165,10 @@ void CGame::Update(void)
 {
 	for (int nCount = 0; nCount < MAX_CAMERA; nCount++)
 	{
-		if (m_pCamera[nCount] != NULL)
+		if (m_apCamera[nCount] != NULL)
 		{
 			//カメラクラスの更新処理
-			m_pCamera[nCount]->Update();
+			m_apCamera[nCount]->Update();
 		}
 	}
 
@@ -199,9 +199,9 @@ void CGame::Draw(void)
 {
 	for (int nCount = 0; nCount < MAX_CAMERA; nCount++)
 	{
-		if (m_pCamera[nCount] != NULL)
+		if (m_apCamera[nCount] != NULL)
 		{
-			m_pCamera[nCount]->SetCamera();
+			m_apCamera[nCount]->SetCamera();
 		}
 	}
 
@@ -229,7 +229,7 @@ void CGame::Draw(void)
 //=======================================================================================
 CCamera * CGame::GetCamera(int nCount)
 {
-	return m_pCamera[nCount];
+	return m_apCamera[nCount];
 }
 
 //=======================================================================================

@@ -11,6 +11,7 @@
 #include "keyboard.h"
 #include "game.h"
 #include "player.h"
+#include "joypad.h"
 
 //=============================================================================
 //マクロ定義
@@ -144,6 +145,9 @@ void CCamera::Update(void)
 	//キーボードクラス情報の取得
 	CInputKeyboard *pKeyInput = CManager::GetKeyboard();
 
+	// ジョイパッドの取得
+	//DIJOYSTATE js = CInputJoypad::GetStick(m_nCameraNum);
+
 	if (pKeyInput->GetTrigger(DIK_TAB))
 	{
 		if (m_bTarget == false)
@@ -156,6 +160,7 @@ void CCamera::Update(void)
 		{
 			pPlayerPos2rot = pPlayerPos2;
 			m_posRRot = pPlayerPos1 - pPlayerPos2;
+			m_posVRot = m_posV;
 			m_bTarget = false;
 		}
 	}
@@ -164,9 +169,9 @@ void CCamera::Update(void)
 	{
 		m_fφ = atan2f(pPlayerPos1.z - pPlayerPos2.z, pPlayerPos1.x - pPlayerPos2.x);
 
-		m_posVDest.x = m_posR.x + m_fDistance* sinf(m_fθ) * cosf(m_fφ) + pPlayerPos1.x - pPlayerPos2.x;
-		m_posVDest.y = m_posR.y + m_fDistance* cosf(m_fθ);
-		m_posVDest.z = m_posR.z + m_fDistance* sinf(m_fθ) * sinf(m_fφ) + pPlayerPos1.z - pPlayerPos2.z;
+		m_posVDest.x = m_posR.x + m_fDistance * sinf(m_fθ) * cosf(m_fφ) + pPlayerPos1.x - pPlayerPos2.x;
+		m_posVDest.y = m_posR.y + m_fDistance * cosf(m_fθ);
+		m_posVDest.z = m_posR.z + m_fDistance * sinf(m_fθ) * sinf(m_fφ) + pPlayerPos1.z - pPlayerPos2.z;
 
 		m_posRDest = D3DXVECTOR3(pPlayerPos2.x, pPlayerPos2.y, pPlayerPos2.z);
 
@@ -175,8 +180,8 @@ void CCamera::Update(void)
 	}
 	else
 	{
-
-		//m_fφ = atan2f(pPlayerPos1.z - pPlayerPos2rot.z, pPlayerPos1.x - pPlayerPos2rot.x);
+		// キーボード更新
+		CInputKeyboard *pKeyboard = CManager::GetKeyboard();
 
 		//視点（カメラ座標）の左旋回
 		if (pKeyInput->GetPress(DIK_LEFT))
@@ -199,25 +204,53 @@ void CCamera::Update(void)
 			m_fθ += D3DXToRadian(1.0f);
 		}
 
-		m_posVDest.x = m_posR.x + m_fDistance* sinf(m_fθ) * cosf(m_fφ) + m_posRRot.x;
-		m_posVDest.y = m_posR.y + m_fDistance* cosf(m_fθ);
-		m_posVDest.z = m_posR.z + m_fDistance* sinf(m_fθ) * sinf(m_fφ) + m_posRRot.z;
+#ifdef CAMERA_TEST
+		/*m_fφ = atan2f(m_posRRot.z , m_posRRot.x);*/
 
-		m_posRDest.x;
-		m_posRDest.y;
-		m_posRDest.z;
-		m_posRDest = D3DXVECTOR3(pPlayerPos1.x - m_posRRot.x, pPlayerPos1.y - m_posRRot.y, pPlayerPos1.z - m_posRRot.z);
+		m_posVDest.x = m_posR.x + m_fDistance * sinf(m_fθ) * cosf(m_fφ) + pPlayerPos1.x - pPlayerPos2.x;
+		m_posVDest.y = m_posR.y + m_fDistance * cosf(m_fθ);
+		m_posVDest.z = m_posR.z + m_fDistance * sinf(m_fθ) * sinf(m_fφ) + pPlayerPos1.z - pPlayerPos2.z;
 
-		//m_posRDest = D3DXVECTOR3(pPlayerPos1.x - m_posRRot.x, pPlayerPos1.y - m_posRRot.y, pPlayerPos1.z - m_posRRot.z);
+		m_posRDest.x = m_posR.x * sinf(m_fθ) * cosf(m_fφ) + pPlayerPos1.x;
+		m_posRDest.y = m_posR.y * cosf(m_fθ);
+		m_posRDest.z = m_posR.z * sinf(m_fθ) * sinf(m_fφ) + pPlayerPos1.z;
+
+		/*m_posRDest = D3DXVECTOR3(pPlayerPos2.x, pPlayerPos2.y, pPlayerPos2.z);*/
+
+		m_posV += (m_posVDest - m_posV); //カメラフロー
+		m_posR += (m_posRDest - m_posR); //カメラフロー
+
+		////m_fφ = atan2f(m_posRRot.z, m_posRRot.x);
+
+		//m_posVDest.x = m_posR.x + m_fDistance * sinf(m_fθ) * cosf(m_fφ) + pPlayerPos1.x - pPlayerPos2rot.x;
+		//m_posVDest.y = m_posR.y + m_fDistance * cosf(m_fθ);
+		//m_posVDest.z = m_posR.z + m_fDistance * sinf(m_fθ) * sinf(m_fφ) + pPlayerPos1.z - pPlayerPos2rot.z;
+
+		////m_posRDest.x = m_posR.x + m_fDistance * sinf(m_fθ) * cosf(m_fφ) + m_posRRot.x;
+		////m_posRDest.y = m_posR.y + m_fDistance * cosf(m_fθ);
+		////m_posRDest.z = m_posR.z + m_fDistance * sinf(m_fθ) * sinf(m_fφ) + m_posRRot.z;
+
+		//m_posRDest = D3DXVECTOR3(pPlayerPos2rot);
+
+		//m_posV += (m_posVDest - m_posV);
+		//m_posR += (m_posRDest - m_posR);
+
+		//// キャラ移動時のカメラの位置
+		////m_posV += (m_posVDest - m_posV) * 0.001f;
+
+		//// キャラ移動時のカメラの向き
+		////m_posR += (m_posRDest - m_posR) * 0.1f;
+#endif //CAMERA_TEST
+
+		m_posVDest.x = m_posR.x + m_fDistance * sinf(m_fθ) * cosf(m_fφ);
+		m_posVDest.y = m_posR.y + m_fDistance * cosf(m_fθ);
+		m_posVDest.z = m_posR.z + m_fDistance * sinf(m_fθ) * sinf(m_fφ);
+
+		m_posRDest = D3DXVECTOR3(pPlayerPos1.x, pPlayerPos1.y + 10, pPlayerPos1.z);
 
 		m_posV += (m_posVDest - m_posV);
 		m_posR += (m_posRDest - m_posR);
 
-		// キャラ移動時のカメラの位置
-		//m_posV += (m_posVDest - m_posV) * 0.001f;
-
-		// キャラ移動時のカメラの向き
-		//m_posR += (m_posRDest - m_posR) * 0.1f;
 	}
 }
 
@@ -254,4 +287,19 @@ void CCamera::SetCamera(void)
 	//プロジェクションマトリックスの設定
 	pDevice->SetTransform(D3DTS_PROJECTION,
 		&m_mtxProjection);
+}
+
+bool CCamera::GetTargetBool(void)
+{
+	return m_bTarget;
+}
+
+float CCamera::Getθ(void)
+{
+	return m_fθ;
+}
+
+float CCamera::Getφ(void)
+{
+	return m_fφ;
 }

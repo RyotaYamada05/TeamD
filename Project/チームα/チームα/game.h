@@ -17,7 +17,7 @@
 //***************************************************************************************
 #ifdef VIIEW_PORT_TEST
 #endif // VIIEW_PORT_TEST
-#define MAX_CAMERA (2)			// カメラの数
+#define MAX_CAMERA (1)			// カメラの数
 #define MAX_PLAYER (2)			// プレイヤーの数
 
 //***************************************************************************************
@@ -48,7 +48,7 @@ public:
 	void Draw(void);
 
 private:
-	static CCamera *m_pCamera[MAX_CAMERA];		// カメラのポインタ
+	static CCamera *m_apCamera[MAX_CAMERA];		// カメラのポインタ
 	static CLight *m_pLight;					// ライトのポインタ
 	static CMeshField *m_pMeshField;			// メッシュフィールドのポインタ
 	static CBg *m_pBg;							// 背景のポインタ

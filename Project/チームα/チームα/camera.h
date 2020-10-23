@@ -28,15 +28,19 @@ public:
 	void Uninit(void);
 	void Update(void);
 	void SetCamera(void);
+	bool GetTargetBool(void);
+	float Getθ(void);
+	float Getφ(void);
 private:
 	//=========================================================================
 	//メンバ変数宣言
 	//=========================================================================
 	D3DXVECTOR3 m_posV;						//カメラの座標
 	D3DXVECTOR3 m_posVDest;					//カメラの座標（目的地）
+	D3DXVECTOR3 m_posVRot;					//カメラの座標（）
 	D3DXVECTOR3 m_posR;						//注視点
 	D3DXVECTOR3 m_posRDest;					//注視点（目的地）
-	D3DXVECTOR3 m_posRRot;						//注視点
+	D3DXVECTOR3 m_posRRot;					//注視点（）
 	D3DXVECTOR3 m_posU;						//上方向ベクトル
 	D3DXMATRIX m_mtxProjection;				//プロジェクションマトリックス
 	D3DXMATRIX m_mtxView;					//ビューマトリックス

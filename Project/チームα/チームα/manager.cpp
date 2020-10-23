@@ -26,6 +26,7 @@
 #include "meshfield.h"
 #include "bg.h"
 #include "joypad.h"
+#include "camera.h"
 
 //=============================================================================
 //Ã“Iƒƒ“ƒo•Ï”éŒ¾
