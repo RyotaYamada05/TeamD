@@ -48,11 +48,9 @@ public:
 	void GroundLimit(void);											// 地面の制限
 	void Fall(void);												// 急降下
 	void Dush(void);												// ダッシュ
+	D3DXVECTOR3 GetPos(void);
 
 	CLife *GetLife(int nNumber);											// ライフの情報
-
-
-
 private:
 	CScore *pScore;							// スコアの情報
 	CLife *m_pLife[LIFE_NUM];				// ライフのポインタ

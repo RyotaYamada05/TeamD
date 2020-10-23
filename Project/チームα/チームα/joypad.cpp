@@ -244,3 +244,16 @@ DIJOYSTATE CInputJoypad::GetStick(const int nID)
 	return js;
 
 }
+
+DIJOYSTATE2 CInputJoypad::GetStick2(const int nID)
+{
+	DIJOYSTATE2 js = {};
+
+	if (m_apDevice[nID] != NULL)
+	{
+		m_apDevice[nID]->Poll();
+		m_apDevice[nID]->GetDeviceState(sizeof(DIJOYSTATE2), &js);
+	}
+	return js;
+
+}

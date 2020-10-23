@@ -66,6 +66,7 @@ public:
 	BYTE m_aJoyStateTrigger[NUM_JOY_MAX][MAX_JOYSTICK_NUM] = {};   // ジョイパッドのトリガー情報
 	BYTE m_aJoyStateRelease[NUM_JOY_MAX][MAX_JOYSTICK_NUM] = {};   // ジョイパッドのリリース情報
 	static DIJOYSTATE CInputJoypad::GetStick(const int nID);
+	static DIJOYSTATE2 CInputJoypad::GetStick2(const int nID);
 
 private:
 	static LPDIRECTINPUTDEVICE8 m_apDevice[MAX_JOYSTICK_NUM];

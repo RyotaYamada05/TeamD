@@ -32,6 +32,8 @@ public:
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
+	D3DXVECTOR2 ScreenPos(int nScreenId);
+	static int ScreenId(void);
 
 	bool SetUpViewport(int nNumber);
 	LPDIRECT3DDEVICE9 GetDevice(void);
