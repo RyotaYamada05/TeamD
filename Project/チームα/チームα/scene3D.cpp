@@ -91,9 +91,6 @@ HRESULT CScene3D::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 	//デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
-	//オブジェクトの設定
-	SetObjType(OBJTYPE_DARTS_BOARD);
-
 	//頂点バッファの生成
 	pDevice->CreateVertexBuffer(sizeof(VERTEX_3D)*NUM_VERTEX,
 		D3DUSAGE_WRITEONLY,
