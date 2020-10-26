@@ -201,7 +201,7 @@ void CCamera::Update(void)
 			m_fƒÓ = atan2f(pPlayerPos1.z - pPlayerPos2.z, pPlayerPos1.x - pPlayerPos2.x);
 
 			m_posVDest.x = m_posR.x + m_fDistance * sinf(m_fƒÆ) * cosf(m_fƒÓ) + pPlayerPos1.x - pPlayerPos2.x;
-			m_posVDest.y = m_posR.y + m_fDistance * cosf(m_fƒÆ);
+			m_posVDest.y = m_posR.y + m_fDistance * cosf(m_fƒÆ) + pPlayerPos1.y - pPlayerPos2.y;
 			m_posVDest.z = m_posR.z + m_fDistance * sinf(m_fƒÆ) * sinf(m_fƒÓ) + pPlayerPos1.z - pPlayerPos2.z;
 
 			m_posRDest = D3DXVECTOR3(pPlayerPos2.x, pPlayerPos2.y, pPlayerPos2.z);
