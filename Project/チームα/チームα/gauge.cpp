@@ -51,9 +51,6 @@ CGauge::~CGauge()
 //=======================================================================================
 HRESULT CGauge::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 {
-	m_pos = pos;
-	m_size = size;
-
 	// Rendererクラスからデバイスを取得
 	LPDIRECT3DDEVICE9 pD3DDevice = CManager::GetRenderer()->GetDevice();
 
@@ -64,6 +61,9 @@ HRESULT CGauge::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 		D3DPOOL_MANAGED,
 		&m_pVetxBuff,
 		NULL);
+
+	m_pos = pos;
+	m_size = size;
 
 	// 頂点情報を設定
 	VERTEX_2D *pVtx;

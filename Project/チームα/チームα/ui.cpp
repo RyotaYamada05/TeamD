@@ -20,7 +20,7 @@ LPDIRECT3DTEXTURE9 CUi::m_apTexture[UI_TYPE] = {};
 CUi* CUi::Create(D3DXVECTOR3 pos, D3DXVECTOR3 size, UITYPE type)
 {
 	// オブジェクトを生成
-	CUi* pUi = new CUi();
+	CUi* pUi = new CUi;
 
 	// 初期化処理
 	pUi->Init(pos,size,type);

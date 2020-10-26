@@ -14,7 +14,7 @@
 //================================================
 //静的メンバ変数宣言
 //================================================
-LPDIRECT3DTEXTURE9 CLife::m_apTexture[LIFE_TYPE] = {};
+LPDIRECT3DTEXTURE9 CLife::m_apTexture[LIFETYPE_PLAYER_MAX] = {};
 
 //================================================
 //クリエイト処理
@@ -22,7 +22,7 @@ LPDIRECT3DTEXTURE9 CLife::m_apTexture[LIFE_TYPE] = {};
 CLife* CLife::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 size, const D3DXCOLOR col, const LIFETYPE type)
 {
 	// オブジェクトを生成
-	CLife* pLife = new CLife();
+	CLife* pLife = new CLife;
 
 	// 初期化処理
 	pLife->Init(pos, size, col, type);
@@ -56,7 +56,7 @@ HRESULT CLife::Load(void)
 //================================================
 void CLife::Unload(void)
 {
-	for (int nCount = 0; nCount < LIFE_TYPE; nCount++)
+	for (int nCount = 0; nCount < LIFETYPE_PLAYER_MAX; nCount++)
 	{
 		//テクスチャの開放
 		if (m_apTexture[nCount] != NULL)
@@ -74,6 +74,10 @@ CLife::CLife()
 	m_nCounter = 0;
 	m_nCounterLife = 0;
 	m_bLife = false;
+	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);		//カラー
+	m_type = LIFETYPE_NONE;		//タイプ
+
 }
 
 //================================================

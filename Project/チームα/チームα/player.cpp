@@ -106,6 +106,8 @@ CPlayer::CPlayer()
 	m_bJump = false;
 	m_bDush = false;
 	m_bDushInter = false;
+	m_nPlayerNum = 0;						// プレイヤーの番号
+
 }
 
 //=============================================================================
@@ -130,9 +132,6 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 	CModel::BindModel(model);
 
 	m_pos = pos;
-
-	//ライフのロード
-	CLife::Load();
 
 	switch (m_nPlayerNum)
 	{
