@@ -71,6 +71,7 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 {
 	for (int nCount = 0; nCount < MAX_PLAYER; nCount++)
 	{
+		//カメラクラスのクリエイト
 		m_apCamera[nCount] = CCamera::Create();
 	}
 
