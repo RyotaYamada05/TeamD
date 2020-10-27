@@ -22,11 +22,12 @@ CBullet::CBullet()
 {
 	//各メンバ変数のクリア
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	//位置
-	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	//移動量
+	m_move = D3DXVECTOR3(10.0f, 0.0f, 0.0f);	//移動量
 	m_size = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	//サイズ
 	m_user = BULLET_USER_NONE;	//使用者
 	m_nAtk = 0;	//攻撃力
 	m_nLife = 0;	//ライフ
+	m_nCounter = 0;
 	m_pTargetPL = NULL;	//敵プレイヤーのポインタ
 }
 
@@ -121,8 +122,12 @@ void CBullet::Update(void)
 	//位置の取得
 	m_pos = GetPos();
 
-	//移動量の計算
-	m_move = VectorMath(m_pTargetPL->GetPos(), 5.0f);
+	if (m_nCounter <= 120)
+	{
+		//移動量の計算
+		m_move = VectorMath(m_pTargetPL->GetPos(), 5.0f);
+	}
+	
 
 	//移動量を位置に与える
 	m_pos += m_move;
@@ -149,6 +154,8 @@ void CBullet::Update(void)
 
 	//ライフの減少
 	m_nLife--;
+
+	m_nCounter++;
 }
 
 //=============================================================================
@@ -197,13 +204,14 @@ D3DXVECTOR3 CBullet::VectorMath(D3DXVECTOR3 TargetPos, float fSpeed)
 
 	//ベクトルの大きさを求める(√c^2 = a^2 * b^2)
 	float fVectorSize = D3DXVec3Length(&Vector);
-
+	
 	//単位ベクトル用変数
 	D3DXVECTOR3 UnitVector;
-
+	
 	//単位ベクトルを求める(元のベクトル / ベクトルの大きさ)
 	D3DXVec3Normalize(&UnitVector, &Vector);
 
+
 	//単位ベクトルを速度倍にして返す(UnitVector * fSpeed)
-	return UnitVector * fSpeed;
+	return	UnitVector * fSpeed;
 }

@@ -63,7 +63,7 @@ HRESULT CPlayer::LoadModel(void)
 	LPDIRECT3DDEVICE9 pD3DDevice = CManager::GetRenderer()->GetDevice();
 
 	// ƒ‚ƒfƒ‹‚Ì¶¬
-	D3DXLoadMeshFromX("data/model/TestBox1.x",
+	D3DXLoadMeshFromX("data/model/ti-muiro.x",
 		D3DXMESH_SYSTEMMEM,
 		pD3DDevice,
 		NULL,
