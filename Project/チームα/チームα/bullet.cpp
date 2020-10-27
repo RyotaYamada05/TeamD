@@ -14,6 +14,7 @@
 //=============================================================================
 #define BULLET_LIFE 600	//バレットライフ 
 #define BULLET_ATK 20	//攻撃力
+#define BULLET_SPEED 10.0f	//速度
 
 //=============================================================================
 //バレットクラスのコンストラクタ
@@ -125,7 +126,7 @@ void CBullet::Update(void)
 	if (m_nCounter <= 120)
 	{
 		//移動量の計算
-		m_move = VectorMath(m_pTargetPL->GetPos(), 5.0f);
+		m_move = VectorMath(m_pTargetPL->GetPos(), BULLET_SPEED);
 	}
 	
 
