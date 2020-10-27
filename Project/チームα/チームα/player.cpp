@@ -60,6 +60,7 @@ CPlayer * CPlayer::Create(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 //=============================================================================
 HRESULT CPlayer::LoadModel(void)
 {
+	//デバイス情報の取得
 	LPDIRECT3DDEVICE9 pD3DDevice = CManager::GetRenderer()->GetDevice();
 
 	// モデルの生成
@@ -76,6 +77,9 @@ HRESULT CPlayer::LoadModel(void)
 	return S_OK;
 }
 
+//=============================================================================
+// モデルアンロード
+//=============================================================================
 void CPlayer::Unload(void)
 {
 	//メッシュの破棄
@@ -131,43 +135,49 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 	//モデル情報を設定
 	CModel::BindModel(model);
 
+	//位置の設定
 	m_pos = pos;
 
 	switch (m_nPlayerNum)
 	{
+	//1Pだった場合
 	case 0:
-		//１Ｐのライフゲージ
+		//1Pのライフゲージ
 		if (m_pLife[0] == NULL)
 		{
-			m_pLife[0] = CLife::Create(D3DXVECTOR3(130.0f,30.0f, 0.0f),
-				D3DXVECTOR3(MAX_LIFE, LIFE_SIZE_PLAYER_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255),
+			//1P側に体力ゲージを生成
+			m_pLife[0] = CLife::Create(D3DXVECTOR3(200.0f, 100.0f, 0.0f),
+				D3DXVECTOR3(MAX_LIFE, 20.0f, 0.0f), D3DCOLOR_RGBA(255, 140, 0, 255),
 				CLife::LIFETYPE_FAST_PLAYER);
 		}
 
-		//１Ｐのライフゲージ
+		//1Pのライフゲージ
 		if (m_pLife[1] == NULL)
 		{
-			m_pLife[1] = CLife::Create(D3DXVECTOR3(860.0f, 65.0f, 0.0f),
-				D3DXVECTOR3(MAX_LIFE, LIFE_SIZE_ENEMY_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255),
-				CLife::LIFETYPE_SECOND_PLAYER);
+			//2P側に体力ゲージを生成
+			m_pLife[1] = CLife::Create(D3DXVECTOR3(750.0f, 150.0f, 0.0f),
+				D3DXVECTOR3(MAX_LIFE, 20.0f, 0.0f), D3DCOLOR_RGBA(60, 179, 113, 255),
+				CLife::LIFETYPE_FAST_PLAYER);
 		}
 		break;
 
+	//2Pだった場合
 	case 1:
-		//２Ｐのライフゲージ
+		//１Ｐのライフゲージ
 		if (m_pLife[0] == NULL)
 		{
-			m_pLife[0] = CLife::Create(D3DXVECTOR3(130.0f, 65.0f, 0.0f),
-				D3DXVECTOR3(MAX_LIFE, LIFE_SIZE_ENEMY_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255),
+			//1P側に体力ゲージを生成
+			m_pLife[0] = CLife::Create(D3DXVECTOR3(200.0f, 150.0f, 0.0f),
+				D3DXVECTOR3(MAX_LIFE, 20.0f, 0.0f), D3DCOLOR_RGBA(60, 179, 113, 255),
 				CLife::LIFETYPE_SECOND_PLAYER);
 		}
 
-		//２Ｐのライフゲージ
-		if (m_pLife[1] == NULL)
+		//１Ｐのライフゲージ		if (m_pLife[1] == NULL)
 		{
-			m_pLife[1] = CLife::Create(D3DXVECTOR3(860.0f, 30.0f, 0.0f),
-				D3DXVECTOR3(MAX_LIFE, LIFE_SIZE_PLAYER_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255),
-				CLife::LIFETYPE_FAST_PLAYER);
+			//2P側に体力ゲージを生成
+			m_pLife[1] = CLife::Create(D3DXVECTOR3(750.0f, 100.0f, 0.0f),
+				D3DXVECTOR3(MAX_LIFE, 20.0f, 0.0f), D3DCOLOR_RGBA(255, 140, 0, 255),
+				CLife::LIFETYPE_SECOND_PLAYER);
 		}
 		break;
 
@@ -176,13 +186,10 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 		break;
 	}
 
-
-//	CLife::Create(D3DXVECTOR3(300, 200.0f, 0.0f), D3DXVECTOR3(MAX_LIFE, 20.0f, 0.0f), D3DCOLOR_RGBA(60, 179, 113, 255), CLife::LIFETYPE_FAST_PLAYER);
-
-
 	// 初期化
 	CModel::Init(m_pos, rot);
 
+	//オブジェクトタイプの設定
 	SetObjType(CScene::OBJTYPE_PLAYER);
 
 	return S_OK;
