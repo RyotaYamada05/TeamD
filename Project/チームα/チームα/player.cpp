@@ -15,8 +15,9 @@
 #include "input.h"
 #include "bullet.h"
 #include "joypad.h"
+#include "camera.h"
 #include "life.h"
-
+#include "game.h"
 //=============================================================================
 // マクロ定義
 //=============================================================================
@@ -109,6 +110,8 @@ CPlayer::CPlayer()
 	m_bJump = false;
 	m_bDush = false;
 	m_bDushInter = false;
+	m_nPlayerNum = 0;						// プレイヤーの番号
+
 }
 
 //=============================================================================
@@ -160,7 +163,7 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 
 	//2Pだった場合
 	case 1:
-		//2Pのライフゲージ
+		//１Ｐのライフゲージ
 		if (m_pLife[0] == NULL)
 		{
 			//1P側に体力ゲージを生成
@@ -169,8 +172,7 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 				CLife::LIFETYPE_SECOND_PLAYER);
 		}
 
-		//2Pのライフゲージ
-		if (m_pLife[1] == NULL)
+		//１Ｐのライフゲージ		if (m_pLife[1] == NULL)
 		{
 			//2P側に体力ゲージを生成
 			m_pLife[1] = CLife::Create(D3DXVECTOR3(750.0f, 100.0f, 0.0f),
@@ -186,7 +188,7 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 
 	// 初期化
 	CModel::Init(m_pos, rot);
-	
+
 	//オブジェクトタイプの設定
 	SetObjType(CScene::OBJTYPE_PLAYER);
 
@@ -200,6 +202,9 @@ void CPlayer::Uninit(void)
 {
 	// 終了処理
 	CModel::Uninit();
+
+	//ライフのアンロード
+	CLife::Unload();
 }
 
 //=============================================================================
@@ -253,7 +258,6 @@ void CPlayer::Update(void)
 		break;
 	}
 
-
 	// 座標情報を与える
 	CModel::SetPos(m_pos);
 }
@@ -302,19 +306,39 @@ void CPlayer::Walk(void)
 
 	if (js.lX != 0.0f || js.lY != 0)
 	{
-		float fAngle = atan2f((float)js.lX, (float)js.lY);
+		float fAngle = CGame::GetCamera(m_nPlayerNum)->Getφ();
 
-		if (m_nPlayerNum == 0)
+		if (js.lX < -50.0f)
 		{
 			// ジョイパッド操作
-			m_pos.x += sinf(-fAngle)* PLAYER_SPEED;
-			m_pos.z += cosf(-fAngle)* PLAYER_SPEED;
+			m_pos.x += sinf(fAngle)* PLAYER_SPEED;
+			m_pos.z -= cosf(fAngle)* PLAYER_SPEED;
+		}
+		else if (js.lX > 50.0f)
+		{
+			// ジョイパッド操作
+			m_pos.x -= sinf(fAngle)* PLAYER_SPEED;
+			m_pos.z += cosf(fAngle)* PLAYER_SPEED;
 		}
 		else
 		{
+
+		}
+
+		if (js.lY < -50.0f)
+		{
 			// ジョイパッド操作
-			m_pos.x += sinf(+fAngle)* PLAYER_SPEED;
-			m_pos.z += cosf(+fAngle)* -PLAYER_SPEED;
+			m_pos.x -= cosf(fAngle)* PLAYER_SPEED;
+			m_pos.z -= sinf(fAngle)* PLAYER_SPEED;
+		}
+		else if (js.lY > 50.0f)
+		{
+			// ジョイパッド操作
+			m_pos.x += cosf(fAngle)* PLAYER_SPEED;
+			m_pos.z += sinf(fAngle)* PLAYER_SPEED;
+		}
+		else
+		{
 
 		}
 	}
@@ -505,4 +529,9 @@ void CPlayer::Dush(void)
 CLife * CPlayer::GetLife(int nNumber)
 {
 	return m_pLife[nNumber];
+}
+
+D3DXVECTOR3 CPlayer::GetPos(void)
+{
+	return m_pos;
 }

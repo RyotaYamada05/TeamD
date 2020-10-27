@@ -16,8 +16,11 @@
 //=============================================================================
 //マクロ定義
 //=============================================================================
-#define MAX_LIFE  (400)	//ライフの最大数
-#define HALF_LIFE (200) //ライフの半分
+#define MAX_LIFE			(400)	//ライフの最大数(ライフのXサイズ)
+#define HALF_LIFE			(200)	//ライフの半分
+#define LIFE_SIZE_PLAYER_Y	(20)	//プレイヤーライフのYサイズ
+#define LIFE_SIZE_ENEMY_Y	(10)	//エネミーライフのYサイズ
+
 //=============================================================================
 //クラス宣言
 //=============================================================================
@@ -27,7 +30,7 @@ public:
 	//１Ｐと２Ｐライフのタイプ分け
 	typedef enum
 	{
-		LIFETYPE_NONE = 0,
+		LIFETYPE_NONE = -1,
 		LIFETYPE_FAST_PLAYER,		//１Ｐ側表示
 		LIFETYPE_SECOND_PLAYER,		//２Ｐ相手側表示
 		LIFETYPE_PLAYER_MAX
@@ -45,7 +48,7 @@ public:
 	void Decrease(int CounterLife,bool Life, LIFETYPE type);
 
 private:
-	static LPDIRECT3DTEXTURE9 m_pTexture;
+	static LPDIRECT3DTEXTURE9 m_apTexture[LIFETYPE_PLAYER_MAX];
 	D3DXVECTOR3 m_pos;	//位置
 	D3DXVECTOR3 m_size;	//サイズ
 	D3DXCOLOR   m_col;	//カラー

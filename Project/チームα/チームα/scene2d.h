@@ -28,16 +28,20 @@ public:
 	void Draw(void);
 	void BindTexture(LPDIRECT3DTEXTURE9 pTextuer) { m_pTextuer = pTextuer; }
 	void SetPos(const D3DXVECTOR3 pos) { m_pos = pos; }
+	void SetPolygonSize(const D3DXVECTOR3 nSize) { m_PolygonSize = nSize; }
+	void SetCol(D3DXCOLOR col);
+
 	D3DXVECTOR3 GetPos(void)const { return m_pos; }
 	D3DXVECTOR3 GetSize(void)const { return m_PolygonSize; }
-	void SetPolygonSize(const D3DXVECTOR3 nSize) { m_PolygonSize = nSize; }
+	D3DXCOLOR   GetCol(void) { return m_col; }
 	
 private:
 
-	LPDIRECT3DTEXTURE9 m_pTextuer;       // テクスチャへのポインタ
-	LPDIRECT3DVERTEXBUFFER9 m_pVetxBuff; // 頂点バッファへのポインタ
-	D3DXVECTOR3 m_pos;                   // ポリゴンの位置
-	D3DXVECTOR3 m_PolygonSize;           // ポリゴンのサイズ
+	LPDIRECT3DTEXTURE9 m_pTextuer;			// テクスチャへのポインタ
+	LPDIRECT3DVERTEXBUFFER9 m_pVetxBuff;	 // 頂点バッファへのポインタ
+	D3DXVECTOR3 m_pos;						// ポリゴンの位置
+	D3DXVECTOR3 m_PolygonSize;				// ポリゴンのサイズ
+	D3DXCOLOR   m_col;						// ポリゴンのカラー	
 };
 
 #endif // !_SCENE2D_H_
