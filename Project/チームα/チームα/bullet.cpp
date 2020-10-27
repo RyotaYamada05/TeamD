@@ -12,6 +12,7 @@
 //=============================================================================
 //マクロ定義
 //=============================================================================
+
 #define BULLET_LIFE 600	//バレットライフ 
 #define BULLET_ATK 20	//攻撃力
 #define BULLET_SPEED 10.0f	//速度
@@ -88,6 +89,7 @@ HRESULT CBullet::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size, const BULLE
 	
 	//オブジェクトタイプを設定
 	SetObjType(CScene::OBJTYPE_BULLET);
+
 
 	switch (m_user)
 	{
@@ -173,7 +175,7 @@ void CBullet::Draw(void)
 //=============================================================================
 bool CBullet::Collision(void)
 {
-	//位置の取得
+	
 	D3DXVECTOR3 targetPos = m_pTargetPL->GetPos();
 
 	if (targetPos.x >= m_pos.x - m_size.x / 2 &&

@@ -5,10 +5,13 @@
 //
 //================================================
 
+//================================================
+// インクルード
+//================================================
+
 #include "ui.h"
 #include "manager.h"
 #include "renderer.h"
-#include "keyboard.h"
 
 //================================================
 //静的メンバ変数宣言
@@ -45,7 +48,7 @@ HRESULT CUi::Load(void)
 
 	//タイムの下
 	D3DXCreateTextureFromFile(pDevice,
-		"data/Texture/Time001.png", //ファイルの読み込み
+		"data/Texture/Time002.png", //ファイルの読み込み
 		&m_apTexture[UITYPE_TIME]);
 
 	//プレイヤー文字
@@ -151,20 +154,6 @@ void CUi::Uninit(void)
 void CUi::Update(void)
 {
 	CScene2d::Update();
-
-	// キーボード更新
-	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
-
-	//Hキー押したら
-	if (pKeyboard->GetPress(DIK_H))
-	{
-		Create(D3DXVECTOR3(320.0f, 660.0f, 0.0f), D3DXVECTOR3(UI_HIT_SIZE_X, UI_HIT_SIZE_Y, 0.0f), CUi::UITYPE_HIT);
-	}
-	//Jキー押したら
-	if (pKeyboard->GetPress(DIK_J))
-	{
-		Create(D3DXVECTOR3(960.0f, 660.0f, 0.0f), D3DXVECTOR3(UI_HIT_SIZE_X, UI_HIT_SIZE_Y, 0.0f), CUi::UITYPE_HIT);
-	}
 
 	//Hit!!がでたとき
 	UiHit();

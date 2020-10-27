@@ -77,6 +77,7 @@ HRESULT CCamera::Init(void)
 		m_fMove = 5.0f;
 		m_fDistance = DISTANCE;
 		m_rot.y = 0.0f;
+
 		m_fθ = D3DXToRadian(75.0f);
 		m_fφ = D3DXToRadian(0.0f);
 		m_posR = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	//注視点は全て0座標を見る
@@ -84,6 +85,7 @@ HRESULT CCamera::Init(void)
 		m_posV.x = m_posR.x + m_fDistance* sinf(m_fθ) * cosf(m_fφ);
 		m_posV.y = m_posR.z + m_fDistance* cosf(m_fθ);
 		m_posV.z = m_posR.y + m_fDistance* sinf(m_fθ) * sinf(m_fφ);
+
 
 		// ビューポートの設定
 		//D3DVIEWPORT9 view_port[2];
@@ -96,6 +98,7 @@ HRESULT CCamera::Init(void)
 		//	m_posV = D3DXVECTOR3(0.0f, 0.0f, -m_fDistance);	//位置zはm_fDistance分-方向へ設定する
 		//	m_posR = D3DXVECTOR3(0.0f, 0.0f, 20.0f);	//注視点は全て0座標を見る
 		//	m_posU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+
 
 		//	m_fDistance = sqrtf(
 		//		powf((m_posV.x - m_posR.x), 2) +
@@ -110,14 +113,17 @@ HRESULT CCamera::Init(void)
 		//	m_posR = D3DXVECTOR3(0.0f, 0.0f, 20.0f);	//注視点は全て0座標を見る
 		//	m_posU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 
+
 		//	m_fDistance = sqrtf(
 		//		powf((m_posV.x - m_posR.x), 2) +
 		//		powf((m_posV.z - m_posR.z), 2));
 		//}
 
+
 		//m_fDistance = sqrtf(
 		//	powf((m_posV.x - m_posR.x), 2) +
 		//	powf((m_posV.z - m_posR.z), 2));
+
 
 		break;
 
@@ -132,6 +138,7 @@ HRESULT CCamera::Init(void)
 		m_posV.x = m_posR.x + m_fDistance* sinf(m_fθ) * cosf(m_fφ);
 		m_posV.y = m_posR.z + m_fDistance* cosf(m_fθ);
 		m_posV.z = m_posR.y + m_fDistance* sinf(m_fθ) * sinf(m_fφ);
+
 
 		break;
 
@@ -155,8 +162,10 @@ void CCamera::Uninit(void)
 //=============================================================================
 void CCamera::Update(void)
 {
+
 	if (CGame::GetPlayer(m_nCameraNum) != NULL)
 	{
+
 		D3DXVECTOR3 pPlayerPos1 = CGame::GetPlayer(m_nCameraNum)->GetPos();
 		int nCamera2p = 0;
 
@@ -169,6 +178,7 @@ void CCamera::Update(void)
 			nCamera2p = 0;
 		}
 
+	
 		D3DXVECTOR3 pPlayerPos2 = CGame::GetPlayer(nCamera2p)->GetPos();
 		D3DXVECTOR3 pPlayerPos2rot;
 

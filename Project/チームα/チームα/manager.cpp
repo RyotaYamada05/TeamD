@@ -27,6 +27,8 @@
 #include "bg.h"
 #include "joypad.h"
 #include "life.h"
+#include "ui.h"
+#include "charge.h"
 
 //=============================================================================
 //Ã“Iƒƒ“ƒo•Ï”éŒ¾
@@ -231,9 +233,10 @@ void CManager::LoadAll(void)
 	CTitle::Load();
 	CResult::Load();
 	CMeshField::Load();
-	CBg::Load();
+	CBg::Load();	
 	CLife::Load();
-
+	CUi::Load();
+	CCharge::Load();
 }
 
 //=============================================================================
@@ -246,6 +249,9 @@ void CManager::UnLoadAll(void)
 	CPlayer::Unload();
 	CMeshField::UnLoad();
 	CBg::UnLoad();
+	CLife::Unload();
+	CUi::Unload();
+	CCharge::Unload();
 }
 
 //=============================================================================

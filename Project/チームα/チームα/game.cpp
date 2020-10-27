@@ -20,12 +20,10 @@
 #include "meshfield.h"
 #include "bg.h"
 #include "joypad.h"
-
 #include "time.h"
-#include "gauge.h"
-#include "life.h"
 #include "ui.h"
 
+#include "charge.h"
 //=======================================================================================
 // static初期化
 //=======================================================================================
@@ -33,8 +31,9 @@ CCamera *CGame::m_apCamera[MAX_PLAYER] = {};			// カメラクラスのポインタ変数
 CLight *CGame::m_pLight = NULL;						// ライトクラスのポインタ変数
 CMeshField *CGame::m_pMeshField = NULL;				// メッシュフィールド
 CBg *CGame::m_pBg = NULL;							// 背景のポインタ
-CPlayer *CGame::m_apPlayer[MAX_PLAYER] = {};			// プレイヤーのポインタ
-
+CPlayer *CGame::m_apPlayer[MAX_PLAYER] = {};		// プレイヤーのポインタ
+CTime *CGame::m_pTime = NULL;						// タイムのポインタ
+CUi *CGame::m_pUi = NULL;							// uiのポインタ
 //=======================================================================================
 // コンストラクタ
 //=======================================================================================
@@ -87,24 +86,27 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 		}
 	}
 
-	//Uiのロード
-	CUi::Load();
-	//UIライフゲージの生成
-	CUi::Create(D3DXVECTOR3(330.0f, 30.0f, 0.0f), D3DXVECTOR3(UI_LIFE_SIZE_X / 2, UI_LIFE_SIZE_PLAYERY, 0.0f), CUi::UITTYPE_LIFE);
-	CUi::Create(D3DXVECTOR3(1060.0f, 30.0f, 0.0f), D3DXVECTOR3(UI_LIFE_SIZE_X / 2, UI_LIFE_SIZE_PLAYERY, 0.0f), CUi::UITTYPE_LIFE);
+	//ui
+	if (m_pUi == NULL)
+	{
+		//UIライフゲージ(外枠)の生成
+		CUi::Create(D3DXVECTOR3(330.0f, 30.0f, 0.0f), D3DXVECTOR3(UI_LIFE_SIZE_X / 2, UI_LIFE_SIZE_PLAYERY, 0.0f), CUi::UITTYPE_LIFE);
+		CUi::Create(D3DXVECTOR3(1060.0f, 30.0f, 0.0f), D3DXVECTOR3(UI_LIFE_SIZE_X / 2, UI_LIFE_SIZE_PLAYERY, 0.0f), CUi::UITTYPE_LIFE);
 
-	CUi::Create(D3DXVECTOR3(330.0f, 65.0f, 0.0f), D3DXVECTOR3(UI_LIFE_SIZE_X / 2, UI_LIFE_SIZE_ENEMYY, 0.0f), CUi::UITTYPE_LIFE);
-	CUi::Create(D3DXVECTOR3(1060.0f, 65.0f, 0.0f), D3DXVECTOR3(UI_LIFE_SIZE_X / 2, UI_LIFE_SIZE_ENEMYY, 0.0f), CUi::UITTYPE_LIFE);
+		CUi::Create(D3DXVECTOR3(330.0f, 65.0f, 0.0f), D3DXVECTOR3(UI_LIFE_SIZE_X / 2, UI_LIFE_SIZE_ENEMYY, 0.0f), CUi::UITTYPE_LIFE);
+		CUi::Create(D3DXVECTOR3(1060.0f, 65.0f, 0.0f), D3DXVECTOR3(UI_LIFE_SIZE_X / 2, UI_LIFE_SIZE_ENEMYY, 0.0f), CUi::UITTYPE_LIFE);
 
-	//UIのタイム生成
-	CUi::Create(D3DXVECTOR3(640.0f, 50.0f, 0.0f), D3DXVECTOR3(UI_TIME_SIZE_X, UI_TIME_SIZE_Y, 0.0f), CUi::UITYPE_TIME);
+		//UIのタイム生成
+		CUi::Create(D3DXVECTOR3(640.0f, 50.0f, 0.0f), D3DXVECTOR3(UI_TIME_SIZE_X, UI_TIME_SIZE_Y, 0.0f), CUi::UITYPE_TIME);
 
-	//UIのプレイヤー・エネミー文字の生成
-	CUi::Create(D3DXVECTOR3(70.0f, 30.0f, 0.0f), D3DXVECTOR3(UI_PLAYER_SIZE_X, UI_PLAYER_SIZE_Y, 0.0f), CUi::UITYPE_PLAYER);
-	CUi::Create(D3DXVECTOR3(75.0f, 65.0f, 0.0f), D3DXVECTOR3(UI_ENEMY_SIZE_X, UI_ENEMY_SIZE_Y, 0.0f), CUi::UITYPE_ENEMY);
+		//UIのプレイヤー・エネミー文字の生成
+		CUi::Create(D3DXVECTOR3(70.0f, 30.0f, 0.0f), D3DXVECTOR3(UI_PLAYER_SIZE_X, UI_PLAYER_SIZE_Y, 0.0f), CUi::UITYPE_PLAYER);
+		CUi::Create(D3DXVECTOR3(75.0f, 65.0f, 0.0f), D3DXVECTOR3(UI_ENEMY_SIZE_X, UI_ENEMY_SIZE_Y, 0.0f), CUi::UITYPE_ENEMY);
 
-	CUi::Create(D3DXVECTOR3(800.0f, 30.0f, 0.0f), D3DXVECTOR3(UI_PLAYER_SIZE_X, UI_PLAYER_SIZE_Y, 0.0f), CUi::UITYPE_PLAYER);
-	CUi::Create(D3DXVECTOR3(805.0f, 65.0f, 0.0f), D3DXVECTOR3(UI_ENEMY_SIZE_X, UI_ENEMY_SIZE_Y, 0.0f), CUi::UITYPE_ENEMY);
+		CUi::Create(D3DXVECTOR3(800.0f, 30.0f, 0.0f), D3DXVECTOR3(UI_PLAYER_SIZE_X, UI_PLAYER_SIZE_Y, 0.0f), CUi::UITYPE_PLAYER);
+		CUi::Create(D3DXVECTOR3(805.0f, 65.0f, 0.0f), D3DXVECTOR3(UI_ENEMY_SIZE_X, UI_ENEMY_SIZE_Y, 0.0f), CUi::UITYPE_ENEMY);
+
+	}
 
 	// プレイヤーの生成
 	if (m_apPlayer[0] == NULL)
@@ -128,9 +130,11 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 		m_pBg = CBg::Create();
 	}
 
-	//タイム生成
-	CTime::Create(D3DXVECTOR3(585.0f, 55.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-
+	//タイム
+	if (m_pTime == NULL)
+	{
+		CTime::Create(D3DXVECTOR3(TIME_POS_X, TIME_POS_Y, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	}
 
 	//デバイス情報の取得
 	LPDIRECT3DDEVICE9 pD3DDevice = CManager::GetRenderer()->GetDevice();
@@ -161,8 +165,6 @@ void CGame::Uninit(void)
 			m_apCamera[nCount] = NULL;
 		}
 	}
-	//ui
-	CUi::Unload();
 
 	// メッシュフィールド
 	if (m_pMeshField != NULL)
@@ -245,4 +247,20 @@ CLight * CGame::GetLight(void)
 CPlayer * CGame::GetPlayer(int nCount)
 {
 	return m_apPlayer[nCount];
+}
+
+//=======================================================================================
+// タイムの情報
+//=======================================================================================
+CTime * CGame::GetTime(void)
+{
+	return m_pTime;
+}
+
+//=======================================================================================
+// uiの情報
+//=======================================================================================
+CUi * CGame::GetUi(void)
+{
+	return m_pUi;
 }

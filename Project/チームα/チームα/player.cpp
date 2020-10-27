@@ -18,6 +18,7 @@
 #include "camera.h"
 #include "life.h"
 #include "game.h"
+#include "charge.h"
 //=============================================================================
 // マクロ定義
 //=============================================================================
@@ -103,6 +104,7 @@ CPlayer::CPlayer()
 {
 	pScore = NULL;
 	memset(m_pLife, 0, sizeof(m_pLife));
+	m_pCharge = NULL;
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_nDushFlame = 0;
@@ -138,6 +140,7 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 	//位置の設定
 	m_pos = pos;
 
+
 	switch (m_nPlayerNum)
 	{
 	//1Pだった場合
@@ -146,39 +149,55 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 		if (m_pLife[0] == NULL)
 		{
 			//1P側に体力ゲージを生成
-			m_pLife[0] = CLife::Create(D3DXVECTOR3(200.0f, 100.0f, 0.0f),
-				D3DXVECTOR3(MAX_LIFE, 20.0f, 0.0f), D3DCOLOR_RGBA(255, 140, 0, 255),
+			m_pLife[0] = CLife::Create(D3DXVECTOR3(LIFE_POS_RIGHT_X, LIFE_POS_UP_Y, 0.0f),
+				D3DXVECTOR3(MAX_LIFE, LIFE_SIZE_PLAYER_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255),
 				CLife::LIFETYPE_FAST_PLAYER);
 		}
 
 		//1Pのライフゲージ
 		if (m_pLife[1] == NULL)
 		{
+
 			//2P側に体力ゲージを生成
-			m_pLife[1] = CLife::Create(D3DXVECTOR3(750.0f, 150.0f, 0.0f),
-				D3DXVECTOR3(MAX_LIFE, 20.0f, 0.0f), D3DCOLOR_RGBA(60, 179, 113, 255),
-				CLife::LIFETYPE_FAST_PLAYER);
+			m_pLife[1] = CLife::Create(D3DXVECTOR3(LIFE_POS_LEFT_X, LIFE_POS_DOWN_Y, 0.0f),
+				D3DXVECTOR3(MAX_LIFE, LIFE_SIZE_ENEMY_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255),
+				CLife::LIFETYPE_SECOND_PLAYER);
+		}
+
+		//１Ｐの弾のチャージゲージ
+		if (m_pCharge == NULL)
+		{
+			//2P側に体力ゲージを生成
+			m_pCharge = CCharge::Create(D3DXVECTOR3(CHARGE_POS_LEFT_X, CHARGE_POS_Y, 0.0f),
+				D3DXVECTOR3(MAX_CHARGE, CHARGE_SIZE_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255));
 		}
 		break;
 
 	//2Pだった場合
 	case 1:
-		//１Ｐのライフゲージ
+		//２Ｐのライフゲージ
 		if (m_pLife[0] == NULL)
 		{
 			//1P側に体力ゲージを生成
-			m_pLife[0] = CLife::Create(D3DXVECTOR3(200.0f, 150.0f, 0.0f),
-				D3DXVECTOR3(MAX_LIFE, 20.0f, 0.0f), D3DCOLOR_RGBA(60, 179, 113, 255),
+			m_pLife[0] = CLife::Create(D3DXVECTOR3(LIFE_POS_RIGHT_X, LIFE_POS_DOWN_Y, 0.0f),
+				D3DXVECTOR3(MAX_LIFE, LIFE_SIZE_ENEMY_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255),				
 				CLife::LIFETYPE_SECOND_PLAYER);
 		}
 
 		//１Ｐのライフゲージ		if (m_pLife[1] == NULL)
 		{
 			//2P側に体力ゲージを生成
-			m_pLife[1] = CLife::Create(D3DXVECTOR3(750.0f, 100.0f, 0.0f),
-				D3DXVECTOR3(MAX_LIFE, 20.0f, 0.0f), D3DCOLOR_RGBA(255, 140, 0, 255),
-				CLife::LIFETYPE_SECOND_PLAYER);
+			m_pLife[1] = CLife::Create(D3DXVECTOR3(LIFE_POS_LEFT_X, LIFE_POS_UP_Y, 0.0f),
+				D3DXVECTOR3(MAX_LIFE, LIFE_SIZE_PLAYER_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255),
+				CLife::LIFETYPE_FAST_PLAYER);		}
+
+		//２Ｐの弾のチャージゲージ
+		if (m_pCharge == NULL)
+		{
+			m_pCharge = CCharge::Create(D3DXVECTOR3(CHARGE_POS_RIGHT_X, CHARGE_POS_Y, 0.0f),
+				D3DXVECTOR3(MAX_CHARGE, CHARGE_SIZE_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255));
 		}
+
 		break;
 
 			
@@ -186,7 +205,7 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 		break;
 	}
 
-	// 初期化
+	 //初期化	
 	CModel::Init(m_pos, rot);
 
 	//オブジェクトタイプの設定
@@ -229,6 +248,12 @@ void CPlayer::Update(void)
 		m_pos.y += m_move.y;		// 落下
 	}
 
+	D3DXVECTOR3 size = m_pLife[0]->GetSize();
+	if (size.x <= 0)
+	{
+		Uninit();
+		return;
+	}
 	//位置へ移動量を加算
 	m_pos += m_move;
 
@@ -244,6 +269,8 @@ void CPlayer::Update(void)
 		{
 			//バレットの生成
 			CBullet::Create(m_pos, D3DXVECTOR3(100.0f, 100.0f, 0.0f), CBullet::BULLET_USER_PL1);
+			//弾うったらゲージを減らす
+			m_pCharge->Reduce(50, true);
 		}
 		break;
 
@@ -254,6 +281,8 @@ void CPlayer::Update(void)
 		{
 			//バレットの生成
 			CBullet::Create(m_pos, D3DXVECTOR3(100.0f, 100.0f, 0.0f), CBullet::BULLET_USER_PL2);
+			//弾うったらゲージを減らす
+			m_pCharge->Reduce(50, true);
 		}
 		break;
 	}
@@ -311,6 +340,7 @@ void CPlayer::Walk(void)
 		if (js.lX < -50.0f)
 		{
 			// ジョイパッド操作
+
 			m_pos.x += sinf(fAngle)* PLAYER_SPEED;
 			m_pos.z -= cosf(fAngle)* PLAYER_SPEED;
 		}
@@ -328,6 +358,7 @@ void CPlayer::Walk(void)
 		if (js.lY < -50.0f)
 		{
 			// ジョイパッド操作
+
 			m_pos.x -= cosf(fAngle)* PLAYER_SPEED;
 			m_pos.z -= sinf(fAngle)* PLAYER_SPEED;
 		}
@@ -534,4 +565,9 @@ CLife * CPlayer::GetLife(int nNumber)
 D3DXVECTOR3 CPlayer::GetPos(void)
 {
 	return m_pos;
+}
+
+CCharge * CPlayer::GetCgarge(void)
+{
+	return m_pCharge;
 }
