@@ -25,7 +25,8 @@ class CLight;
 class CMeshField;
 class CBg;
 class CPlayer;
-class CLife;
+class CTime;
+class CUi;
 //***************************************************************************************
 // インクルードファイル
 //***************************************************************************************
@@ -38,6 +39,8 @@ public:
 	static CCamera *GetCamera(int nCount);
 	static CLight *GetLight(void);
 	static CPlayer *GetPlayer(int nCount);
+	static CTime *GetTime(void);
+	static CUi *GetUi(void);
 
 	HRESULT Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size);
 	void Uninit(void);
@@ -45,11 +48,13 @@ public:
 	void Draw(void);
 
 private:
-	static CCamera *m_pCamera[MAX_PLAYER];					// カメラのポインタ
+	static CCamera *m_pCamera[MAX_PLAYER];		// カメラのポインタ
 	static CLight *m_pLight;					// ライトのポインタ
 	static CMeshField *m_pMeshField;			// メッシュフィールドのポインタ
 	static CBg *m_pBg;							// 背景のポインタ
 	static CPlayer *m_apPlayer[MAX_PLAYER];		// プレイヤーのポインタ
+	static CTime *m_pTime;						// タイムのポインタ
+	static CUi *m_pUi;							// uiのポインタ
 	LPD3DXFONT m_pFont;
 };
 

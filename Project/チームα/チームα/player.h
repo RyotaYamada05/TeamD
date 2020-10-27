@@ -23,7 +23,7 @@
 //=============================================================================
 class CScore;
 class CLife;
-
+class CCharge;
 //=============================================================================
 // ターンクラス
 //=============================================================================
@@ -49,13 +49,13 @@ public:
 	void Fall(void);												// 急降下
 	void Dush(void);												// ダッシュ
 
-	CLife *GetLife(int nNumber);											// ライフの情報
-
-
+	CLife *GetLife(int nNumber);									// ライフの情報
+	CCharge *GetCgarge(void);										// チャージのポインタ
 
 private:
 	CScore *pScore;							// スコアの情報
 	CLife *m_pLife[LIFE_NUM];				// ライフのポインタ
+	CCharge *m_pCharge;						// チャージのポインタ
 	D3DXVECTOR3 m_pos;						// 座標
 	D3DXVECTOR3 m_move;						// 移動
 	int m_nDushFlame;						// ダッシュのフレーム

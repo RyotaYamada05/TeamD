@@ -16,7 +16,7 @@
 #include "bullet.h"
 #include "joypad.h"
 #include "life.h"
-
+#include "charge.h"
 //=============================================================================
 // ƒ}ƒNƒ’è‹`
 //=============================================================================
@@ -98,6 +98,7 @@ CPlayer::CPlayer()
 {
 	pScore = NULL;
 	memset(m_pLife, 0, sizeof(m_pLife));
+	m_pCharge = NULL;
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_nDushFlame = 0;
@@ -130,16 +131,13 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 
 	m_pos = pos;
 
-	//ƒ‰ƒCƒt‚Ìƒ[ƒh
-	CLife::Load();
-
 	switch (m_nPlayerNum)
 	{
 	case 0:
 		//‚P‚o‚Ìƒ‰ƒCƒtƒQ[ƒW
 		if (m_pLife[0] == NULL)
 		{
-			m_pLife[0] = CLife::Create(D3DXVECTOR3(130.0f,30.0f, 0.0f),
+			m_pLife[0] = CLife::Create(D3DXVECTOR3(LIFE_POS_RIGHT_X, LIFE_POS_UP_Y, 0.0f),
 				D3DXVECTOR3(MAX_LIFE, LIFE_SIZE_PLAYER_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255),
 				CLife::LIFETYPE_FAST_PLAYER);
 		}
@@ -147,9 +145,16 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 		//‚P‚o‚Ìƒ‰ƒCƒtƒQ[ƒW
 		if (m_pLife[1] == NULL)
 		{
-			m_pLife[1] = CLife::Create(D3DXVECTOR3(860.0f, 65.0f, 0.0f),
+			m_pLife[1] = CLife::Create(D3DXVECTOR3(LIFE_POS_LEFT_X, LIFE_POS_DOWN_Y, 0.0f),
 				D3DXVECTOR3(MAX_LIFE, LIFE_SIZE_ENEMY_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255),
 				CLife::LIFETYPE_SECOND_PLAYER);
+		}
+
+		//‚P‚o‚Ì’e‚Ìƒ`ƒƒ[ƒWƒQ[ƒW
+		if (m_pCharge == NULL)
+		{
+			m_pCharge = CCharge::Create(D3DXVECTOR3(CHARGE_POS_LEFT_X, CHARGE_POS_Y, 0.0f),
+				D3DXVECTOR3(MAX_CHARGE, CHARGE_SIZE_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255));
 		}
 		break;
 
@@ -157,7 +162,7 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 		//‚Q‚o‚Ìƒ‰ƒCƒtƒQ[ƒW
 		if (m_pLife[0] == NULL)
 		{
-			m_pLife[0] = CLife::Create(D3DXVECTOR3(130.0f, 65.0f, 0.0f),
+			m_pLife[0] = CLife::Create(D3DXVECTOR3(LIFE_POS_RIGHT_X, LIFE_POS_DOWN_Y, 0.0f),
 				D3DXVECTOR3(MAX_LIFE, LIFE_SIZE_ENEMY_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255),
 				CLife::LIFETYPE_SECOND_PLAYER);
 		}
@@ -165,10 +170,18 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 		//‚Q‚o‚Ìƒ‰ƒCƒtƒQ[ƒW
 		if (m_pLife[1] == NULL)
 		{
-			m_pLife[1] = CLife::Create(D3DXVECTOR3(860.0f, 30.0f, 0.0f),
+			m_pLife[1] = CLife::Create(D3DXVECTOR3(LIFE_POS_LEFT_X, LIFE_POS_UP_Y, 0.0f),
 				D3DXVECTOR3(MAX_LIFE, LIFE_SIZE_PLAYER_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255),
 				CLife::LIFETYPE_FAST_PLAYER);
 		}
+
+		//‚Q‚o‚Ì’e‚Ìƒ`ƒƒ[ƒWƒQ[ƒW
+		if (m_pCharge == NULL)
+		{
+			m_pCharge = CCharge::Create(D3DXVECTOR3(CHARGE_POS_RIGHT_X, CHARGE_POS_Y, 0.0f),
+				D3DXVECTOR3(MAX_CHARGE, CHARGE_SIZE_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255));
+		}
+
 		break;
 
 			
@@ -177,10 +190,7 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 	}
 
 
-//	CLife::Create(D3DXVECTOR3(300, 200.0f, 0.0f), D3DXVECTOR3(MAX_LIFE, 20.0f, 0.0f), D3DCOLOR_RGBA(60, 179, 113, 255), CLife::LIFETYPE_FAST_PLAYER);
-
-
-	// ‰Šú‰»
+// ‰Šú‰»
 	CModel::Init(m_pos, rot);
 
 	SetObjType(CScene::OBJTYPE_PLAYER);
@@ -237,6 +247,8 @@ void CPlayer::Update(void)
 		{
 			//ƒoƒŒƒbƒg‚Ì¶¬
 			CBullet::Create(m_pos, D3DXVECTOR3(100.0f, 100.0f, 0.0f), CBullet::BULLET_USER_PL1);
+			//’e‚¤‚Á‚½‚çƒQ[ƒW‚ðŒ¸‚ç‚·
+			m_pCharge->Reduce(50, true);
 		}
 		break;
 
@@ -247,6 +259,8 @@ void CPlayer::Update(void)
 		{
 			//ƒoƒŒƒbƒg‚Ì¶¬
 			CBullet::Create(m_pos, D3DXVECTOR3(100.0f, 100.0f, 0.0f), CBullet::BULLET_USER_PL2);
+			//’e‚¤‚Á‚½‚çƒQ[ƒW‚ðŒ¸‚ç‚·
+			m_pCharge->Reduce(50, true);
 		}
 		break;
 	}
@@ -502,4 +516,9 @@ void CPlayer::Dush(void)
 CLife * CPlayer::GetLife(int nNumber)
 {
 	return m_pLife[nNumber];
+}
+
+CCharge * CPlayer::GetCgarge(void)
+{
+	return m_pCharge;
 }

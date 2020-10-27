@@ -27,6 +27,7 @@ CBullet::CBullet()
 	m_user = BULLET_USER_NONE;	//使用者
 	m_nAtk = 0;	//攻撃力
 	m_nLife = 0;	//ライフ
+	m_nPlayerNum = 0;
 }
 
 //=============================================================================
@@ -150,12 +151,13 @@ bool CBullet::Collision(void)
 	switch (m_user)
 	{
 	case BULLET_USER_PL1:
-
+		m_nPlayerNum = 1;
 		//プレイヤークラスへキャスト
 		pPlayer = CGame::GetPlayer(1);
 
 		break;
 	case BULLET_USER_PL2:
+		m_nPlayerNum = 0;
 		//プレイヤークラスへキャスト
 		pPlayer = CGame::GetPlayer(0);
 
@@ -175,7 +177,7 @@ bool CBullet::Collision(void)
 		for (int nCount = 0; nCount < LIFE_NUM; nCount++)
 		{
 			//　プレイヤーのライフを減らす
-			pPlayer->GetLife(nCount)->Decrease(50, true, CLife::LIFETYPE_NONE);
+			pPlayer->GetLife(nCount)->Decrease(50, m_nPlayerNum,true);
 		}
 
 		m_nLife = 0;

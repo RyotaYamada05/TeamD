@@ -26,6 +26,10 @@
 #include "meshfield.h"
 #include "bg.h"
 #include "joypad.h"
+#include "life.h"
+#include "ui.h"
+#include "charge.h"
+
 //=============================================================================
 //Ã“Iƒƒ“ƒo•Ï”éŒ¾
 //=============================================================================
@@ -228,6 +232,9 @@ void CManager::LoadAll(void)
 	CResult::Load();
 	CMeshField::Load();
 	CBg::Load();
+	CLife::Load();
+	CUi::Load();
+	CCharge::Load();
 }
 
 //=============================================================================
@@ -240,6 +247,9 @@ void CManager::UnLoadAll(void)
 	CPlayer::Unload();
 	CMeshField::UnLoad();
 	CBg::UnLoad();
+	CLife::Unload();
+	CUi::Unload();
+	CCharge::Unload();
 }
 
 void CManager::SetMode(MODE_TYPE mode)

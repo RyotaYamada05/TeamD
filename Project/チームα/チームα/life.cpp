@@ -5,11 +5,11 @@
 //
 //=============================================================================
 
+#include "main.h"
 #include "Life.h"
 #include "manager.h"
 #include "renderer.h"
-#include "keyboard.h"
-#include "main.h"
+#include "ui.h"
 
 //================================================
 //静的メンバ変数宣言
@@ -73,6 +73,8 @@ CLife::CLife()
 {
 	m_nCounter = 0;
 	m_nCounterLife = 0;
+	m_nReduce = 0;
+	m_nPlayerNum = 0;
 	m_bLife = false;
 }
 
@@ -125,24 +127,50 @@ void CLife::Update(void)
 {
 	CGauge::Update();
 
-	// キーボード更新
-	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
+	//ライフを減らす
+	Lifereduce();
+	//ライフが半分になると点滅させる
+	LifeFlashing();
+}
 
-	//位置の取得
+//================================================
+//描画処理
+//================================================
+void CLife::Draw(void)
+{
+	CGauge::Draw();
+}
+
+//================================================
+//ライフをいくつ減らすかの取得・ヒット！を出す
+//================================================
+void CLife::Decrease(int Reduce, int PlayerNamber, bool Life)
+{
+	m_nReduce = Reduce;
+	m_bLife = Life;
+	m_nPlayerNum = PlayerNamber;
+
+	//２Ｐに弾があたったら１Ｐの場所にＨＩＴの文字を出す
+	if (m_nPlayerNum == 1)
+	{
+		CUi::Create(D3DXVECTOR3(UI_HIT_POS_LEFT_X, 600.0f, 0.0f), D3DXVECTOR3(UI_HIT_SIZE_X, UI_HIT_SIZE_Y, 0.0f), CUi::UITYPE_HIT);
+	}
+	//１Ｐに弾があたったら２Ｐの場所にＨＩＴの文字を出す
+	if (m_nPlayerNum == 0)
+	{
+		CUi::Create(D3DXVECTOR3(UI_HIT_POS_RIGHT_X, 600.0f, 0.0f), D3DXVECTOR3(UI_HIT_SIZE_X, UI_HIT_SIZE_Y, 0.0f), CUi::UITYPE_HIT);
+	}
+}
+
+//================================================
+//ライフを減らす処理
+//================================================
+void CLife::Lifereduce(void)
+{
+	//サイズの取得
 	D3DXVECTOR3 size = GetSize();
+	//色の取得
 	D3DXCOLOR col = GetCol();
-
-	
-	//Tキー押したら
-	if (pKeyboard->GetPress(DIK_T))
-	{
-		Decrease(50, true, LIFETYPE_FAST_PLAYER);
-	}
-
-	if (pKeyboard->GetPress(DIK_Y))
-	{
-		Decrease(100, true, LIFETYPE_SECOND_PLAYER);
-	}
 
 	//ライフを減らす処理
 	if (0 < size.x)
@@ -164,7 +192,8 @@ void CLife::Update(void)
 				col = D3DCOLOR_RGBA(0, 50, 255, 255);
 			}
 
-			if (m_nCounterLife == m_nCount)
+			//決められたカウント分動いたらもとに戻す
+			if (m_nCounterLife == m_nReduce)
 			{
 				m_bLife = false;
 				m_nCounterLife = 0;
@@ -183,6 +212,22 @@ void CLife::Update(void)
 		}
 	}
 
+	//サイズの設定
+	SetSize(size);
+	//色の設定
+	SetCol(col);
+}
+
+//================================================
+//ライフが半分になると点滅させる
+//================================================
+void CLife::LifeFlashing(void)
+{
+	//サイズの取得
+	D3DXVECTOR3 size = GetSize();
+	//色の取得
+	D3DXCOLOR col = GetCol();
+
 	//ライフが半分以下になると点滅するようにする
 	if (size.x < HALF_LIFE)
 	{
@@ -199,25 +244,9 @@ void CLife::Update(void)
 			m_nCounter = 0;
 		}
 	}
-	
+
+	//サイズの設定
 	SetSize(size);
+	//色の設定
 	SetCol(col);
-}
-
-//================================================
-//描画処理
-//================================================
-void CLife::Draw(void)
-{
-	CGauge::Draw();
-}
-
-//================================================
-//ライフを減らしていく処理
-//================================================
-void CLife::Decrease(int Count, bool Life, LIFETYPE type)
-{
-	m_nCount = Count;
-	m_bLife = Life;
-	m_typeDecrease = type;
 }
