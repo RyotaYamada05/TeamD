@@ -177,6 +177,7 @@
     <ClCompile Include="scene2d.cpp" />
     <ClCompile Include="scene3D.cpp" />
     <ClCompile Include="shader.cpp" />
+    <ClCompile Include="shape.cpp" />
     <ClCompile Include="tcp_client.cpp" />
     <ClCompile Include="time.cpp" />
     <ClCompile Include="title.cpp" />
@@ -210,6 +211,7 @@
     <ClInclude Include="scene2d.h" />
     <ClInclude Include="scene3D.h" />
     <ClInclude Include="shader.h" />
+    <ClInclude Include="shape.h" />
     <ClInclude Include="tcp_client.h" />
     <ClInclude Include="time.h" />
     <ClInclude Include="title.h" />

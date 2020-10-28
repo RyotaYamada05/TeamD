@@ -189,9 +189,6 @@ void CCamera::Update(void)
 			}
 			else
 			{
-				pPlayerPos2rot = pPlayerPos2;
-				m_posRRot = pPlayerPos1 - pPlayerPos2;
-				m_posVRot = m_posV;
 				m_bTarget = false;
 			}
 		}
@@ -203,6 +200,13 @@ void CCamera::Update(void)
 			m_posVDest.x = m_posR.x + m_fDistance * sinf(m_fθ) * cosf(m_fφ) + pPlayerPos1.x - pPlayerPos2.x;
 			m_posVDest.y = m_posR.y + m_fDistance * cosf(m_fθ) + pPlayerPos1.y - pPlayerPos2.y;
 			m_posVDest.z = m_posR.z + m_fDistance * sinf(m_fθ) * sinf(m_fφ) + pPlayerPos1.z - pPlayerPos2.z;
+
+
+			if (pPlayerPos2.x <= pPlayerPos1.x + 10 && pPlayerPos1.x - 10 <= pPlayerPos2.x  &&
+				pPlayerPos2.z <= pPlayerPos1.z + 10 && pPlayerPos1.z - 10 <= pPlayerPos2.z)
+			{
+				m_bTarget = false;
+			}
 
 			m_posRDest = D3DXVECTOR3(pPlayerPos2.x, pPlayerPos2.y, pPlayerPos2.z);
 
@@ -235,50 +239,19 @@ void CCamera::Update(void)
 				m_fθ += D3DXToRadian(1.0f);
 			}
 
-#ifdef CAMERA_TEST
-			/*m_fφ = atan2f(m_posRRot.z , m_posRRot.x);*/
+			m_posVDest.x = pPlayerPos1.x + m_fDistance * sinf(m_fθ) * cosf(m_fφ);
 
-			m_posVDest.x = m_posR.x + m_fDistance * sinf(m_fθ) * cosf(m_fφ) + pPlayerPos1.x - pPlayerPos2.x;
-			m_posVDest.y = m_posR.y + m_fDistance * cosf(m_fθ);
-			m_posVDest.z = m_posR.z + m_fDistance * sinf(m_fθ) * sinf(m_fφ) + pPlayerPos1.z - pPlayerPos2.z;
+			m_posVDest.y = pPlayerPos1.y + m_fDistance * cosf(m_fθ);
 
-			m_posRDest.x = m_posR.x * sinf(m_fθ) * cosf(m_fφ) + pPlayerPos1.x;
-			m_posRDest.y = m_posR.y * cosf(m_fθ);
-			m_posRDest.z = m_posR.z * sinf(m_fθ) * sinf(m_fφ) + pPlayerPos1.z;
+			if (m_posVDest.y <= 0)
+			{
+				m_posVDest.y = 1;
+			}
 
-			/*m_posRDest = D3DXVECTOR3(pPlayerPos2.x, pPlayerPos2.y, pPlayerPos2.z);*/
+			m_posVDest.z = pPlayerPos1.z + m_fDistance * sinf(m_fθ) * sinf(m_fφ);
 
-			m_posV += (m_posVDest - m_posV); //カメラフロー
-			m_posR += (m_posRDest - m_posR); //カメラフロー
-
-			////m_fφ = atan2f(m_posRRot.z, m_posRRot.x);
-
-			//m_posVDest.x = m_posR.x + m_fDistance * sinf(m_fθ) * cosf(m_fφ) + pPlayerPos1.x - pPlayerPos2rot.x;
-			//m_posVDest.y = m_posR.y + m_fDistance * cosf(m_fθ);
-			//m_posVDest.z = m_posR.z + m_fDistance * sinf(m_fθ) * sinf(m_fφ) + pPlayerPos1.z - pPlayerPos2rot.z;
-
-			////m_posRDest.x = m_posR.x + m_fDistance * sinf(m_fθ) * cosf(m_fφ) + m_posRRot.x;
-			////m_posRDest.y = m_posR.y + m_fDistance * cosf(m_fθ);
-			////m_posRDest.z = m_posR.z + m_fDistance * sinf(m_fθ) * sinf(m_fφ) + m_posRRot.z;
-
-			//m_posRDest = D3DXVECTOR3(pPlayerPos2rot);
-
-			//m_posV += (m_posVDest - m_posV);
-			//m_posR += (m_posRDest - m_posR);
-
-			//// キャラ移動時のカメラの位置
-			////m_posV += (m_posVDest - m_posV) * 0.001f;
-
-			//// キャラ移動時のカメラの向き
-			////m_posR += (m_posRDest - m_posR) * 0.1f;
-#endif //CAMERA_TEST
-
-			m_posVDest.x = m_posR.x + m_fDistance * sinf(m_fθ) * cosf(m_fφ);
-			m_posVDest.y = m_posR.y + m_fDistance * cosf(m_fθ);
-			m_posVDest.z = m_posR.z + m_fDistance * sinf(m_fθ) * sinf(m_fφ);
-
-			m_posRDest = D3DXVECTOR3(pPlayerPos1.x, pPlayerPos1.y + 10, pPlayerPos1.z);
-
+			m_posRDest = D3DXVECTOR3(pPlayerPos1.x, pPlayerPos1.y + 100, pPlayerPos1.z);
+			
 			m_posV += (m_posVDest - m_posV);
 			m_posR += (m_posRDest - m_posR);
 

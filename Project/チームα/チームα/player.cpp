@@ -429,12 +429,14 @@ void CPlayer::Dush(void)
 
 			if (js.lX != 0.0f || js.lY != 0)
 			{
+				float fAngle = CGame::GetCamera(m_nPlayerNum)->Getφ();
+
 				m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-				float fAngle = atan2f((float)js.lX, (float)js.lY);
 
 				// ジョイパッド操作
-				m_move.x += sinf(-D3DX_PI / 2)* PLAYER_DUSH;
-				m_move.z -= cosf(-D3DX_PI / 2)* PLAYER_DUSH;
+				m_move.x += sinf(fAngle)* PLAYER_DUSH;
+				m_move.z -= cosf(fAngle)* PLAYER_DUSH;
+
 				m_bDush = true;
 
 			}
@@ -448,14 +450,15 @@ void CPlayer::Dush(void)
 
 			if (js.lX != 0.0f || js.lY != 0)
 			{
+				float fAngle = CGame::GetCamera(m_nPlayerNum)->Getφ();
+
 				m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-				float fAngle = atan2f((float)js.lX, (float)js.lY);
 
 				// ジョイパッド操作
-				m_move.x += sinf(D3DX_PI / 2)* PLAYER_DUSH;
-				m_move.z -= cosf(D3DX_PI / 2)* PLAYER_DUSH;
-				m_bDush = true;
+				m_move.x -= sinf(fAngle)* PLAYER_DUSH;
+				m_move.z += cosf(fAngle)* PLAYER_DUSH;
 
+				m_bDush = true;
 			}
 		}
 

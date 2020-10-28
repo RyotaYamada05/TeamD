@@ -30,7 +30,7 @@ public:
 	{
 		OBJTYPE_NONE = 0,
 		OBJTYPE_PLAYER,	//プレイヤータイプ
-		OBJTYPE_DARTS,	//ダーツタイプ
+		OBJTYPE_SPHERE,	//球タイプ
 		OBJTYPE_DARTS_BOARD,	//ダーツボードタイプ
 		OBJTYPE_MAX	//オブジェクトタイプの最大数
 	}OBJTYPE;	//オブジェクトタイプ

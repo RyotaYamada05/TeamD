@@ -25,6 +25,7 @@
 class CCamera;
 class CLight;
 class CMeshField;
+class CMeshShape;
 class CBg;
 class CPlayer;
 class CLife;
@@ -40,6 +41,7 @@ public:
 	static CCamera *GetCamera(int nCount);
 	static CLight *GetLight(void);
 	static CPlayer *GetPlayer(int nCount);
+	static CMeshShape*GetSphere();
 
 	HRESULT Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size);
 	void Uninit(void);
@@ -50,6 +52,7 @@ private:
 	static CCamera *m_apCamera[MAX_PLAYER];					// カメラのポインタ
 	static CLight *m_pLight;					// ライトのポインタ
 	static CMeshField *m_pMeshField;			// メッシュフィールドのポインタ
+	static CMeshShape * m_pSphere;					// メッシュスフィアのポインタ
 	static CBg *m_pBg;							// 背景のポインタ
 	static CPlayer *m_apPlayer[MAX_PLAYER];		// プレイヤーのポインタ
 	LPD3DXFONT m_pFont;

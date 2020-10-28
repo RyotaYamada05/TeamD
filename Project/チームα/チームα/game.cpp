@@ -18,9 +18,9 @@
 #include "renderer.h"
 #include "player.h"
 #include "meshfield.h"
+#include "shape.h"
 #include "bg.h"
 #include "joypad.h"
-
 #include "time.h"
 #include "gauge.h"
 #include "life.h"
@@ -32,6 +32,7 @@
 CCamera *CGame::m_apCamera[MAX_PLAYER] = {};			// カメラクラスのポインタ変数
 CLight *CGame::m_pLight = NULL;						// ライトクラスのポインタ変数
 CMeshField *CGame::m_pMeshField = NULL;				// メッシュフィールド
+CMeshShape *CGame::m_pSphere = NULL;				// メッシュスフィア
 CBg *CGame::m_pBg = NULL;							// 背景のポインタ
 CPlayer *CGame::m_apPlayer[MAX_PLAYER] = {};			// プレイヤーのポインタ
 
@@ -121,6 +122,12 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 		m_pMeshField = CMeshField::Create();
 	}
 
+	// メッシュスフィア
+	if (m_pSphere == NULL)
+	{
+		m_pSphere = CMeshShape::Create();
+	}
+
 	// 背景
 	if (m_pBg == NULL)
 	{
@@ -170,6 +177,12 @@ void CGame::Uninit(void)
 		m_pMeshField->Uninit();
 	}
 
+	// メッシュスフィア
+	if (m_pSphere != NULL)
+	{
+		m_pSphere->Uninit();
+	}
+
 	// 背景
 	if (m_pBg != NULL)
 	{
@@ -199,6 +212,12 @@ void CGame::Update(void)
 		m_pMeshField->Update();
 	}
 
+	// メッシュスフィア
+	if (m_pSphere != NULL)
+	{
+		m_pSphere->Update();
+	}
+
 	CManager::GetConection()->Update();
 }
 
@@ -211,6 +230,12 @@ void CGame::Draw(void)
 	if (m_pMeshField != NULL)
 	{
 		m_pMeshField->Draw();
+	}
+
+	// メッシュスフィア
+	if (m_pSphere != NULL)
+	{
+		m_pSphere->Draw();
 	}
 
 	// 背景
@@ -242,4 +267,9 @@ CLight * CGame::GetLight(void)
 CPlayer * CGame::GetPlayer(int nCount)
 {
 	return m_apPlayer[nCount];
+}
+
+CMeshShape * CGame::GetSphere()
+{
+	return m_pSphere;
 }
