@@ -138,6 +138,10 @@ void CScene2d::Draw(void)
 	pD3DDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP,
 		0,
 		NUM_POLYGON);
+
+	// テクスチャの設定
+	pD3DDevice->SetTexture(0, NULL);
+
 }
 
 //=======================================================================================
@@ -153,3 +157,26 @@ CScene2d* CScene2d::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 
 	return pScene;
 }
+
+//======================================================
+//色の取得
+//======================================================
+void CScene2d::SetCol(D3DXCOLOR col)
+{
+	VERTEX_2D*pVtx;	//頂点情報へのポインタ
+
+	m_col = col;
+
+	//頂点データ範囲をロックし、頂点バッファへのポインタを所得
+	m_pVetxBuff->Lock(0, 0, (void**)&pVtx, 0);
+
+	//頂点カラーの設定(0~255の数値で設定)
+	pVtx[0].col = D3DXCOLOR(col.r, col.g, col.b, col.a); //r,g,b,aは0~255の範囲で決めること
+	pVtx[1].col = D3DXCOLOR(col.r, col.g, col.b, col.a);  //r:レッド g:グリーン　b:ブルー
+	pVtx[2].col = D3DXCOLOR(col.r, col.g, col.b, col.a); //aは、透明度を表している
+	pVtx[3].col = D3DXCOLOR(col.r, col.g, col.b, col.a);
+
+	//頂点データをアンロック
+	m_pVetxBuff->Unlock();
+}
+

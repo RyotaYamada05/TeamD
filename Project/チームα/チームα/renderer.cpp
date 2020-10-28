@@ -8,6 +8,7 @@
 #include "scene.h"
 #include "fade.h"
 #include "shader.h"
+#include "manager.h"
 #include "camera.h"
 #include "game.h"
 
@@ -67,13 +68,13 @@ HRESULT CRenderer::Init(HWND hWnd, bool bWindow)
 	if (m_pD3DInterface == NULL)
 	{
 		// 作成失敗
-		return false;
+		return E_FAIL;
 	}
 
 	m_pD3DPresentParam = new D3DPRESENT_PARAMETERS;
 	if (m_pD3DPresentParam == NULL)
 	{
-		return false;
+		return E_FAIL;
 	}
 	ZeroMemory(m_pD3DPresentParam, sizeof(D3DPRESENT_PARAMETERS));
 
@@ -125,6 +126,29 @@ HRESULT CRenderer::Init(HWND hWnd, bool bWindow)
 				return E_FAIL;
 			}
 		}
+	}
+
+	// ビューポートの設定
+	D3DVIEWPORT9 view_port;
+
+	// ビューポートの左上座標
+	view_port.X = 0;
+	view_port.Y = 0;
+
+	// ビューポートの幅
+	view_port.Width = SCREEN_WIDTH;
+
+	// ビューポートの高さ
+	view_port.Height = SCREEN_HEIGHT;
+
+	// ビューポート深度設定
+	view_port.MinZ = 0.0f;
+	view_port.MaxZ = 1.0f;
+	
+	// ビューポート設定
+	if (FAILED(m_pD3DDevice->SetViewport(&view_port)))
+	{
+		return E_FAIL;
 	}
 
 	ShowWindow(hWnd, SW_SHOW);
@@ -196,7 +220,6 @@ void CRenderer::Update(void)
 //=============================================================================
 void CRenderer::Draw(void)
 {
-	// バックバッファ＆Ｚバッファのクリア
 	m_pD3DDevice->Clear(0, NULL, (D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER), D3DCOLOR_RGBA(0, 255, 255, 0), 1.0f, 0);
 
 	// Direct3Dによる描画の開始
@@ -231,56 +254,67 @@ void CRenderer::Draw(void)
 			//オブジェクトクラスの全描画処理呼び出し
 			CScene::AllDraw();
 
-			//ライティングを無効にする。
-			m_pD3DDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
+			////ライティングを無効にする。
+			//m_pD3DDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
 
-			// WVPを持つ一時的な行列を作成し、
-			// 次に転置して、格納する
-			D3DXMatrixTranspose(&trans, &(matWorld * matView * matProj));
+			//// WVPを持つ一時的な行列を作成し、
+			//// 次に転置して、格納する
+			//D3DXMatrixTranspose(&trans, &(matWorld * matView * matProj));
 
-			// 行列のアドレスを送る（メモリ内では4行の4浮動小数点)
-			// レジスタr0で始まる全部で4つのレジスタに置く
-			m_pD3DDevice->SetVertexShaderConstantF(
-				0,				// 開始レジスタ番号
-				trans,			// 値のアドレス
-				4);				// ロードする4成分値の数
+			//// 行列のアドレスを送る（メモリ内では4行の4浮動小数点)
+			//// レジスタr0で始まる全部で4つのレジスタに置く
+			//m_pD3DDevice->SetVertexShaderConstantF(
+			//	0,				// 開始レジスタ番号
+			//	trans,			// 値のアドレス
+			//	4);				// ロードする4成分値の数
 
-			// 色の設定
-			float fteal[4] = { 0.0f, 1.0f, 0.7f, 0.0f };	// rgbaの値
+			//// 色の設定
+			//float fteal[4] = { 0.0f, 1.0f, 0.7f, 0.0f };	// rgbaの値
 
-			// レジスタc12を指定する
-			m_pD3DDevice->SetVertexShaderConstantF(
-				12,				// 設定する定数レジスタ
-				fteal,			// 値の配列
-				1);				// ロードする4成分値の数
+			//// レジスタc12を指定する
+			//m_pD3DDevice->SetVertexShaderConstantF(
+			//	12,				// 設定する定数レジスタ
+			//	fteal,			// 値の配列
+			//	1);				// ロードする4成分値の数
 
-			//射影座標変換・透過変換の設定
-			D3DXMatrixPerspectiveFovLH(&matProj,
-				D3DX_PI / 4.0f,
-				4.0f / 3.0f,
-				0.1f,
-				500.0f);
+			////射影座標変換・透過変換の設定
+			//D3DXMatrixPerspectiveFovLH(&matProj,
+			//	D3DX_PI / 4.0f,
+			//	4.0f / 3.0f,
+			//	0.1f,
+			//	500.0f);
 
-			m_pD3DDevice->SetTransform(D3DTS_PROJECTION, &matProj);
+			//m_pD3DDevice->SetTransform(D3DTS_PROJECTION, &matProj);
 
-			//ビュー座標変換
-			D3DXMatrixIdentity(&matView);
-			m_pD3DDevice->SetTransform(D3DTS_VIEW, &matView);
+			////ビュー座標変換
+			//D3DXMatrixIdentity(&matView);
+			//m_pD3DDevice->SetTransform(D3DTS_VIEW, &matView);
 
-			//ワールド座標変換
-			D3DXMatrixIdentity(&matWorld);
-			m_pD3DDevice->SetTransform(D3DTS_WORLD, &matWorld);
+			////ワールド座標変換
+			//D3DXMatrixIdentity(&matWorld);
+			//m_pD3DDevice->SetTransform(D3DTS_WORLD, &matWorld);
 
 
-			//メモリを確保できていたら
-			if (m_pShader != NULL)
-			{
-				m_pShader->Draw(matProj);
-			}
+			////メモリを確保できていたら
+			//if (m_pShader != NULL)
+			//{
+			//	m_pShader->Draw(matProj);
+			//}
+
+			//環境光（アンビエント）の設定
+			D3DMATERIAL9 material;
+
+			SecureZeroMemory(&material, sizeof(D3DMATERIAL9));
+			material.Ambient.r = 1.0f;
+			material.Ambient.g = 1.0f;
+			material.Ambient.b = 1.0f;
+			material.Ambient.a = 1.0f;
+
+			m_pD3DDevice->SetMaterial(&material);
+			m_pD3DDevice->SetRenderState(D3DRS_AMBIENT, 0x44444444);
 
 			//ライティングを無効にする。
 			m_pD3DDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
-
 			
 			CFade *pFade = CManager::GetFade();
 
@@ -290,24 +324,12 @@ void CRenderer::Draw(void)
 			}
 
 			// バックバッファとフロントバッファの入れ替え
-	//		m_pD3DDevice->Present(NULL, NULL, NULL, NULL);
+			m_pD3DDevice->Present(NULL, NULL, NULL, NULL);
 		}
 
 		// Direct3Dによる描画の終了
 		m_pD3DDevice->EndScene();
 	}
-
-	//環境光（アンビエント）の設定
-	D3DMATERIAL9 material;
-
-	SecureZeroMemory(&material, sizeof(D3DMATERIAL9));
-	material.Ambient.r = 1.0f;
-	material.Ambient.g = 1.0f;
-	material.Ambient.b = 1.0f;
-	material.Ambient.a = 1.0f;
-
-	m_pD3DDevice->SetMaterial(&material);
-	m_pD3DDevice->SetRenderState(D3DRS_AMBIENT, 0x44444444);
 
 	// バックバッファとフロントバッファの入れ替え
 	m_pD3DDevice->Present(NULL, NULL, NULL, NULL);
@@ -365,6 +387,7 @@ bool CRenderer::SetUpViewport(int nNumber)
 	default:
 		break;
 	}
+
 	return true;
 }
 

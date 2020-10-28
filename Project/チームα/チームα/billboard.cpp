@@ -1,6 +1,6 @@
 //=====================================================
 //
-// ビルボードクラスヘッダー [billboard.cpp]
+// ビルボードクラスヘッダー [billboard.h]
 // Author : 小西優斗
 //
 //=====================================================
@@ -12,19 +12,24 @@
 #include "manager.h"
 #include "renderer.h"
 
-CBillboard *CBillboard::m_apBillboard[MAX_BILLBOARD] = {};	// 出現させるビルボード
-
 //=====================================================
 // コンストラクタ
 //=====================================================
 CBillboard::CBillboard()
 {
-	m_Pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);				// 位置情報
-	m_Dir = D3DXVECTOR3(0.0f, 0.0f, 0.0f);				// 方向7
-	m_pVtxBuff = NULL;									// 頂点バッファへのポインタ
-	m_pTexture = NULL;									// ポリゴンのテクスチャ
-	m_nLife = 0;										// 寿命
-	m_bUse = false;										// 使用判定
+	m_Pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 位置情報
+	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 移動量
+	m_size = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// サイズ
+	m_Dir = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 方向7
+	m_pVtxBuff = NULL;							// 頂点バッファへのポインタ
+	m_pTexture = NULL;							// ポリゴンのテクスチャ
+	m_nLife = 0;								// 寿命
+	m_bUse = false;								// 使用判定
+	m_nCountAnim = 0;;							// アニメーションテクスチャ
+	m_nCountAnimPattern = 0;					// アニメーションのパターン
+	m_nCounterAnim = 0;							// アニメーションのカウンター
+	m_nPatternAnim = 0;							// アニメーションのパターン数
+	m_nLoop = -1;								// ループするか
 }
 
 //=====================================================
@@ -52,26 +57,29 @@ HRESULT CBillboard::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 
 	VERTEX_3D*pVtx = NULL;
 
+	m_Pos = pos;
+	m_size = size;
+
 	//頂点バッファをロック
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 	//頂点座標設定の設定
-	pVtx[0].pos = D3DXVECTOR3(pos.x - size.x / 2, pos.y + size.y / 2, 0.0f);
-	pVtx[1].pos = D3DXVECTOR3(pos.x + size.x / 2, pos.y + size.y / 2, 0.0f);
-	pVtx[2].pos = D3DXVECTOR3(pos.x - size.x / 2, pos.y - size.y / 2, 0.0f);
-	pVtx[3].pos = D3DXVECTOR3(pos.x + size.x / 2, pos.y - size.y / 2, 0.0f);
+	pVtx[0].pos = D3DXVECTOR3(- m_size.x / 2, + m_size.y / 2, 0.0f);
+	pVtx[1].pos = D3DXVECTOR3(+ m_size.x / 2, + m_size.y / 2, 0.0f);
+	pVtx[2].pos = D3DXVECTOR3(- m_size.x / 2, - m_size.y / 2, 0.0f);
+	pVtx[3].pos = D3DXVECTOR3(+ m_size.x / 2, - m_size.y / 2, 0.0f);
 
 	//各頂点の法線の設定（※ベクトルの大きさは１にする必要がある）
-	pVtx[0].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
-	pVtx[1].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
-	pVtx[2].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
-	pVtx[3].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+	pVtx[0].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
+	pVtx[1].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
+	pVtx[2].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
+	pVtx[3].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
 
 	//頂点カラーの設定（0～255の数値で設定）
-	pVtx[0].col = D3DCOLOR_RGBA(255, 255, 255, 255);
-	pVtx[1].col = D3DCOLOR_RGBA(255, 255, 255, 255);
-	pVtx[2].col = D3DCOLOR_RGBA(255, 255, 255, 255);
-	pVtx[3].col = D3DCOLOR_RGBA(255, 255, 255, 255);
+	pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+	pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+	pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+	pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 
 	pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
 	pVtx[1].tex = D3DXVECTOR2(1.0f, 0.0f);
@@ -98,7 +106,14 @@ void CBillboard::Uninit(void)
 //=====================================================
 void CBillboard::Update(void)
 {
+	m_Pos += m_move;
 
+	// アニメーションの設定がされたとき
+	if (m_nPatternAnim != 0)
+	{
+		// アニメーションを更新する
+		UpdateAnimation();
+	}
 }
 
 //=====================================================
@@ -108,14 +123,18 @@ void CBillboard::Draw(void)
 {
 	// デバイス情報取得
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
-
+//
 	//計算用のマトリクス
 	D3DXMATRIX mtxRot, mtxTrans;
 	DWORD ambient;
 
+	//現在アンビエント情報を保存
 	pDevice->GetRenderState(D3DRS_AMBIENT, &ambient);
-	pDevice->SetRenderState(D3DRS_AMBIENT, 0xffffffff);
-	pDevice->LightEnable(0, FALSE);
+	pDevice->SetRenderState(D3DRS_AMBIENT, 0xff030303);   // 世の中をちょっと白く照らす	//ライティングをOFFにする
+	pDevice->SetRenderState(D3DRS_AMBIENT, ambient);
+
+	//pDevice->SetRenderState(D3DRS_AMBIENT, 0xffffffff);
+	pDevice->LightEnable(0, TRUE);
 
 	//ワールドマトリクスの初期化
 	D3DXMatrixIdentity(&m_mtxWorld);
@@ -164,6 +183,147 @@ void CBillboard::Draw(void)
 
 	pDevice->SetRenderState(D3DRS_AMBIENT, ambient);
 	pDevice->LightEnable(0, TRUE);
+}
+
+//=============================================
+// アニメーション情報取得
+//=============================================
+void CBillboard::InitAnimation(int nCounterAnim, int nPatternAnim, int nLoop)
+{
+	m_nCounterAnim = nCounterAnim;
+	m_nPatternAnim = nPatternAnim;
+	m_nLoop = nLoop;
+
+	// 頂点情報を設定
+	VERTEX_3D *pVtx;
+
+	// 頂点バッファをロックし、頂点情報へのポインタを取得
+	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+
+	//テクスチャ座標を更新
+	pVtx[0].tex = D3DXVECTOR2((float)(1.0f / m_nPatternAnim)*(float)m_nCountAnimPattern, 0.0f);
+	pVtx[1].tex = D3DXVECTOR2((float)(1.0f / m_nPatternAnim)*(float)m_nCountAnimPattern + (float)(1.0f / m_nPatternAnim), 0.0f);
+	pVtx[2].tex = D3DXVECTOR2((float)(1.0f / m_nPatternAnim)*(float)m_nCountAnimPattern, 1.0f);
+	pVtx[3].tex = D3DXVECTOR2((float)(1.0f / m_nPatternAnim)*(float)m_nCountAnimPattern + (float)(1.0f / m_nPatternAnim), 1.0f);
+
+	// 頂点バッファをアンロックする
+	m_pVtxBuff->Unlock();
+}
+
+//=============================================
+// アニメーション更新関数
+//=============================================
+void CBillboard::UpdateAnimation(void)
+{
+	// 爆発のアニメーションカウントを進めて、パターンを切り替える
+	m_nCountAnim++;
+
+	// 頂点情報(テクスチャ座標)の更新
+	if (m_nCountAnim >= m_nCounterAnim)	// 爆発の速さ
+	{
+		// アニメーションのカウントを0にする
+		m_nCountAnim = 0;
+
+		// アニメーションのパターンをカウントさせる
+		m_nCountAnimPattern++;
+	}
+
+	// アニメーションが終わったら
+	if (m_nCountAnimPattern >= m_nPatternAnim)
+	{
+		// 数値を戻しておく
+		m_nCountAnimPattern = 0;
+
+		if (m_nLoop == 0)
+		{
+			// 終了処理
+			Uninit();
+		}
+	}
+	else
+	{
+		// 頂点情報を設定
+		VERTEX_3D *pVtx;
+
+		// 頂点バッファをロックし、頂点情報へのポインタを取得
+		m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+
+		//テクスチャ座標を更新
+		pVtx[0].tex = D3DXVECTOR2((float)(1.0f / m_nPatternAnim)*(float)m_nCountAnimPattern, 0.0f);
+		pVtx[1].tex = D3DXVECTOR2((float)(1.0f / m_nPatternAnim)*(float)m_nCountAnimPattern + (float)(1.0f / m_nPatternAnim), 0.0f);
+		pVtx[2].tex = D3DXVECTOR2((float)(1.0f / m_nPatternAnim)*(float)m_nCountAnimPattern, 1.0f);
+		pVtx[3].tex = D3DXVECTOR2((float)(1.0f / m_nPatternAnim)*(float)m_nCountAnimPattern + (float)(1.0f / m_nPatternAnim), 1.0f);
+
+		// 頂点バッファをアンロックする
+		m_pVtxBuff->Unlock();
+	}
+}
+
+LPDIRECT3DVERTEXBUFFER9 CBillboard::GetBuff(void)
+{
+	return m_pVtxBuff;
+}
+
+//=====================================================
+// 位置の設定
+//=====================================================
+void CBillboard::SetPos(D3DXVECTOR3 pos)
+{
+	m_Pos = pos;
+
+	VERTEX_3D*pVtx = NULL;
+
+	//頂点バッファをロック
+	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+
+	//頂点座標設定の設定
+	pVtx[0].pos = D3DXVECTOR3(- m_size.x / 2, + m_size.y / 2, 0.0f);
+	pVtx[1].pos = D3DXVECTOR3(+ m_size.x / 2, + m_size.y / 2, 0.0f);
+	pVtx[2].pos = D3DXVECTOR3(- m_size.x / 2, - m_size.y / 2, 0.0f);
+	pVtx[3].pos = D3DXVECTOR3(+ m_size.x / 2, - m_size.y / 2, 0.0f);
+
+	//頂点バッファのアンロック
+	m_pVtxBuff->Unlock();
+}
+
+//=====================================================
+// 移動量設定
+//=====================================================
+void CBillboard::SetMove(D3DXVECTOR3 move)
+{
+	m_move = move;
+}
+
+//=====================================================
+// サイズ設定
+//=====================================================
+void CBillboard::SetSize(D3DXVECTOR3 size)
+{
+	m_size = size;
+}
+
+//=====================================================
+// 位置の取得
+//=====================================================
+D3DXVECTOR3 CBillboard::GetPos(void)
+{
+	return m_Pos;
+}
+
+//=====================================================
+// 移動量情報
+//=====================================================
+D3DXVECTOR3 CBillboard::GetMove(void)
+{
+	return D3DXVECTOR3();
+}
+
+//=====================================================
+// サイズ情報
+//=====================================================
+D3DXVECTOR3 CBillboard::GetSize(void)
+{
+	return m_size;
 }
 
 //=====================================================

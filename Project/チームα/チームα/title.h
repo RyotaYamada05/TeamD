@@ -15,7 +15,7 @@
 class CScene2d;
 
 //***************************************************************************************
-// 
+// タイトルクラス
 //***************************************************************************************
 class CTitle : public CScene
 {
@@ -30,8 +30,8 @@ public:
 	void Draw(void);
 
 private:
-	static LPDIRECT3DTEXTURE9 m_pTexture[1];
-	CScene2d* m_pScene;
+	static LPDIRECT3DTEXTURE9 m_pTexture[1];	//テクスチャへのポインタ
+	CScene2d* m_pScene;	//ポインタ
 	bool m_bModechenge;
 };
 

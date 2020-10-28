@@ -42,7 +42,8 @@ HRESULT CLight::Init(void)
 	m_Light.Type = D3DLIGHT_DIRECTIONAL;
 
 	//光の拡散の指定
-	m_Light.Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+	m_Light.Diffuse = D3DXCOLOR(0.7f, 0.7f, 0.7f, 1.0f);
+	//m_Light.Ambient = D3DXCOLOR(0.5f, 0.5f, 0.5f, 0.5f);
 
 	//ライト方向の指定
 	vecDir = D3DXVECTOR3(0.0f, 0.0f, -1.0f);

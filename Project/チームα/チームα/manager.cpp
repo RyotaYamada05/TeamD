@@ -26,6 +26,12 @@
 #include "meshfield.h"
 #include "bg.h"
 #include "joypad.h"
+#include "life.h"
+#include "2d_explosion.h"
+#include "beam.h"
+#include "effect.h"
+#include "particle.h"
+#include "shock.h"
 
 //=============================================================================
 //静的メンバ変数宣言
@@ -107,7 +113,10 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindow)
 			return -1;
 		}
 	}
+	//タイトルクラスのクリエイト
 	m_pTitle = CTitle::Create();
+
+	//フェードクラスのクリエイト
 	m_pFade = CFade::Create();
 
 	//全テクスチャの読み込み
@@ -126,10 +135,13 @@ void CManager::Uninit(void)
 	
 	if (m_pFade != NULL)
 	{
+		//フェードクラスの終了処理呼び出し
 		m_pFade->Uninit();
 
+		//メモリの破棄
 		delete m_pFade;
 
+		//メモリのクリア
 		m_pFade = NULL;
 	}
 
@@ -196,12 +208,8 @@ void CManager::Update(void)
 
 	if (m_pFade != NULL)
 	{
+		//フェードクラスの更新処理呼び出し
 		m_pFade->Update();
-	}
-
-	if (m_mode == MODE_TYPE_TITLE && m_pInput->GetTrigger(DIK_RETURN))
-	{
-		m_pFade->SetFade(MODE_TYPE_GAME);
 	}
 }
 
@@ -229,6 +237,12 @@ void CManager::LoadAll(void)
 	CResult::Load();
 	CMeshField::Load();
 	CBg::Load();
+	CLife::Load();
+	C2dExplosion::Load();
+	CBeam::Load();
+	CEffect::Load();
+	CParticle::Load();
+	CShock::Load();
 }
 
 //=============================================================================
@@ -241,10 +255,19 @@ void CManager::UnLoadAll(void)
 	CPlayer::Unload();
 	CMeshField::UnLoad();
 	CBg::UnLoad();
+	C2dExplosion::UnLoad();
+	CBeam::UnLoad();
+	CEffect::UnLoad();
+	CParticle::UnLoad();
+	CShock::UnLoad();
 }
 
+//=============================================================================
+//ゲームモードの設定処理
+//=============================================================================
 void CManager::SetMode(MODE_TYPE mode)
 {
+	//現在モードの終了
 	switch (m_mode)
 	{
 	case MODE_TYPE_TITLE:
@@ -275,8 +298,11 @@ void CManager::SetMode(MODE_TYPE mode)
 		break;
 
 	}
+
+	//モードを設定
 	m_mode = mode;
 
+	//設定されたモードをクリエイト
 	switch (m_mode)
 	{
 	case MODE_TYPE_TITLE:
@@ -300,9 +326,8 @@ void CManager::SetMode(MODE_TYPE mode)
 		{
 			m_pResult = CResult::Create();
 		}
-		
-
 		break;
+
 	default:
 		break;
 	}
@@ -338,11 +363,17 @@ CConection *CManager::GetConection(void)
 	return m_pConection;
 }
 
+//=============================================================================
+//フェード情報取得
+//=============================================================================
 CFade * CManager::GetFade(void)
 {
 	return m_pFade;
 }
 
+//=============================================================================
+//ジョイパッド情報取得
+//=============================================================================
 CInputJoypad * CManager::GetJoypad(void)
 {
 	return m_pJoypad;
