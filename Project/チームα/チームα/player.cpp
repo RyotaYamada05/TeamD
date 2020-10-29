@@ -65,6 +65,7 @@ HRESULT CPlayer::LoadModel(void)
 	LPDIRECT3DDEVICE9 pD3DDevice = CManager::GetRenderer()->GetDevice();
 
 	// モデルの生成
+
 	D3DXLoadMeshFromX("data/model/ti-muiro.x",
 		D3DXMESH_SYSTEMMEM,
 		pD3DDevice,
@@ -145,11 +146,12 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 	{
 	//1Pだった場合
 	case 0:
+
 		//1Pのライフゲージ
 		if (m_pLife[0] == NULL)
 		{
 			//1P側に体力ゲージを生成
-			m_pLife[0] = CLife::Create(D3DXVECTOR3(LIFE_POS_RIGHT_X, LIFE_POS_UP_Y, 0.0f),
+			m_pLife[0] = CLife::Create(D3DXVECTOR3(LIFE_POS_LEFT_X, LIFE_POS_UP_Y, 0.0f),
 				D3DXVECTOR3(MAX_LIFE, LIFE_SIZE_PLAYER_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255),
 				CLife::LIFETYPE_FAST_PLAYER);
 		}
@@ -157,9 +159,8 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 		//1Pのライフゲージ
 		if (m_pLife[1] == NULL)
 		{
-
 			//2P側に体力ゲージを生成
-			m_pLife[1] = CLife::Create(D3DXVECTOR3(LIFE_POS_LEFT_X, LIFE_POS_DOWN_Y, 0.0f),
+			m_pLife[1] = CLife::Create(D3DXVECTOR3(LIFE_POS_RIGHT_X, LIFE_POS_DOWN_Y, 0.0f),
 				D3DXVECTOR3(MAX_LIFE, LIFE_SIZE_ENEMY_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255),
 				CLife::LIFETYPE_SECOND_PLAYER);
 		}
@@ -178,18 +179,19 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 		//２Ｐのライフゲージ
 		if (m_pLife[0] == NULL)
 		{
-			//1P側に体力ゲージを生成
-			m_pLife[0] = CLife::Create(D3DXVECTOR3(LIFE_POS_RIGHT_X, LIFE_POS_DOWN_Y, 0.0f),
-				D3DXVECTOR3(MAX_LIFE, LIFE_SIZE_ENEMY_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255),				
-				CLife::LIFETYPE_SECOND_PLAYER);
+			m_pLife[0] = CLife::Create(D3DXVECTOR3(LIFE_POS_RIGHT_X, LIFE_POS_UP_Y, 0.0f),
+				D3DXVECTOR3(MAX_LIFE, LIFE_SIZE_PLAYER_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255),
+				CLife::LIFETYPE_FAST_PLAYER);
 		}
 
-		//１Ｐのライフゲージ		if (m_pLife[1] == NULL)
+		//１Ｐのライフゲージ		
+		if (m_pLife[1] == NULL)
 		{
-			//2P側に体力ゲージを生成
-			m_pLife[1] = CLife::Create(D3DXVECTOR3(LIFE_POS_LEFT_X, LIFE_POS_UP_Y, 0.0f),
-				D3DXVECTOR3(MAX_LIFE, LIFE_SIZE_PLAYER_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255),
-				CLife::LIFETYPE_FAST_PLAYER);		}
+			
+			m_pLife[1] = CLife::Create(D3DXVECTOR3(LIFE_POS_LEFT_X, LIFE_POS_DOWN_Y, 0.0f),
+				D3DXVECTOR3(MAX_LIFE, LIFE_SIZE_ENEMY_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255),
+				CLife::LIFETYPE_SECOND_PLAYER);
+		}
 
 		//２Ｐの弾のチャージゲージ
 		if (m_pCharge == NULL)
@@ -205,7 +207,7 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 		break;
 	}
 
-	 //初期化	
+	// 初期化	
 	CModel::Init(m_pos, rot);
 
 	//オブジェクトタイプの設定
@@ -337,10 +339,10 @@ void CPlayer::Walk(void)
 	{
 		float fAngle = CGame::GetCamera(m_nPlayerNum)->Getφ();
 
+
 		if (js.lX < -50.0f)
 		{
 			// ジョイパッド操作
-
 			m_pos.x += sinf(fAngle)* PLAYER_SPEED;
 			m_pos.z -= cosf(fAngle)* PLAYER_SPEED;
 		}
@@ -358,7 +360,6 @@ void CPlayer::Walk(void)
 		if (js.lY < -50.0f)
 		{
 			// ジョイパッド操作
-
 			m_pos.x -= cosf(fAngle)* PLAYER_SPEED;
 			m_pos.z -= sinf(fAngle)* PLAYER_SPEED;
 		}
