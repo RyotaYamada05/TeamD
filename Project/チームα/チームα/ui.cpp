@@ -12,7 +12,7 @@
 #include "ui.h"
 #include "manager.h"
 #include "renderer.h"
-
+#include "keyboard.h"
 //================================================
 //静的メンバ変数宣言
 //================================================
@@ -73,8 +73,18 @@ HRESULT CUi::Load(void)
 
 	//負けた時
 	D3DXCreateTextureFromFile(pDevice,
-		"Data/TEXTURE/Lose.png", //ファイルの読み込み
+		"Data/TEXTURE/Lose1.png", //ファイルの読み込み
 		&m_apTexture[UITYPE_LOSE]);
+
+	//標準
+	D3DXCreateTextureFromFile(pDevice,
+		"Data/TEXTURE/Lockon001.png", //ファイルの読み込み
+		&m_apTexture[UITYPE_STANDARD]);
+
+	//ロックオン
+	D3DXCreateTextureFromFile(pDevice,
+		"Data/TEXTURE/Lockon.png", //ファイルの読み込み
+		&m_apTexture[UITYPE_LOCKON]);
 
 	return S_OK;
 }
@@ -102,6 +112,8 @@ CUi::CUi()
 {
 	m_nPattern = 0;
 	m_nCounter = 0;
+	m_nLockCounter = 0;
+	m_nLockPattern = 0;
 	m_pos = (D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 	m_move = (D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 	m_size = (D3DXVECTOR3(0.0f, 0.0f, 0.0f));
@@ -137,6 +149,14 @@ HRESULT CUi::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size, UITYPE type)
 
 	//カラー設定
 	CScene2d::SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+
+	//ロックオンの場合
+	if (m_type == UITYPE_LOCKON)
+	{
+		//テクスチャー設定
+		CScene2d::SetAnim(m_nLockPattern, 0.5);
+	}
+
 	return S_OK;
 }
 
@@ -157,7 +177,29 @@ void CUi::Update(void)
 
 	//Hit!!がでたとき
 	UiHit();
-	
+
+	//ロックオンの処理
+	UiLockon();
+
+	// キーボード更新
+	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
+
+	if (pKeyboard->GetTrigger(DIK_T))
+	{
+		Create(D3DXVECTOR3(UI_RESULT_POS_LEFT_X, UI_RESULT_POS_Y, 0.0f), D3DXVECTOR3(UI_RESULT_SIZE_X, UI_RESULT_SIZE_Y, 0.0f), CUi::UITYPE_WIN);
+		Create(D3DXVECTOR3(UI_RESULT_POS_RIGHT_X, UI_RESULT_POS_Y, 0.0f), D3DXVECTOR3(UI_RESULT_SIZE_X, UI_RESULT_SIZE_Y, 0.0f), CUi::UITYPE_LOSE);
+	}
+
+	if (pKeyboard->GetTrigger(DIK_Y))
+	{
+		Create(D3DXVECTOR3(UI_RESULT_POS_RIGHT_X, UI_RESULT_POS_Y, 0.0f), D3DXVECTOR3(UI_RESULT_SIZE_X, UI_RESULT_SIZE_Y, 0.0f), CUi::UITYPE_WIN);
+		Create(D3DXVECTOR3(UI_RESULT_POS_LEFT_X, UI_RESULT_POS_Y, 0.0f), D3DXVECTOR3(UI_RESULT_SIZE_X, UI_RESULT_SIZE_Y, 0.0f), CUi::UITYPE_LOSE);
+	}
+
+	if (pKeyboard->GetTrigger(DIK_U))
+	{
+		Create(D3DXVECTOR3(UI_RESULT_POS_RIGHT_X, UI_RESULT_POS_Y, 0.0f), D3DXVECTOR3(UI_LOCKON_SIZE_X, UI_LOCKON_SIZE_Y, 0.0f), CUi::UITYPE_LOCKON);
+	}
 }
 
 //================================================
@@ -199,4 +241,23 @@ void CUi::UiHit(void)
 	}
 
 	SetCol(col);
+}
+
+//================================================
+//ヒットした時に出るUIの処理
+//================================================
+void CUi::UiLockon(void)
+{
+	if (m_type == UITYPE_LOCKON)
+	{
+		m_nLockCounter++;
+		if (m_nLockCounter == 8)
+		{
+			m_nLockPattern++;
+			CScene2d::SetAnim(m_nLockPattern, 0.5f);
+
+			m_nLockCounter = 0;
+		}
+	}
+	
 }

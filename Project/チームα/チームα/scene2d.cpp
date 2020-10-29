@@ -125,6 +125,13 @@ void CScene2d::Draw(void)
 	// Rendererクラスからデバイスを取得
 	LPDIRECT3DDEVICE9 pD3DDevice = CManager::GetRenderer()->GetDevice();
 
+	//アルファテストを有効化
+	pD3DDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+	//アルファテスト基準値の設定
+	pD3DDevice->SetRenderState(D3DRS_ALPHAREF, 0);
+	//アルファテストの比較方法の設定(GREATERは基準値より大きい場合)
+	pD3DDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
+
 	// 頂点バッファをデータストリームに設定
 	pD3DDevice->SetStreamSource(0, m_pVetxBuff, 0, sizeof(VERTEX_2D));
 
@@ -138,6 +145,11 @@ void CScene2d::Draw(void)
 	pD3DDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP,
 		0,
 		NUM_POLYGON);
+
+	
+
+	//アルファテストを無効化
+	pD3DDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
 
 	// テクスチャの設定
 	pD3DDevice->SetTexture(0, NULL);
@@ -180,3 +192,21 @@ void CScene2d::SetCol(D3DXCOLOR col)
 	m_pVetxBuff->Unlock();
 }
 
+//======================================================
+//アニメーションの取得
+//======================================================
+void CScene2d::SetAnim(int PatternAnim, float Countea)
+{
+	VERTEX_2D*pVtx;	//頂点情報へのポインタ
+
+	//頂点データ範囲をロックし、頂点バッファへのポインタを所得
+	m_pVetxBuff->Lock(0, 0, (void**)&pVtx, 0);
+
+	pVtx[0].tex = D3DXVECTOR2(PatternAnim*Countea, 0.0f);
+	pVtx[1].tex = D3DXVECTOR2(PatternAnim*Countea + Countea, 0.0f);
+	pVtx[2].tex = D3DXVECTOR2(PatternAnim*Countea, 1.0f);
+	pVtx[3].tex = D3DXVECTOR2(PatternAnim*Countea + Countea, 1.0f);
+
+	//頂点データをアンロック
+	m_pVetxBuff->Unlock();
+}

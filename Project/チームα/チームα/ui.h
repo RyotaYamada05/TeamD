@@ -14,25 +14,38 @@
 //マクロ定義
 //=============================================================================
 //ライフ
-#define UI_LIFE_SIZE_X			(405)		//ライフUIのXサイズ
-#define UI_LIFE_SIZE_PLAYERY	(22)		//プレイヤーライフUIのYサイズ
-#define UI_LIFE_SIZE_ENEMYY		(11.2)		//エネミーライフUIのYサイズ
+#define UI_LIFE_SIZE_X			(405.0f)	// ライフUIのXサイズ
+#define UI_LIFE_SIZE_PLAYERY	(22.0f)		// プレイヤーライフUIのYサイズ
+#define UI_LIFE_SIZE_ENEMYY		(11.2)		// エネミーライフUIのYサイズ
 //タイム
-#define UI_TIME_SIZE_X			(85)		//タイムUIのXサイズ
-#define UI_TIME_SIZE_Y			(40)		//タイムUIのYサイズ
+#define UI_TIME_SIZE_X			(85.0f)		// タイムUIのXサイズ
+#define UI_TIME_SIZE_Y			(40.0f)		// タイムUIのYサイズ
 //プレイヤー・エネミーの文字
-#define UI_PLAYER_SIZE_X		(50)		//プレイヤーUIのXサイズ
-#define UI_PLAYER_SIZE_Y		(15)		//プレイヤーUIのYサイズ
-#define UI_ENEMY_SIZE_X			(45)		//エネミーUIのXサイズ
-#define UI_ENEMY_SIZE_Y			(10)		//エネミーUIのYサイズ
+#define UI_PLAYER_SIZE_X		(50.0f)		// プレイヤーUIのXサイズ
+#define UI_PLAYER_SIZE_Y		(15.0f)		// プレイヤーUIのYサイズ
+#define UI_ENEMY_SIZE_X			(45.0f)		// エネミーUIのXサイズ
+#define UI_ENEMY_SIZE_Y			(10.0f)		// エネミーUIのYサイズ
 //HIT
-#define UI_HIT_SIZE_X			(100)		// ヒットUIのXサイズ
-#define UI_HIT_SIZE_Y			(50)		// ヒットUIのYサイズ
-#define UI_HIT_POS_RIGHT_X		(320.0f)	// ヒットUIの左側のXサイズ
-#define UI_HIT_POS_LEFT_X		(960.0f)	// ヒットUIの右側のXサイズ
-#define UI_HIT_POS_Y			(600.0f)	// ヒットUIの左側のYサイズ
+#define UI_HIT_SIZE_X			(100.0f)	// ヒットUIのXサイズ
+#define UI_HIT_SIZE_Y			(50.0f)		// ヒットUIのYサイズ
+#define UI_HIT_POS_LEFT_X		(320.0f)	// ヒットUIの左側のX軸
+#define UI_HIT_POS_RIGHT_X		(960.0f)	// ヒットUIの右側のX軸
+#define UI_HIT_POS_Y			(600.0f)	// ヒットUIのYサイズ
+//WINとLOSE
+#define UI_RESULT_SIZE_X		(200.0f)	// 勝敗文字のXサイズ
+#define UI_RESULT_SIZE_Y		(30.0f)		// 勝敗文字のYサイズ
+#define UI_RESULT_POS_LEFT_X	(320.0f)	// 勝敗文字出すX軸（左側）
+#define UI_RESULT_POS_RIGHT_X	(960.0f)	// 勝敗文字出すX軸（右側）
+#define UI_RESULT_POS_Y			(360.0f)	// 勝敗文字出す場所のY軸
+//LOCKON
+#define UI_LOCKON_SIZE_X		(70.0f)		// ロックオンのXサイズ
+#define UI_LOCKON_SIZE_Y		(70.0f)		// ロックオンのYサイズ
+#define UI_LOCKON_POS_LEFT_X	(320.0f)	// ロックオンの左側のX軸
+#define UI_LOCKON_POS_RIGHT_X	(960.0f)	// ロックオンの右側のX軸
+#define UI_LOCKON_POS_Y			(360.0f)	// ロックオンのY軸
+
 //種類
-#define UI_TYPE					(9)			//UIの種類の最大数
+#define UI_TYPE					(11)		// UIの種類の最大数
 
 //=============================================================================
 //クラス宣言
@@ -43,13 +56,15 @@ public:
 	typedef enum
 	{
 		UITYPE_NONE = -1,
-		UITTYPE_LIFE,	// ライフバー
-		UITYPE_TIME,	// タイムバー
-		UITYPE_PLAYER,	// プレイヤー文字
-		UITYPE_ENEMY,	// エネミー文字
-		UITYPE_HIT,		// ヒット文字
-		UITYPE_WIN,		// WIN文字
-		UITYPE_LOSE,	// LOSE文字
+		UITTYPE_LIFE,		// ライフバー
+		UITYPE_TIME,		// タイムバー
+		UITYPE_PLAYER,		// プレイヤー文字
+		UITYPE_ENEMY,		// エネミー文字
+		UITYPE_HIT,			// ヒット文字
+		UITYPE_WIN,			// WIN文字
+		UITYPE_LOSE,		// LOSE文字
+		UITYPE_STANDARD,	// 標準表示
+		UITYPE_LOCKON,		// ロックオン表示
 		UITYPE_MAX
 	}UITYPE;
 	CUi();
@@ -64,6 +79,7 @@ public:
 	void Update(void);
 	void Draw(void);
 	void UiHit(void);
+	void UiLockon(void);
 
 private:
 	static LPDIRECT3DTEXTURE9 m_apTexture[UI_TYPE];
@@ -75,6 +91,8 @@ private:
 	UITYPE		m_type;	// ポリゴンのタイプ
 	int m_nCounter;		// カウンター
 	int m_nPattern;		// 使用しているかどうか
+	int m_nLockCounter; // ロックオンカウンター
+	int m_nLockPattern; // ロックオンのパターン
 };
 
 #endif // !_UI_H_
