@@ -45,9 +45,13 @@ HRESULT CMeshShape::Init(void)
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
 	//多角形メッシュの生成
-	D3DXCreatePolygon(pDevice,100,6,&m_pMesh,&m_pBuffMat);
+	//D3DXCreatePolygon(pDevice,100,6,&m_pMesh,&m_pBuffMat);
 	//球メッシュの生成
-	//D3DXCreateSphere(pDevice,50, 32, 32,&m_pMesh, &m_pBuffMat);
+	D3DXCreateSphere(pDevice,50, 32, 32,&m_pMesh, &m_pBuffMat);
+	//四角メッシュの生成
+	//D3DXCreateBox(pDevice, 100, 100, 32, &m_pMesh, &m_pBuffMat);
+	//円柱メッシュの生成
+	//D3DXCreateCylinder(pDevice, 50, 50, 50, 32, 32, &m_pMesh, &m_pBuffMat);
 	//トーラスメッシュの生成
 	//D3DXCreateTorus(pDevice, 10, 100, 32, 32, &m_pMesh, &m_pBuffMat);
 
@@ -87,21 +91,35 @@ void CMeshShape::Update(void)
 //=============================================================================
 void CMeshShape::Draw(void)
 {
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 	D3DXMATERIAL*pMat;	//マテリアルデータへのポインタ
 
 	//マテリアルデータへのポインタを取得
 	pMat = (D3DXMATERIAL*)m_pBuffMat->GetBufferPointer();
 
-	pMat->MatD3D.Ambient = D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f);
-	pMat->MatD3D.Diffuse = D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f);
-	pMat->MatD3D.Emissive = D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f);
+	pMat->MatD3D.Ambient = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
+	pMat->MatD3D.Diffuse = D3DXCOLOR(1.0f, 0.0f, 0.0f, 0.1f);
+	pMat->MatD3D.Emissive = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
 	pMat->MatD3D.Specular = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
 
-	//透視変換の設定
-	//D3DXMatrixPerspectiveFovLH(&matProj, D3DXToRadian(45.0f), (float)rect.right / (float)rect.bottom, 100, 1000);
+	// アルファテストを有力化
+	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+
+	// アルファテスト基準値の設定
+	pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
+
+	// アルファテストの比較方法の設定(GREATERは基準値より大きい場合)
+	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
+
+	//pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 
 	// 描画処理
 	CModel::Draw();
+
+	//pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+
+	// アルファテストを無効化
+	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
 }
 
 //=============================================================================
@@ -124,14 +142,14 @@ CMeshShape * CMeshShape::Create(void)
 //=============================================================================
 HRESULT CMeshShape::Load(void)
 {
-	//// レンダラーの情報を受け取る
-	//CRenderer *pRenderer = NULL;
-	//pRenderer = CManager::GetRenderer();
-	//LPDIRECT3DDEVICE9 pDevice = pRenderer->GetDevice();
+	// レンダラーの情報を受け取る
+	CRenderer *pRenderer = NULL;
+	pRenderer = CManager::GetRenderer();
+	LPDIRECT3DDEVICE9 pDevice = pRenderer->GetDevice();
 
-	//// テクスチャの読み込み
-	//D3DXCreateTextureFromFile(pDevice, "data/Texture/stone_00124.jpg",
-	//	&m_apTexture[0]);
+	// テクスチャの読み込み
+	D3DXCreateTextureFromFile(pDevice, "data/Texture/stone_00124.jpg",
+		&m_apTexture[0]);
 
 	return S_OK;
 }
@@ -141,15 +159,15 @@ HRESULT CMeshShape::Load(void)
 //=============================================================================
 void CMeshShape::UnLoad(void)
 {
-	//for (int nCount = 0; nCount < MAX_MESHFIELD_TEXTURE; nCount++)
-	//{
-	//	// テクスチャの開放
-	//	if (m_apTexture[nCount] != NULL)
-	//	{
-	//		m_apTexture[nCount]->Release();
-	//		m_apTexture[nCount] = NULL;
-	//	}
-	//}
+	for (int nCount = 0; nCount < MAX_MESHFIELD_TEXTURE; nCount++)
+	{
+		// テクスチャの開放
+		if (m_apTexture[nCount] != NULL)
+		{
+			m_apTexture[nCount]->Release();
+			m_apTexture[nCount] = NULL;
+		}
+	}
 }
 
 D3DXVECTOR3 CMeshShape::GetPos(void)

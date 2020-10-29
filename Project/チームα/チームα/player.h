@@ -55,6 +55,7 @@ private:
 	CScore *pScore;							// スコアの情報
 	CLife *m_pLife[LIFE_NUM];				// ライフのポインタ
 	D3DXVECTOR3 m_pos;						// 座標
+	D3DXVECTOR3 m_rot;						// 回転
 	D3DXVECTOR3 m_move;						// 移動
 	int m_nDushFlame;						// ダッシュのフレーム
 	int m_nDushInterCnt;					// ダッシュできないときのカウント

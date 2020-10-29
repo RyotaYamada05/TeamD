@@ -109,11 +109,11 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 	// プレイヤーの生成
 	if (m_apPlayer[0] == NULL)
 	{
-		m_apPlayer[0] = CPlayer::Create(D3DXVECTOR3(0.0f, 50.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+		m_apPlayer[0] = CPlayer::Create(D3DXVECTOR3(0.0f, 50.0f, 0.0f), D3DXVECTOR3(0.0f, D3DXToRadian(0.0f), 0.0f));
 	}
 	if (m_apPlayer[1] == NULL)
 	{
-		m_apPlayer[1] = CPlayer::Create(D3DXVECTOR3(0.0f, 50.0f, -500.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+		m_apPlayer[1] = CPlayer::Create(D3DXVECTOR3(0.0f, 50.0f, 500.0f), D3DXVECTOR3(0.0f, D3DXToRadian(180.0f), 0.0f));
 	}
 
 	// メッシュフィールド
@@ -122,6 +122,7 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 		m_pMeshField = CMeshField::Create();
 	}
 
+	CMeshShape::Load();
 	// メッシュスフィア
 	if (m_pSphere == NULL)
 	{
@@ -177,6 +178,7 @@ void CGame::Uninit(void)
 		m_pMeshField->Uninit();
 	}
 
+	CMeshShape::UnLoad();
 	// メッシュスフィア
 	if (m_pSphere != NULL)
 	{

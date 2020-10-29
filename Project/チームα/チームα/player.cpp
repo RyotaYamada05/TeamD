@@ -100,6 +100,7 @@ CPlayer::CPlayer()
 	pScore = NULL;
 	memset(m_pLife, 0, sizeof(m_pLife));
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_nDushFlame = 0;
 	m_nDushInterCnt = 0;
@@ -232,6 +233,11 @@ void CPlayer::Update(void)
 	switch (m_nPlayerNum)
 	{
 	case 0:
+		if (CGame::GetCamera(m_nPlayerNum)->GetTargetBool())
+		{
+			m_rot.y = -CGame::GetCamera(1)->Getφ();
+		}
+
 		//R2トリガーまたはVキーを押したら
 		if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_R2_TRIGGER, m_nPlayerNum) ||
 			pKeyboard->GetTrigger(DIK_V))
@@ -242,6 +248,11 @@ void CPlayer::Update(void)
 		break;
 
 	case 1:
+		if (CGame::GetCamera(m_nPlayerNum)->GetTargetBool())
+		{
+			m_rot.y = -CGame::GetCamera(0)->Getφ();
+		}
+
 		//R2トリガーまたはVキーを押したら
 		if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_R2_TRIGGER, m_nPlayerNum) ||
 			pKeyboard->GetTrigger(DIK_V))
@@ -254,6 +265,7 @@ void CPlayer::Update(void)
 
 	// 座標情報を与える
 	CModel::SetPos(m_pos);
+	CModel::SetRot(m_rot);
 }
 
 //=============================================================================
@@ -304,6 +316,11 @@ void CPlayer::Walk(void)
 
 		if (js.lX < -50.0f)
 		{
+			if (!CGame::GetCamera(m_nPlayerNum)->GetTargetBool())
+			{
+				m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ()+D3DXToRadian(-90.0f));
+			}
+
 			// ジョイパッド操作
 			m_pos.x += sinf(fAngle)* PLAYER_SPEED;
 			m_pos.z -= cosf(fAngle)* PLAYER_SPEED;

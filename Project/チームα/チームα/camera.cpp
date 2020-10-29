@@ -177,7 +177,21 @@ void CCamera::Update(void)
 		CInputKeyboard *pKeyInput = CManager::GetKeyboard();
 
 		// ジョイパッドの取得
-		//DIJOYSTATE js = CInputJoypad::GetStick(m_nCameraNum);
+		DIJOYSTATE js = CInputJoypad::GetStick(m_nCameraNum);
+
+		if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_R3, m_nCameraNum))
+		{
+			if (m_bTarget == false)
+			{
+				m_fθ = D3DXToRadian(75.0f);
+				m_fφ = D3DXToRadian(0.0f);
+				m_bTarget = true;
+			}
+			else
+			{
+				m_bTarget = false;
+			}
+		}
 
 		if (pKeyInput->GetTrigger(DIK_TAB))
 		{
