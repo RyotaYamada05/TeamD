@@ -214,7 +214,6 @@ void CManager::Update(void)
 		//フェードクラスの更新処理呼び出し
 		m_pFade->Update();
 	}
-
 }
 
 //=============================================================================
@@ -240,8 +239,7 @@ void CManager::LoadAll(void)
 	CTitle::Load();
 	CResult::Load();
 	CMeshField::Load();
-
-	CBg::Load();	
+	CBg::Load();
 	CLife::Load();
 	CUi::Load();
 	CCharge::Load();
@@ -263,7 +261,6 @@ void CManager::UnLoadAll(void)
 	CPlayer::Unload();
 	CMeshField::UnLoad();
 	CBg::UnLoad();
-
 	CLife::Unload();
 	CUi::Unload();
 	CCharge::Unload();
@@ -338,8 +335,6 @@ void CManager::SetMode(MODE_TYPE mode)
 		{
 			m_pResult = CResult::Create();
 		}
-		break;
-
 
 	default:
 		break;

@@ -90,7 +90,6 @@
     <ClCompile Include="joypad.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-
     <ClCompile Include="bullet.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -109,7 +108,9 @@
     <ClCompile Include="ui.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="2d_explosion.cpp">
+    <ClCompile Include="shape.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>    <ClCompile Include="2d_explosion.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="beam.cpp">
@@ -207,7 +208,6 @@
     <ClInclude Include="joypad.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-
     <ClInclude Include="bullet.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -226,7 +226,9 @@
     <ClInclude Include="ui.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="2d_explosion.h">
+    <ClInclude Include="shape.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>    <ClInclude Include="2d_explosion.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="beam.h">

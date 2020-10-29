@@ -182,6 +182,7 @@
     <ClCompile Include="scene2d.cpp" />
     <ClCompile Include="scene3D.cpp" />
     <ClCompile Include="shader.cpp" />
+    <ClCompile Include="shape.cpp" />
     <ClCompile Include="shock.cpp" />
     <ClCompile Include="tcp_client.cpp" />
     <ClCompile Include="time.cpp" />
@@ -193,7 +194,8 @@
     <ClInclude Include="beam.h" />
     <ClInclude Include="bg.h" />
     <ClInclude Include="billboard.h" />
-    <ClInclude Include="board.h" />    <ClInclude Include="bullet.h" />
+    <ClInclude Include="board.h" />
+    <ClInclude Include="bullet.h" />
     <ClInclude Include="bullet2.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="charge.h" />
@@ -221,6 +223,7 @@
     <ClInclude Include="scene2d.h" />
     <ClInclude Include="scene3D.h" />
     <ClInclude Include="shader.h" />
+    <ClInclude Include="shape.h" />
     <ClInclude Include="shock.h" />
     <ClInclude Include="tcp_client.h" />
     <ClInclude Include="time.h" />

@@ -50,6 +50,7 @@ public:
 	void BindTexture(LPDIRECT3DTEXTURE9 pTexture);
 
 	LPD3DXMESH GetMesh(void)const;
+	LPD3DXBUFFER GetBuffMat(void)const;	//
 
 	void SetPos(const D3DXVECTOR3 pos);
 	D3DXVECTOR3 GetPos(void)const;

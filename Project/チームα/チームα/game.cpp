@@ -18,6 +18,7 @@
 #include "renderer.h"
 #include "player.h"
 #include "meshfield.h"
+#include "shape.h"
 #include "bg.h"
 #include "joypad.h"
 #include "time.h"
@@ -33,6 +34,7 @@
 CCamera *CGame::m_apCamera[MAX_PLAYER] = {};			// カメラクラスのポインタ変数
 CLight *CGame::m_pLight = NULL;						// ライトクラスのポインタ変数
 CMeshField *CGame::m_pMeshField = NULL;				// メッシュフィールド
+CMeshShape *CGame::m_pSphere = NULL;				// メッシュスフィア
 CBg *CGame::m_pBg = NULL;							// 背景のポインタ
 
 CPlayer *CGame::m_apPlayer[MAX_PLAYER] = {};		// プレイヤーのポインタ
@@ -120,13 +122,11 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 	// プレイヤーの生成
 	if (m_apPlayer[0] == NULL)
 	{
-	
 		m_apPlayer[0] = CPlayer::Create(D3DXVECTOR3(0.0f, 50.0f, 0.0f), D3DXVECTOR3(PLAYER_SIZE_X, PLAYER_SIZE_Y, PLAYER_SIZE_Z));
 	}
 	if (m_apPlayer[1] == NULL)
 	{
-
-		m_apPlayer[1] = CPlayer::Create(D3DXVECTOR3(0.0f, 50.0f, -500.0f), D3DXVECTOR3(PLAYER_SIZE_X, PLAYER_SIZE_Y, PLAYER_SIZE_Z));
+		m_apPlayer[1] = CPlayer::Create(D3DXVECTOR3(0.0f, 50.0f, 500.0f), D3DXVECTOR3(PLAYER_SIZE_X, PLAYER_SIZE_Y, PLAYER_SIZE_Z));
 	}
 
 	// メッシュフィールド
@@ -135,12 +135,18 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 		m_pMeshField = CMeshField::Create();
 	}
 
+	CMeshShape::Load();
+	// メッシュスフィア
+	if (m_pSphere == NULL)
+	{
+		m_pSphere = CMeshShape::Create();
+	}
+
 	// 背景
 	if (m_pBg == NULL)
 	{
 		m_pBg = CBg::Create();
 	}
-
 
 	//タイム
 	if (m_pTime == NULL)
@@ -154,7 +160,6 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 	//フォントの生成
 	D3DXCreateFont(pD3DDevice, 18, 0, 0, 0, FALSE, SHIFTJIS_CHARSET,
 		OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, "Terminal", &m_pFont);
-
 
 	return S_OK;
 }
@@ -189,6 +194,13 @@ void CGame::Uninit(void)
 		m_pMeshField->Uninit();
 	}
 
+	CMeshShape::UnLoad();
+	// メッシュスフィア
+	if (m_pSphere != NULL)
+	{
+		m_pSphere->Uninit();
+	}
+
 	// 背景
 	if (m_pBg != NULL)
 	{
@@ -210,7 +222,6 @@ void CGame::Update(void)
 {
 	for (int nCount = 0; nCount < MAX_PLAYER; nCount++)
 	{
-	
 		if (m_apCamera[nCount] != NULL)
 		{
 			//カメラクラスの更新処理
@@ -223,6 +234,12 @@ void CGame::Update(void)
 	if (m_pMeshField != NULL)
 	{
 		m_pMeshField->Update();
+	}
+
+	// メッシュスフィア
+	if (m_pSphere != NULL)
+	{
+		m_pSphere->Update();
 	}
 
 	CManager::GetConection()->Update();
@@ -239,6 +256,12 @@ void CGame::Draw(void)
 		m_pMeshField->Draw();
 	}
 
+	// メッシュスフィア
+	if (m_pSphere != NULL)
+	{
+		m_pSphere->Draw();
+	}
+
 	// 背景
 	if (m_pBg != NULL)
 	{
@@ -251,7 +274,6 @@ void CGame::Draw(void)
 //=======================================================================================
 CCamera * CGame::GetCamera(int nCount)
 {
-
 	return m_apCamera[nCount];
 }
 
@@ -285,4 +307,9 @@ CTime * CGame::GetTime(void)
 CUi * CGame::GetUi(void)
 {
 	return m_pUi;
+}
+
+CMeshShape * CGame::GetSphere()
+{
+	return m_pSphere;
 }

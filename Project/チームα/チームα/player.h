@@ -65,7 +65,9 @@ private:
 	CLife *m_pLife[LIFE_NUM];				// ライフのポインタ
 	CCharge *m_pCharge;						// チャージのポインタ
 	D3DXVECTOR3 m_pos;						// 座標
+	D3DXVECTOR3 m_rot;						// 回転
 	D3DXVECTOR3 m_move;						// 移動
+	float m_fAngle;							// 角度
 	int m_nDushFlame;						// ダッシュのフレーム
 	int m_nDushInterCnt;					// ダッシュできないときのカウント
 	int m_nPlayerNum;						// プレイヤーの番号

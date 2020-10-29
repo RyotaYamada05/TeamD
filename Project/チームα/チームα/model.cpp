@@ -200,6 +200,11 @@ LPD3DXMESH CModel::GetMesh(void) const
 	return m_pMesh;
 }
 
+LPD3DXBUFFER CModel::GetBuffMat(void) const
+{
+	return m_pBuffMat;
+}
+
 //=============================================================================
 //モデルクラスの位置情報の設定
 //=============================================================================

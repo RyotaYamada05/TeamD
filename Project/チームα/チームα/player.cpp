@@ -15,7 +15,6 @@
 #include "input.h"
 #include "bullet.h"
 #include "joypad.h"
-
 #include "charge.h"
 #include "camera.h"
 #include "life.h"
@@ -38,7 +37,6 @@
 //=============================================================================
 // static初期化
 //=============================================================================
-
 LPD3DXMESH CPlayer::m_pMesh = NULL;			// メッシュ情報へのポインタ
 LPD3DXBUFFER CPlayer::m_pBuffMat = NULL;	// マテリアル情報へのポインタ
 DWORD CPlayer::m_nNumMat = 0;				// マテリアル情報の数
@@ -51,7 +49,6 @@ CPlayer * CPlayer::Create(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 {
 	// 初期化処理
 	CPlayer *pPlayer = new CPlayer;
-
 
 	// プレイヤーの番号を代入
 	pPlayer->m_nPlayerNum = m_nPlayerAll++;
@@ -71,7 +68,6 @@ HRESULT CPlayer::LoadModel(void)
 	LPDIRECT3DDEVICE9 pD3DDevice = CManager::GetRenderer()->GetDevice();
 
 	// モデルの生成
-
 	D3DXLoadMeshFromX("data/model/ti-muiro.x",
 		D3DXMESH_SYSTEMMEM,
 		pD3DDevice,
@@ -114,6 +110,7 @@ CPlayer::CPlayer()
 	memset(m_pLife, 0, sizeof(m_pLife));
 	m_pCharge = NULL;
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_nDushFlame = 0;
 	m_nDushInterCnt = 0;
@@ -121,7 +118,7 @@ CPlayer::CPlayer()
 	m_bDush = false;
 	m_bDushInter = false;
 	m_nPlayerNum = 0;						// プレイヤーの番号
-
+	m_fAngle = 0.0f;
 }
 
 //=============================================================================
@@ -135,7 +132,7 @@ CPlayer::~CPlayer()
 //=============================================================================
 // 初期化処理
 //=============================================================================
-HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
+HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 {
 	// モデルの情報を設定
 	MODEL model;
@@ -149,12 +146,10 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 	//位置の設定
 	m_pos = pos;
 
-
 	switch (m_nPlayerNum)
 	{
 	//1Pだった場合
 	case 0:
-
 		//1Pのライフゲージ
 		if (m_pLife[0] == NULL)
 		{
@@ -180,6 +175,8 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 			m_pCharge = CCharge::Create(D3DXVECTOR3(CHARGE_POS_LEFT_X, CHARGE_POS_Y, 0.0f),
 				D3DXVECTOR3(MAX_CHARGE, CHARGE_SIZE_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255));
 		}
+
+		m_rot = D3DXVECTOR3(0.0f, D3DXToRadian(0.0f), 0.0f);
 
 		// モデルタイプ設定
 		SetType(MODEL_TYPE_PLAYER1);
@@ -210,6 +207,9 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 			m_pCharge = CCharge::Create(D3DXVECTOR3(CHARGE_POS_RIGHT_X, CHARGE_POS_Y, 0.0f),
 				D3DXVECTOR3(MAX_CHARGE, CHARGE_SIZE_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255));
 		}
+
+		m_rot = D3DXVECTOR3(0.0f, D3DXToRadian(180.0f), 0.0f);
+
 		// モデルタイプ設定
 		SetType(MODEL_TYPE_PLAYER2);
 
@@ -221,7 +221,10 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 	}
 
 	// 初期化	
-	CModel::Init(m_pos, rot);
+	CModel::Init(m_pos, size);
+
+	//rot初期化
+	CModel::SetRot(m_rot);
 
 	//オブジェクトタイプの設定
 	SetObjType(CScene::OBJTYPE_PLAYER);
@@ -236,7 +239,6 @@ void CPlayer::Uninit(void)
 {
 	// 終了処理
 	CModel::Uninit();
-
 
 }
 
@@ -277,6 +279,11 @@ void CPlayer::Update(void)
 	switch (m_nPlayerNum)
 	{
 	case 0:
+		if (CGame::GetCamera(m_nPlayerNum)->GetTargetBool())
+		{
+			m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ() + D3DXToRadian(90.0f));
+		}
+
 		//R2トリガーまたはVキーを押したら
 		if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_R2_TRIGGER, m_nPlayerNum) ||
 			pKeyboard->GetTrigger(DIK_V))
@@ -289,6 +296,11 @@ void CPlayer::Update(void)
 		break;
 
 	case 1:
+		if (CGame::GetCamera(m_nPlayerNum)->GetTargetBool())
+		{
+			m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ() + D3DXToRadian(90.0f));
+		}
+
 		//R2トリガーまたはVキーを押したら
 		if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_R2_TRIGGER, m_nPlayerNum) ||
 			pKeyboard->GetTrigger(DIK_V))
@@ -303,6 +315,7 @@ void CPlayer::Update(void)
 
 	// 座標情報を与える
 	CModel::SetPos(m_pos);
+	CModel::SetRot(m_rot);
 }
 
 //=============================================================================
@@ -352,23 +365,29 @@ void CPlayer::Walk(void)
 
 	if (js.lX != 0.0f || js.lY != 0)
 	{
-
-		float fAngle = CGame::GetCamera(m_nPlayerNum)->Getφ();
-
-		
+		m_fAngle = CGame::GetCamera(m_nPlayerNum)->Getφ();
 
 		if (js.lX < -50.0f)
 		{
-			// ジョイパッド操作
+			if (!CGame::GetCamera(m_nPlayerNum)->GetTargetBool())
+			{
+				m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ() - D3DXToRadian(180.0f));
+			}
 
-			m_pos.x += sinf(fAngle)* PLAYER_SPEED;
-			m_pos.z -= cosf(fAngle)* PLAYER_SPEED;
+			// ジョイパッド操作
+			m_pos.x += sinf(m_fAngle)* PLAYER_SPEED;
+			m_pos.z -= cosf(m_fAngle)* PLAYER_SPEED;
 		}
 		else if (js.lX > 50.0f)
 		{
+			if (!CGame::GetCamera(m_nPlayerNum)->GetTargetBool())
+			{
+				m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ());
+			}
+
 			// ジョイパッド操作
-			m_pos.x -= sinf(fAngle)* PLAYER_SPEED;
-			m_pos.z += cosf(fAngle)* PLAYER_SPEED;
+			m_pos.x -= sinf(m_fAngle)* PLAYER_SPEED;
+			m_pos.z += cosf(m_fAngle)* PLAYER_SPEED;
 		}
 		else
 		{
@@ -377,16 +396,24 @@ void CPlayer::Walk(void)
 
 		if (js.lY < -50.0f)
 		{
-			// ジョイパッド操作
+			if (!CGame::GetCamera(m_nPlayerNum)->GetTargetBool())
+			{
+				m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ() + D3DXToRadian(90.0f));
+			}
 
-			m_pos.x -= cosf(fAngle)* PLAYER_SPEED;
-			m_pos.z -= sinf(fAngle)* PLAYER_SPEED;
+			// ジョイパッド操作
+			m_pos.x -= cosf(m_fAngle)* PLAYER_SPEED;
+			m_pos.z -= sinf(m_fAngle)* PLAYER_SPEED;
 		}
 		else if (js.lY > 50.0f)
 		{
+			if (!CGame::GetCamera(m_nPlayerNum)->GetTargetBool())
+			{
+				m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ() + D3DXToRadian(-90.0f));
+			}
 			// ジョイパッド操作
-			m_pos.x += cosf(fAngle)* PLAYER_SPEED;
-			m_pos.z += sinf(fAngle)* PLAYER_SPEED;
+			m_pos.x += cosf(m_fAngle)* PLAYER_SPEED;
+			m_pos.z += sinf(m_fAngle)* PLAYER_SPEED;
 		}
 		else
 		{
@@ -407,7 +434,6 @@ void CPlayer::Walk(void)
 	// Aキーを押したとき
 	if (pKeyboard->GetPress(DIK_A))
 	{
-
 		m_pos.x += sinf(-D3DX_PI / 2)*PLAYER_SPEED;
 	}
 	// Dキーを押したとき
@@ -415,7 +441,6 @@ void CPlayer::Walk(void)
 	{
 		m_pos.x += sinf(D3DX_PI / 2)*PLAYER_SPEED;
 	}
-
 }
 
 //=============================================================================
@@ -427,7 +452,6 @@ void CPlayer::Jump(void)
 	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
 
 	// SPACEキーを押したとき・コントローラのYを押したとき
-	
 	if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_Y, m_nPlayerNum) && m_bJump == false
 		|| pKeyboard->GetTrigger(DIK_SPACE) && m_bJump == false )
 	{
@@ -436,7 +460,6 @@ void CPlayer::Jump(void)
 			m_move.y = PLAYER_JUMP;
 			m_bJump = true;
 	}
-
 }
 
 //=============================================================================
@@ -445,10 +468,8 @@ void CPlayer::Jump(void)
 void CPlayer::GroundLimit(void)
 {
 	// 着地の処理
-
 	if (m_pos.y <= GROUND_RIMIT)
 	{
-
 		m_move.y = GROUND_RIMIT;
 		m_pos.y = GROUND_RIMIT;
 		m_bJump = false;
@@ -465,7 +486,6 @@ void CPlayer::Fall(void)
 
 	// SPACEキーを押したとき
 	if (pKeyboard->GetTrigger(DIK_B) && m_bJump == true ||
-		
 		CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_A, m_nPlayerNum) && m_bJump == true)
 	{
 		// ジャンプの処理
@@ -486,7 +506,6 @@ void CPlayer::Dush(void)
 	if (m_bDushInter == false)
 	{
 		// Xボタンの時
-	
 		if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_X, m_nPlayerNum))
 		{
 			// ジョイパッドの取得
@@ -494,20 +513,20 @@ void CPlayer::Dush(void)
 
 			if (js.lX != 0.0f || js.lY != 0)
 			{
-				m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-				float fAngle = atan2f((float)js.lX, (float)js.lY);
+				m_fAngle = CGame::GetCamera(m_nPlayerNum)->Getφ();
 
-				// ジョイパッド操作
-		
-				m_move.x += sinf(-D3DX_PI / 2)* PLAYER_DUSH;
-				m_move.z -= cosf(-D3DX_PI / 2)* PLAYER_DUSH;
+				m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
+				// ジョイパッド操作				
+				m_move.x += sinf(m_fAngle)* PLAYER_DUSH;
+				m_move.z -= cosf(m_fAngle)* PLAYER_DUSH;
+
 				m_bDush = true;
 
 			}
 		}
 
 		// Bボタンの時
-	
 		if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_B, m_nPlayerNum))
 		{
 			// ジョイパッドの取得
@@ -515,14 +534,15 @@ void CPlayer::Dush(void)
 
 			if (js.lX != 0.0f || js.lY != 0)
 			{
+				m_fAngle = CGame::GetCamera(m_nPlayerNum)->Getφ();
+
 				m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-				float fAngle = atan2f((float)js.lX, (float)js.lY);
 
 				// ジョイパッド操作
-				m_move.x += sinf(D3DX_PI / 2)* PLAYER_DUSH;
-				m_move.z -= cosf(D3DX_PI / 2)* PLAYER_DUSH;
-				m_bDush = true;
+				m_move.x -= sinf(m_fAngle)* PLAYER_DUSH;
+				m_move.z += cosf(m_fAngle)* PLAYER_DUSH;
 
+				m_bDush = true;
 			}
 		}
 
@@ -561,7 +581,6 @@ void CPlayer::Dush(void)
 		m_move.z = 0.0f;
 
 		m_nDushInterCnt++;
-
 	}
 
 	// ダッシュしているとき
