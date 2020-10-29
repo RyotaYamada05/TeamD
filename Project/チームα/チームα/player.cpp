@@ -15,10 +15,14 @@
 #include "input.h"
 #include "bullet.h"
 #include "joypad.h"
+
+#include "charge.h"
 #include "camera.h"
 #include "life.h"
 #include "game.h"
-#include "charge.h"
+#include "beam.h"
+#include "particle.h"
+
 //=============================================================================
 // マクロ定義
 //=============================================================================
@@ -34,10 +38,11 @@
 //=============================================================================
 // static初期化
 //=============================================================================
-LPD3DXMESH CPlayer::m_pMesh = NULL;			//メッシュ情報へのポインタ
-LPD3DXBUFFER CPlayer::m_pBuffMat = NULL;	//マテリアル情報へのポインタ
-DWORD CPlayer::m_nNumMat = 0;				//マテリアル情報の数
-int CPlayer::m_nPlayerAll = 0;
+
+LPD3DXMESH CPlayer::m_pMesh = NULL;			// メッシュ情報へのポインタ
+LPD3DXBUFFER CPlayer::m_pBuffMat = NULL;	// マテリアル情報へのポインタ
+DWORD CPlayer::m_nNumMat = 0;				// マテリアル情報の数
+int CPlayer::m_nPlayerAll = 0;				// プレイヤーの総数
 
 //=============================================================================
 // クリエイト
@@ -47,11 +52,12 @@ CPlayer * CPlayer::Create(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 	// 初期化処理
 	CPlayer *pPlayer = new CPlayer;
 
+
 	// プレイヤーの番号を代入
 	pPlayer->m_nPlayerNum = m_nPlayerAll++;
 
+	// 初期化処理
 	pPlayer->Init(pos, size);
-
 
 	return pPlayer;
 }
@@ -74,6 +80,7 @@ HRESULT CPlayer::LoadModel(void)
 		NULL,
 		&m_nNumMat,
 		&m_pMesh);
+
 
 	// 正常終了
 	return S_OK;
@@ -130,6 +137,7 @@ CPlayer::~CPlayer()
 //=============================================================================
 HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 {
+	// モデルの情報を設定
 	MODEL model;
 	model.dwNumMat = m_nNumMat;
 	model.pBuffer = m_pBuffMat;
@@ -172,6 +180,9 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 			m_pCharge = CCharge::Create(D3DXVECTOR3(CHARGE_POS_LEFT_X, CHARGE_POS_Y, 0.0f),
 				D3DXVECTOR3(MAX_CHARGE, CHARGE_SIZE_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255));
 		}
+
+		// モデルタイプ設定
+		SetType(MODEL_TYPE_PLAYER1);
 		break;
 
 	//2Pだった場合
@@ -199,6 +210,8 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 			m_pCharge = CCharge::Create(D3DXVECTOR3(CHARGE_POS_RIGHT_X, CHARGE_POS_Y, 0.0f),
 				D3DXVECTOR3(MAX_CHARGE, CHARGE_SIZE_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255));
 		}
+		// モデルタイプ設定
+		SetType(MODEL_TYPE_PLAYER2);
 
 		break;
 
@@ -224,8 +237,7 @@ void CPlayer::Uninit(void)
 	// 終了処理
 	CModel::Uninit();
 
-	//ライフのアンロード
-	CLife::Unload();
+
 }
 
 //=============================================================================
@@ -253,7 +265,7 @@ void CPlayer::Update(void)
 	D3DXVECTOR3 size = m_pLife[0]->GetSize();
 	if (size.x <= 0)
 	{
-		Uninit();
+		//Uninit();
 		return;
 	}
 	//位置へ移動量を加算
@@ -322,6 +334,9 @@ void CPlayer::PlayerControl()
 
 	// 回避の処理
 	Dush();
+
+	// ビームの処理
+	beam();
 }
 
 //=============================================================================
@@ -337,12 +352,15 @@ void CPlayer::Walk(void)
 
 	if (js.lX != 0.0f || js.lY != 0)
 	{
+
 		float fAngle = CGame::GetCamera(m_nPlayerNum)->Getφ();
 
+		
 
 		if (js.lX < -50.0f)
 		{
 			// ジョイパッド操作
+
 			m_pos.x += sinf(fAngle)* PLAYER_SPEED;
 			m_pos.z -= cosf(fAngle)* PLAYER_SPEED;
 		}
@@ -360,6 +378,7 @@ void CPlayer::Walk(void)
 		if (js.lY < -50.0f)
 		{
 			// ジョイパッド操作
+
 			m_pos.x -= cosf(fAngle)* PLAYER_SPEED;
 			m_pos.z -= sinf(fAngle)* PLAYER_SPEED;
 		}
@@ -388,6 +407,7 @@ void CPlayer::Walk(void)
 	// Aキーを押したとき
 	if (pKeyboard->GetPress(DIK_A))
 	{
+
 		m_pos.x += sinf(-D3DX_PI / 2)*PLAYER_SPEED;
 	}
 	// Dキーを押したとき
@@ -395,6 +415,7 @@ void CPlayer::Walk(void)
 	{
 		m_pos.x += sinf(D3DX_PI / 2)*PLAYER_SPEED;
 	}
+
 }
 
 //=============================================================================
@@ -406,6 +427,7 @@ void CPlayer::Jump(void)
 	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
 
 	// SPACEキーを押したとき・コントローラのYを押したとき
+	
 	if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_Y, m_nPlayerNum) && m_bJump == false
 		|| pKeyboard->GetTrigger(DIK_SPACE) && m_bJump == false )
 	{
@@ -414,6 +436,7 @@ void CPlayer::Jump(void)
 			m_move.y = PLAYER_JUMP;
 			m_bJump = true;
 	}
+
 }
 
 //=============================================================================
@@ -422,8 +445,10 @@ void CPlayer::Jump(void)
 void CPlayer::GroundLimit(void)
 {
 	// 着地の処理
+
 	if (m_pos.y <= GROUND_RIMIT)
 	{
+
 		m_move.y = GROUND_RIMIT;
 		m_pos.y = GROUND_RIMIT;
 		m_bJump = false;
@@ -440,6 +465,7 @@ void CPlayer::Fall(void)
 
 	// SPACEキーを押したとき
 	if (pKeyboard->GetTrigger(DIK_B) && m_bJump == true ||
+		
 		CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_A, m_nPlayerNum) && m_bJump == true)
 	{
 		// ジャンプの処理
@@ -460,6 +486,7 @@ void CPlayer::Dush(void)
 	if (m_bDushInter == false)
 	{
 		// Xボタンの時
+	
 		if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_X, m_nPlayerNum))
 		{
 			// ジョイパッドの取得
@@ -471,6 +498,7 @@ void CPlayer::Dush(void)
 				float fAngle = atan2f((float)js.lX, (float)js.lY);
 
 				// ジョイパッド操作
+		
 				m_move.x += sinf(-D3DX_PI / 2)* PLAYER_DUSH;
 				m_move.z -= cosf(-D3DX_PI / 2)* PLAYER_DUSH;
 				m_bDush = true;
@@ -479,6 +507,7 @@ void CPlayer::Dush(void)
 		}
 
 		// Bボタンの時
+	
 		if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_B, m_nPlayerNum))
 		{
 			// ジョイパッドの取得
@@ -496,7 +525,6 @@ void CPlayer::Dush(void)
 
 			}
 		}
-
 
 		// Wキーを押したとき
 		if (pKeyboard->GetPress(DIK_W) && pKeyboard->GetTrigger(DIK_RSHIFT))
@@ -533,6 +561,7 @@ void CPlayer::Dush(void)
 		m_move.z = 0.0f;
 
 		m_nDushInterCnt++;
+
 	}
 
 	// ダッシュしているとき
@@ -540,6 +569,18 @@ void CPlayer::Dush(void)
 	{
 		// ダッシュが終わるまでをカウント
 		m_nDushFlame++;
+
+		int nNum = rand() % 3;
+
+		if (nNum % 3 == 0)
+		{
+			// 火花の生成
+			for (int nCount = 0; nCount < 2; nCount++)
+			{
+				CParticle::Create(D3DXVECTOR3(m_pos.x, m_pos.y + 25.0f, m_pos.z), D3DXVECTOR3(SPARK_SIZE_X, SPARK_SIZE_Y, 0.0f),
+					D3DXCOLOR(1.0f, 0.5f, 0.0f, 1.0f), SPARK_ANGLE, SPARK_BASE_ANGLE, SPARK_DISTANCE, SPARK_LIFE, SPARK_SPPED);
+			}
+		}
 	}
 
 	// ダッシュが終わるフレーム
@@ -555,6 +596,33 @@ void CPlayer::Dush(void)
 	{
 		m_nDushInterCnt = 0;
 		m_bDushInter = false;
+	}
+}
+
+//=============================================================================
+// ビーム
+//=============================================================================
+void CPlayer::beam(void)
+{
+	// キーボード更新
+	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
+
+	// Lキーを押したとき・コントローラのR1を押したとき
+	if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_R_TRIGGER, m_nPlayerNum) && m_bJump == false
+		|| pKeyboard->GetTrigger(DIK_L) && m_bJump == false)
+	{
+		switch (m_nPlayerNum)
+		{
+		case 0:
+			//バレットの生成
+			CBeam::Create(m_pos, D3DXVECTOR3(0.0f, 0.0f, -BEAM_SPEED), D3DXVECTOR3(BEAM_SIZE_X, BEAM_SIZE_Y, BEAM_SIZE_Z), CBullet2::BULLET2_USER_PL1);
+			break;
+
+		case 1:
+			//バレットの生成
+			CBeam::Create(m_pos, D3DXVECTOR3(0.0f, 0.0f, BEAM_SPEED), D3DXVECTOR3(BEAM_SIZE_X, BEAM_SIZE_Y, BEAM_SIZE_Z), CBullet2::BULLET2_USER_PL2);
+			break;
+		}
 	}
 }
 

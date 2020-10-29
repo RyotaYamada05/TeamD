@@ -34,9 +34,11 @@ public:
 
 	D3DXVECTOR3 GetPos(void)const { return m_pos; }
 	D3DXVECTOR3 GetSize(void)const { return m_PolygonSize; }
+
 	D3DXCOLOR   GetCol(void) { return m_col; }
 	
 private:
+
 
 	LPDIRECT3DTEXTURE9 m_pTextuer;			// テクスチャへのポインタ
 	LPDIRECT3DVERTEXBUFFER9 m_pVetxBuff;	 // 頂点バッファへのポインタ

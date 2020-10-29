@@ -204,7 +204,6 @@ void CBg::Draw(void)
 	// マテリアルデータへのポインタを取得
 	pMat = (D3DXMATERIAL*)m_pBuffMat->GetBufferPointer();
 
-
 	for (int nCntMat = 0; nCntMat < (int)m_nNumMat; nCntMat++)
 	{
 		pMat[nCntMat].MatD3D.Ambient.r = 1.0f;
@@ -230,8 +229,4 @@ void CBg::Draw(void)
 
 	// テクスチャの設定
 	pDevice->SetTexture(0, NULL);
-
-	//デバイス情報の取得
-
-//	CModel::Draw();
 }

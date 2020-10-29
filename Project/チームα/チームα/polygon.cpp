@@ -53,6 +53,7 @@ CPolygon * CPolygon::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 size, const
 	{
 		return NULL;
 	}
+
 	return pPolygon;
 }
 

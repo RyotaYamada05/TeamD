@@ -1,6 +1,6 @@
 //=============================================================================
 //
-// 処理 [bullet.cpp]
+// 弾の処理 [bullet.cpp]
 // Author : 山田陵太
 //
 //=============================================================================
@@ -8,15 +8,14 @@
 #include "player.h"
 #include "game.h"
 #include "life.h"
-
+#include "2d_explosion.h"
+#include "shock.h"
 //=============================================================================
 //マクロ定義
 //=============================================================================
-
-#define BULLET_LIFE 600	//バレットライフ 
+#define BULLET_LIFE 100	//バレットライフ 
 #define BULLET_ATK 20	//攻撃力
-#define BULLET_SPEED 10.0f	//速度
-
+#define BULLET_SPEED 50.0f	//速度
 //=============================================================================
 //バレットクラスのコンストラクタ
 //=============================================================================
@@ -85,11 +84,7 @@ HRESULT CBullet::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size, const BULLE
 	m_nAtk = BULLET_ATK;
 
 	//ビルボードの初期化
-	CBillboard::Init(m_pos, m_size);
-	
-	//オブジェクトタイプを設定
-	SetObjType(CScene::OBJTYPE_BULLET);
-
+	CBillboard::Init(pos, m_size);
 
 	switch (m_user)
 	{
@@ -130,9 +125,7 @@ void CBullet::Update(void)
 		//移動量の計算
 		m_move = VectorMath(m_pTargetPL->GetPos(), BULLET_SPEED);
 	}
-	
 
-	//移動量を位置に与える
 	m_pos += m_move;
 
 	//位置の設定
@@ -140,24 +133,22 @@ void CBullet::Update(void)
 
 	if (Collision() == true)
 	{
-		//終了処理呼び出し
 		Uninit();
-
 		return;
 	}
 
 	//ライフが0以下の時
 	if (m_nLife <= 0)
 	{
+		CShock::Create(m_pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+			D3DXVECTOR3(SHOCK_SIZE_X, SHOCK_SIZE_Y, SHOCK_SIZE_Z));
 		//終了処理呼び出し
 		Uninit();
-
 		return;
 	}
 
 	//ライフの減少
 	m_nLife--;
-
 	m_nCounter++;
 }
 
@@ -175,7 +166,6 @@ void CBullet::Draw(void)
 //=============================================================================
 bool CBullet::Collision(void)
 {
-	
 	D3DXVECTOR3 targetPos = m_pTargetPL->GetPos();
 
 	if (targetPos.x >= m_pos.x - m_size.x / 2 &&
@@ -190,13 +180,13 @@ bool CBullet::Collision(void)
 			//　プレイヤーのライフを減らす
 			m_pTargetPL->GetLife(nCount)->Decrease(50, true, CLife::LIFETYPE_NONE);
 		}
-
+		C2dExplosion::Create(m_pos,
+			D3DXVECTOR3(EXPLOSION_SIZE_X_2D, EXPLOSION_SIZE_Y_2D, EXPLOSION_SIZE_Z_2D));
 		return true;
 	}
-
+		
 	return false;
 }
-
 //=============================================================================
 //バレットクラスののベクトル計算処理
 //=============================================================================

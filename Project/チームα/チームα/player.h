@@ -15,8 +15,14 @@
 //=============================================================================
 // マクロ定義
 //=============================================================================
-#define THROWING_COUNTS (3)		// 投げることができる回数
-#define LIFE_NUM		(2)		// 表示するライフの数
+#define THROWING_COUNTS		(3)			// 投げることができる回数
+#define LIFE_NUM			(2)			// 表示するライフの数
+#define MAX_PARTS			(10)		// パーツの数
+#define MOTION_KEYSET_MAX	(32)		// キーセット最大数
+
+#define PLAYER_SIZE_X		(1)			// サイズ
+#define PLAYER_SIZE_Y		(1)			// サイズ
+#define PLAYER_SIZE_Z		(1)			// サイズ
 
 //=============================================================================
 // 前方宣言
@@ -33,7 +39,8 @@ public:
 	CPlayer();							// コンストラクタ
 	~CPlayer();							// デストラクタ
 
-	static CPlayer*Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot);		// クリエイト
+
+	static CPlayer*Create(D3DXVECTOR3 pos, D3DXVECTOR3 size);		// クリエイト
 	static HRESULT LoadModel(void);
 	static void Unload(void);
 
@@ -48,8 +55,8 @@ public:
 	void GroundLimit(void);											// 地面の制限
 	void Fall(void);												// 急降下
 	void Dush(void);												// ダッシュ
+	void beam(void);												// ビーム
 	D3DXVECTOR3 GetPos(void);
-
 
 	CLife *GetLife(int nNumber);									// ライフの情報
 	CCharge *GetCgarge(void);										// チャージのポインタ
@@ -69,6 +76,7 @@ private:
 	static LPD3DXBUFFER m_pBuffMat;			// マテリアル情報へのポインタ
 	static DWORD m_nNumMat;					// マテリアル情報の数
 	static int m_nPlayerAll;				// プレイヤーの数
+
 };
 
 #endif

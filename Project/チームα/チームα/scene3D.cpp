@@ -196,6 +196,11 @@ void CScene3D::Draw(void)
 
 	//ポリゴンの描画
 	pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, NUM_POLYGON);
+
+	//テクスチャの設定
+	pDevice->SetTexture(0, NULL);
+
+
 }
 
 void CScene3D::SetPos(D3DXVECTOR3 pos)

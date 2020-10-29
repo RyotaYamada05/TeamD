@@ -21,16 +21,20 @@
 #include "bg.h"
 #include "joypad.h"
 #include "time.h"
+#include "gauge.h"
+#include "life.h"
 #include "ui.h"
 
 #include "charge.h"
 //=======================================================================================
 // static初期化
 //=======================================================================================
+
 CCamera *CGame::m_apCamera[MAX_PLAYER] = {};			// カメラクラスのポインタ変数
 CLight *CGame::m_pLight = NULL;						// ライトクラスのポインタ変数
 CMeshField *CGame::m_pMeshField = NULL;				// メッシュフィールド
 CBg *CGame::m_pBg = NULL;							// 背景のポインタ
+
 CPlayer *CGame::m_apPlayer[MAX_PLAYER] = {};		// プレイヤーのポインタ
 CTime *CGame::m_pTime = NULL;						// タイムのポインタ
 CUi *CGame::m_pUi = NULL;							// uiのポインタ
@@ -70,6 +74,7 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 {
 	for (int nCount = 0; nCount < MAX_PLAYER; nCount++)
 	{
+		
 		//カメラクラスのクリエイト
 		m_apCamera[nCount] = CCamera::Create();
 	}
@@ -85,6 +90,7 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 			return -1;
 		}
 	}
+
 
 	//ui
 	if (m_pUi == NULL)
@@ -114,11 +120,13 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 	// プレイヤーの生成
 	if (m_apPlayer[0] == NULL)
 	{
-		m_apPlayer[0] = CPlayer::Create(D3DXVECTOR3(0.0f, 50.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	
+		m_apPlayer[0] = CPlayer::Create(D3DXVECTOR3(0.0f, 50.0f, 0.0f), D3DXVECTOR3(PLAYER_SIZE_X, PLAYER_SIZE_Y, PLAYER_SIZE_Z));
 	}
 	if (m_apPlayer[1] == NULL)
 	{
-		m_apPlayer[1] = CPlayer::Create(D3DXVECTOR3(0.0f, 50.0f, -500.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+
+		m_apPlayer[1] = CPlayer::Create(D3DXVECTOR3(0.0f, 50.0f, -500.0f), D3DXVECTOR3(PLAYER_SIZE_X, PLAYER_SIZE_Y, PLAYER_SIZE_Z));
 	}
 
 	// メッシュフィールド
@@ -133,6 +141,7 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 		m_pBg = CBg::Create();
 	}
 
+
 	//タイム
 	if (m_pTime == NULL)
 	{
@@ -146,6 +155,7 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 	D3DXCreateFont(pD3DDevice, 18, 0, 0, 0, FALSE, SHIFTJIS_CHARSET,
 		OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, "Terminal", &m_pFont);
 
+
 	return S_OK;
 }
 
@@ -156,15 +166,19 @@ void CGame::Uninit(void)
 {
 	for (int nCount = 0; nCount < MAX_PLAYER; nCount++)
 	{
+
 		if (m_apCamera[nCount] != NULL)
 		{
 			//カメラクラスの終了処理呼び出し
+
 			m_apCamera[nCount]->Uninit();
 
 			//メモリの破棄
+
 			delete[] * m_apCamera;
 
 			//メモリのクリア
+
 			m_apCamera[nCount] = NULL;
 		}
 	}
@@ -181,7 +195,9 @@ void CGame::Uninit(void)
 		m_pBg->Uninit();
 	}
 
+
 	CManager::GetConection()->Uninit();
+
 
 	//オブジェクトの破棄
 	Release();
@@ -194,9 +210,11 @@ void CGame::Update(void)
 {
 	for (int nCount = 0; nCount < MAX_PLAYER; nCount++)
 	{
+	
 		if (m_apCamera[nCount] != NULL)
 		{
 			//カメラクラスの更新処理
+			
 			m_apCamera[nCount]->Update();
 		}
 	}
@@ -233,6 +251,7 @@ void CGame::Draw(void)
 //=======================================================================================
 CCamera * CGame::GetCamera(int nCount)
 {
+
 	return m_apCamera[nCount];
 }
 

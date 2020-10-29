@@ -145,7 +145,6 @@ void CScene2d::Draw(void)
 	pD3DDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP,
 		0,
 		NUM_POLYGON);
-
 	
 
 	//アルファテストを無効化
@@ -168,6 +167,7 @@ CScene2d* CScene2d::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 	pScene->Init(pos ,size);
 
 	return pScene;
+
 }
 
 //======================================================
