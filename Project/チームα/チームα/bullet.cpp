@@ -88,7 +88,7 @@ HRESULT CBullet::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size, const BULLE
 	CBillboard::Init(m_pos, m_size);
 	
 	//オブジェクトタイプを設定
-	SetObjType(CScene::OBJTYPE_BULLET);
+	//SetObjType(CScene::OBJTYPE_BULLET);
 
 
 	switch (m_user)
@@ -188,7 +188,7 @@ bool CBullet::Collision(void)
 		for (int nCount = 0; nCount < LIFE_NUM; nCount++)
 		{
 			//　プレイヤーのライフを減らす
-			m_pTargetPL->GetLife(nCount)->Decrease(50, true, CLife::LIFETYPE_NONE);
+			m_pTargetPL->GetLife(nCount)->Decrease(50, m_user, true);
 		}
 
 		return true;

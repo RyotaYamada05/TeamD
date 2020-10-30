@@ -12,6 +12,8 @@
 #include "game.h"
 #include "player.h"
 #include "joypad.h"
+#include "ui.h"
+#include "lockon.h"
 
 //=============================================================================
 //マクロ定義
@@ -51,7 +53,7 @@ CCamera::CCamera()
 	m_fDistance = 0.0f;							// 視点～注視点の距離
 	m_fMove = 0.0f;								// 移動量
 	m_nCameraNum = m_nCameraAll++;						// カメラの番号
-	m_bTarget = true; //ターゲット使用
+	m_bTarget = true;							//ターゲット使用
 }
 
 //=============================================================================
@@ -186,6 +188,8 @@ void CCamera::Update(void)
 		//キーボードクラス情報の取得
 		CInputKeyboard *pKeyInput = CManager::GetKeyboard();
 
+		CLockon *pLockon = CGame::GetLockon();
+
 		// ジョイパッドの取得
 		//DIJOYSTATE js = CInputJoypad::GetStick(m_nCameraNum);
 
@@ -196,6 +200,7 @@ void CCamera::Update(void)
 				m_fθ = D3DXToRadian(75.0f);
 				m_fφ = D3DXToRadian(0.0f);
 				m_bTarget = true;
+				
 			}
 			else
 			{
@@ -203,6 +208,7 @@ void CCamera::Update(void)
 				m_posRRot = pPlayerPos1 - pPlayerPos2;
 				m_posVRot = m_posV;
 				m_bTarget = false;
+				return;
 			}
 		}
 
@@ -218,6 +224,17 @@ void CCamera::Update(void)
 
 			m_posV += (m_posVDest - m_posV); //カメラフロー
 			m_posR += (m_posRDest - m_posR); //カメラフロー
+
+			if (m_nCameraNum == 0)
+			{
+				pLockon->Create(D3DXVECTOR3(UI_LOCKON_POS_LEFT_X, UI_RESULT_POS_Y, 0.0f), D3DXVECTOR3(UI_LOCKON_SIZE_X, UI_LOCKON_SIZE_Y, 0.0f), CLockon::LOCKONTYPE_FAST_PLAYER);
+			}
+
+			if (m_nCameraNum == 1)
+			{
+				pLockon->Create(D3DXVECTOR3(UI_LOCKON_POS_RIGHT_X, UI_RESULT_POS_Y, 0.0f), D3DXVECTOR3(UI_LOCKON_SIZE_X, UI_LOCKON_SIZE_Y, 0.0f), CLockon::LOCKONTYPE_SECOND_PLAYER);
+			}
+
 		}
 		else
 		{
@@ -244,6 +261,7 @@ void CCamera::Update(void)
 			{
 				m_fθ += D3DXToRadian(1.0f);
 			}
+
 
 #ifdef CAMERA_TEST
 			/*m_fφ = atan2f(m_posRRot.z , m_posRRot.x);*/
