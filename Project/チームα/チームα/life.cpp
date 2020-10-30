@@ -155,12 +155,12 @@ void CLife::Decrease(int Reduce, int PlayerNamber, bool Life)
 	m_nPlayerNum = PlayerNamber;
 
 	//‚Q‚o‚É’e‚ª‚ ‚½‚Á‚½‚ç‚P‚o‚ÌêŠ‚É‚g‚h‚s‚Ì•¶š‚ğo‚·
-	if (m_nPlayerNum == 1)
+	if (m_nPlayerNum == 0)
 	{
 		CUi::Create(D3DXVECTOR3(UI_HIT_POS_LEFT_X, 600.0f, 0.0f), D3DXVECTOR3(UI_HIT_SIZE_X, UI_HIT_SIZE_Y, 0.0f), CUi::UITYPE_HIT);
 	}
 	//‚P‚o‚É’e‚ª‚ ‚½‚Á‚½‚ç‚Q‚o‚ÌêŠ‚É‚g‚h‚s‚Ì•¶š‚ğo‚·
-	if (m_nPlayerNum == 0)
+	if (m_nPlayerNum == 1)
 	{
 		CUi::Create(D3DXVECTOR3(UI_HIT_POS_RIGHT_X, 600.0f, 0.0f), D3DXVECTOR3(UI_HIT_SIZE_X, UI_HIT_SIZE_Y, 0.0f), CUi::UITYPE_HIT);
 	}

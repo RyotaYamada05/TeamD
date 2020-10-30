@@ -36,6 +36,7 @@
 #include "shock.h"
 #include "bomb.h"
 
+#include "lockon.h"
 //=============================================================================
 //ê√ìIÉÅÉìÉoïœêîêÈåæ
 //=============================================================================
@@ -239,7 +240,6 @@ void CManager::LoadAll(void)
 	CTitle::Load();
 	CResult::Load();
 	CMeshField::Load();
-
 	CBg::Load();	
 	CLife::Load();
 	CUi::Load();
@@ -251,6 +251,7 @@ void CManager::LoadAll(void)
 	CParticle::Load();
 	CShock::Load();
 	CBomb::Load();
+	CLockon::Load();
 }
 
 //=============================================================================
@@ -271,6 +272,7 @@ void CManager::UnLoadAll(void)
 	CParticle::UnLoad();
 	CShock::UnLoad();
 	CBomb::UnLoad();
+	CLockon::Unload();
 }
 
 //=============================================================================

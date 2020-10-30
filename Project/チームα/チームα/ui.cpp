@@ -8,27 +8,35 @@
 //================================================
 // インクルード
 //================================================
-
 #include "ui.h"
 #include "manager.h"
 #include "renderer.h"
+#include "camera.h"
+#include "game.h"
+#include "player.h"
 #include "keyboard.h"
 //================================================
 //静的メンバ変数宣言
 //================================================
 LPDIRECT3DTEXTURE9 CUi::m_apTexture[UI_TYPE] = {};
+int CUi::m_nUi = 0;
 //================================================
 //クリエイト処理
 //================================================
 CUi* CUi::Create(D3DXVECTOR3 pos, D3DXVECTOR3 size, UITYPE type)
 {
-	// オブジェクトを生成
-	CUi* pUi = new CUi;
+	if (m_nUi <= 20)
+	{
+		// オブジェクトを生成
+		CUi* pUi = new CUi;
 
-	// 初期化処理
-	pUi->Init(pos,size,type);
+		// 初期化処理
+		pUi->Init(pos, size, type);
 
-	return pUi;
+		m_nUi++;
+
+		return pUi;
+	}
 }
 
 //================================================
@@ -81,11 +89,6 @@ HRESULT CUi::Load(void)
 		"Data/TEXTURE/Lockon001.png", //ファイルの読み込み
 		&m_apTexture[UITYPE_STANDARD]);
 
-	//ロックオン
-	D3DXCreateTextureFromFile(pDevice,
-		"Data/TEXTURE/Lockon.png", //ファイルの読み込み
-		&m_apTexture[UITYPE_LOCKON]);
-
 	return S_OK;
 }
 
@@ -110,14 +113,12 @@ void CUi::Unload(void)
 //================================================
 CUi::CUi()
 {
-	m_nPattern = 0;
-	m_nCounter = 0;
-	m_nLockCounter = 0;
-	m_nLockPattern = 0;
-	m_pos = (D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-	m_move = (D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-	m_size = (D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-	m_type = UITYPE_NONE;
+	m_nPattern = 0;								// パターン数
+	m_nCounter = 0;								// カウンタ	
+	m_pos = (D3DXVECTOR3(0.0f, 0.0f, 0.0f));	// 座標
+	m_move = (D3DXVECTOR3(0.0f, 0.0f, 0.0f));	// 移動量
+	m_size = (D3DXVECTOR3(0.0f, 0.0f, 0.0f));	// サイズ
+	m_type = UITYPE_NONE;						// タイプ
 }
 
 //================================================
@@ -150,13 +151,6 @@ HRESULT CUi::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size, UITYPE type)
 	//カラー設定
 	CScene2d::SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 
-	//ロックオンの場合
-	if (m_type == UITYPE_LOCKON)
-	{
-		//テクスチャー設定
-		CScene2d::SetAnim(m_nLockPattern, 0.5);
-	}
-
 	return S_OK;
 }
 
@@ -178,9 +172,6 @@ void CUi::Update(void)
 	//Hit!!がでたとき
 	UiHit();
 
-	//ロックオンの処理
-	UiLockon();
-
 	// キーボード更新
 	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
 
@@ -194,11 +185,6 @@ void CUi::Update(void)
 	{
 		Create(D3DXVECTOR3(UI_RESULT_POS_RIGHT_X, UI_RESULT_POS_Y, 0.0f), D3DXVECTOR3(UI_RESULT_SIZE_X, UI_RESULT_SIZE_Y, 0.0f), CUi::UITYPE_WIN);
 		Create(D3DXVECTOR3(UI_RESULT_POS_LEFT_X, UI_RESULT_POS_Y, 0.0f), D3DXVECTOR3(UI_RESULT_SIZE_X, UI_RESULT_SIZE_Y, 0.0f), CUi::UITYPE_LOSE);
-	}
-
-	if (pKeyboard->GetTrigger(DIK_U))
-	{
-		Create(D3DXVECTOR3(UI_RESULT_POS_RIGHT_X, UI_RESULT_POS_Y, 0.0f), D3DXVECTOR3(UI_LOCKON_SIZE_X, UI_LOCKON_SIZE_Y, 0.0f), CUi::UITYPE_LOCKON);
 	}
 }
 
@@ -241,23 +227,4 @@ void CUi::UiHit(void)
 	}
 
 	SetCol(col);
-}
-
-//================================================
-//ヒットした時に出るUIの処理
-//================================================
-void CUi::UiLockon(void)
-{
-	if (m_type == UITYPE_LOCKON)
-	{
-		m_nLockCounter++;
-		if (m_nLockCounter == 8)
-		{
-			m_nLockPattern++;
-			CScene2d::SetAnim(m_nLockPattern, 0.5f);
-
-			m_nLockCounter = 0;
-		}
-	}
-	
 }

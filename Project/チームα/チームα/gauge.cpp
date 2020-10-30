@@ -139,6 +139,15 @@ void CGauge::Draw(void)
 	// Rendererクラスからデバイスを取得
 	LPDIRECT3DDEVICE9 pD3DDevice = CManager::GetRenderer()->GetDevice();
 
+	//アルファテストを有効化
+	pD3DDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+
+	//アルファテスト基準値の設定
+	pD3DDevice->SetRenderState(D3DRS_ALPHAREF, 0);
+
+	//アルファテストの比較方法の設定(GREATERは基準値より大きい場合)
+	pD3DDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
+
 	// 頂点バッファをデータストリームに設定
 	pD3DDevice->SetStreamSource(0, m_pVetxBuff, 0, sizeof(VERTEX_2D));
 
@@ -152,6 +161,9 @@ void CGauge::Draw(void)
 	pD3DDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP,
 		0,
 		NUM_POLYGON);
+
+	//アルファテストを無効化
+	pD3DDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
 
 	// テクスチャの設定
 	pD3DDevice->SetTexture(0, NULL);

@@ -151,7 +151,8 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 	{
 	//1P‚¾‚Á‚½ê‡
 	case 0:
-		//1P‚Ìƒ‰ƒCƒtƒQ[ƒW		if (m_pLife[0] == NULL)
+		//1P‚Ìƒ‰ƒCƒtƒQ[ƒW		
+		if (m_pLife[0] == NULL)
 		{
 			//1P‘¤‚É‘Ì—ÍƒQ[ƒW‚ð¶¬
 			m_pLife[0] = CLife::Create(D3DXVECTOR3(LIFE_POS_LEFT_X, LIFE_POS_UP_Y, 0.0f),
@@ -207,7 +208,6 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 		//‚Q‚o‚Ì’e‚Ìƒ`ƒƒ[ƒWƒQ[ƒW
 		if (m_pCharge == NULL)
 		{
-
 			m_pCharge = CCharge::Create(D3DXVECTOR3(CHARGE_POS_RIGHT_X, CHARGE_POS_Y, 0.0f),
 				D3DXVECTOR3(MAX_CHARGE, CHARGE_SIZE_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255));
 		}
@@ -278,7 +278,7 @@ void CPlayer::Update(void)
 	// ’n–Ê‚Ì§ŒÀ
 	GroundLimit();
 
-		switch (m_nPlayerNum)
+	switch (m_nPlayerNum)
 	{
 	case 0:
 		if (CGame::GetCamera(m_nPlayerNum)->GetTargetBool())
@@ -631,11 +631,15 @@ void CPlayer::beam(void)
 		case 0:
 			//ƒoƒŒƒbƒg‚Ì¶¬
 			CBeam::Create(m_pos, D3DXVECTOR3(0.0f, 0.0f, -BEAM_SPEED), D3DXVECTOR3(BEAM_SIZE_X, BEAM_SIZE_Y, BEAM_SIZE_Z), CBullet2::BULLET2_USER_PL1);
+			//’e‚¤‚Á‚½‚çƒQ[ƒW‚ðŒ¸‚ç‚·
+			m_pCharge->Reduce(50, true);
 			break;
 
 		case 1:
 			//ƒoƒŒƒbƒg‚Ì¶¬
 			CBeam::Create(m_pos, D3DXVECTOR3(0.0f, 0.0f, BEAM_SPEED), D3DXVECTOR3(BEAM_SIZE_X, BEAM_SIZE_Y, BEAM_SIZE_Z), CBullet2::BULLET2_USER_PL2);
+			//’e‚¤‚Á‚½‚çƒQ[ƒW‚ðŒ¸‚ç‚·
+			m_pCharge->Reduce(50, true);
 			break;
 		}
 	}
@@ -660,6 +664,8 @@ void CPlayer::bomb(void)
 			CBomb::Create(D3DXVECTOR3(m_pos.x, m_pos.y + 50.0f, m_pos.z),
 				D3DXVECTOR3(0.0f, BOMB_MOVE_Y, -BOMB_SPEED),
 				D3DXVECTOR3(BOMB_SIZE_X, BOMB_SIZE_Y, BOMB_SIZE_Z), CBullet2::BULLET2_USER_PL1);
+			//’e‚¤‚Á‚½‚çƒQ[ƒW‚ðŒ¸‚ç‚·
+			m_pCharge->Reduce(50, true);
 			break;
 
 		case 1:
@@ -667,6 +673,8 @@ void CPlayer::bomb(void)
 			CBomb::Create(D3DXVECTOR3(m_pos.x, m_pos.y +50.0f, m_pos.z), 
 				D3DXVECTOR3(0.0f, BOMB_MOVE_Y, BOMB_SPEED),
 				D3DXVECTOR3(BOMB_SIZE_X, BOMB_SIZE_Y, BOMB_SIZE_Z), CBullet2::BULLET2_USER_PL2);
+			//’e‚¤‚Á‚½‚çƒQ[ƒW‚ðŒ¸‚ç‚·
+			m_pCharge->Reduce(50, true);
 			break;
 		}
 	}

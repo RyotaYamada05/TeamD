@@ -84,7 +84,10 @@ HRESULT CBullet::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size, const BULLE
 	m_nAtk = BULLET_ATK;
 
 	//ビルボードの初期化
-	CBillboard::Init(pos, m_size);
+	CBillboard::Init(m_pos, m_size);
+	
+	//オブジェクトタイプを設定
+	//SetObjType(CScene::OBJTYPE_BULLET);
 
 	switch (m_user)
 	{
@@ -178,7 +181,8 @@ bool CBullet::Collision(void)
 		for (int nCount = 0; nCount < LIFE_NUM; nCount++)
 		{
 			//　プレイヤーのライフを減らす
-			m_pTargetPL->GetLife(nCount)->Decrease(50, true, CLife::LIFETYPE_NONE);
+
+			m_pTargetPL->GetLife(nCount)->Decrease(50, m_user, true);
 		}
 		C2dExplosion::Create(m_pos,
 			D3DXVECTOR3(EXPLOSION_SIZE_X_2D, EXPLOSION_SIZE_Y_2D, EXPLOSION_SIZE_Z_2D));

@@ -30,7 +30,7 @@ class CBg;
 class CPlayer;
 class CTime;
 class CUi;
-
+class CLockon;
 //***************************************************************************************
 // インクルードファイル
 //***************************************************************************************
@@ -46,6 +46,7 @@ public:
 	static CTime *GetTime(void);
 	static CMeshShape*GetSphere();
 	static CUi *GetUi(void);
+	static CLockon *GetLockon(void);
 
 	HRESULT Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size);
 	void Uninit(void);
@@ -62,6 +63,7 @@ private:
 	static CPlayer *m_apPlayer[MAX_PLAYER];		// プレイヤーのポインタ
 	static CTime *m_pTime;						// タイムのポインタ
 	static CUi *m_pUi;							// uiのポインタ
+	static CLockon *m_pLockon;					// ロックオンのポインタ
 	LPD3DXFONT m_pFont;
 };
 #endif
