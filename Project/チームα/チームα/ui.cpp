@@ -106,6 +106,7 @@ void CUi::Unload(void)
 			m_apTexture[nCount] = NULL;
 		}
 	}
+
 }
 
 //================================================
@@ -160,6 +161,7 @@ HRESULT CUi::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size, UITYPE type)
 void CUi::Uninit(void)
 {
 	CScene2d::Uninit();
+	m_nUi--;
 }
 
 //================================================

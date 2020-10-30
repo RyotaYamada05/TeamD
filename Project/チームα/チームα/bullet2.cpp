@@ -198,7 +198,7 @@ bool CBullet2::Collision(void)
 		for (int nCount = 0; nCount < LIFE_NUM; nCount++)
 		{
 			//　プレイヤーのライフを減らす
-			pPlayer->GetLife(nCount)->Decrease(50, true, CLife::LIFETYPE_NONE);
+			m_pTargetPL->GetLife(nCount)->Decrease(50, m_user, true);
 
 			// 爆発生成
 			C2dExplosion::Create(m_pos,
