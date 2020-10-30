@@ -31,8 +31,9 @@ class CScene3D;
 class CBillboard : public CScene3D
 {
 public:
-	CBillboard();						// コンストラクタ
-	~CBillboard();						// デストラクタ
+	CBillboard();
+	~CBillboard();
+
 
 	HRESULT Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size);		// 初期化処理
 	void Uninit(void);													// 終了処理
@@ -44,6 +45,7 @@ public:
 	D3DXVECTOR3 GetPos(void);											// 座標情報
 	D3DXVECTOR3 GetMove(void);											// 移動量情報
 	D3DXVECTOR3 GetSize(void);											// サイズ情報
+
 
 	void BindTexture(LPDIRECT3DTEXTURE9 pTexture);						// テクスチャの設定
 	void InitAnimation(int nCounterAnim, int nPatternAnim, int nLoop);	// アニメーション情報初期化
@@ -60,6 +62,7 @@ private:
 	LPDIRECT3DTEXTURE9 m_pTexture;						// ポリゴンのテクスチャ
 	int m_nLife;										// 寿命
 	bool m_bUse;										// 使用判定
+
 	int m_nCountAnim;									// アニメーションテクスチャ
 	int m_nCountAnimPattern;							// アニメーションのパターン
 	int m_nCounterAnim;									// アニメーションのカウンター

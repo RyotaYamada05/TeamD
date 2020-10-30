@@ -29,7 +29,7 @@
 //=============================================================================
 class CScore;
 class CLife;
-
+class CCharge;
 //=============================================================================
 // ターンクラス
 //=============================================================================
@@ -38,6 +38,7 @@ class CPlayer : public CModel
 public:
 	CPlayer();							// コンストラクタ
 	~CPlayer();							// デストラクタ
+
 
 	static CPlayer*Create(D3DXVECTOR3 pos, D3DXVECTOR3 size);		// クリエイト
 	static HRESULT LoadModel(void);
@@ -55,12 +56,15 @@ public:
 	void Fall(void);												// 急降下
 	void Dush(void);												// ダッシュ
 	void beam(void);												// ビーム
+	void bomb(void);												// ボム
 
 	D3DXVECTOR3 GetPos(void);
-	CLife *GetLife(int nNumber);											// ライフの情報
+	CLife *GetLife(int nNumber);									// ライフの情報
+	CCharge *GetCgarge(void);										// チャージのポインタ
 private:
 	CScore *pScore;							// スコアの情報
 	CLife *m_pLife[LIFE_NUM];				// ライフのポインタ
+	CCharge *m_pCharge;						// チャージのポインタ
 	D3DXVECTOR3 m_pos;						// 座標
 	D3DXVECTOR3 m_move;						// 移動
 	int m_nDushFlame;						// ダッシュのフレーム

@@ -1,3 +1,4 @@
+
 //=============================================================================
 //
 // タイム処理 [time.h]
@@ -20,13 +21,15 @@ class CNumber;
 //=============================================================================
 // マクロ定義
 //=============================================================================
-#define TIME_LIMIT		(8000)	//制限時間
-#define MAX_TIME		(4)		//桁数
-#define TIME_S_SIZE_X	(50)	//数字のＸサイズ
-#define TIME_S_SIZE_Y	(50)	//数字のＹサイズ
-#define TIME_MS_SIZE_X	(30)	//ミリ秒数字のＸサイズ
-#define TIME_MS_SIZE_Y	(30)	//ミリ秒数字のＹサイズ
-#define TIME_INTERVAL	(50)	//数字の置く間隔
+#define TIME_LIMIT		(8000)		// 制限時間
+#define MAX_TIME		(4)			// 桁数
+#define TIME_S_SIZE_X	(50)		// 数字のＸサイズ
+#define TIME_S_SIZE_Y	(50)		// 数字のＹサイズ
+#define TIME_MS_SIZE_X	(35)		// ミリ秒数字のＸサイズ
+#define TIME_MS_SIZE_Y	(35)		// ミリ秒数字のＹサイズ
+#define TIME_POS_X		(585.0f)	// タイムのX座標
+#define TIME_POS_Y		(55.0f)		// タイムのY座標
+#define TIME_INTERVAL	(50)		// 数字の置く間隔
 
 //================================================
 //クラス宣言
@@ -46,12 +49,12 @@ public:
 	int GetTime(void) { return m_nTime; }
 
 private:
-	LPDIRECT3DTEXTURE9		m_pTexture;	//テクスチャへのポインタ
-	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;	//頂点バッファへのポインタ
-	D3DXVECTOR3	m_pos;					//ポリゴンの位置
-	CNumber	*m_apNumber[MAX_TIME];		//数字の配置
-	int m_nTime;						//タイム
-	int m_nTimeCount;					//タイムのカウンター
+	LPDIRECT3DTEXTURE9		m_pTexture;	// テクスチャへのポインタ
+	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;	// 頂点バッファへのポインタ
+	D3DXVECTOR3	m_pos;					// ポリゴンの位置
+	CNumber	*m_apNumber[MAX_TIME];		// 数字の配置
+	int m_nTime;						// タイム
+	int m_nTimeCount;					// タイムのカウンター
 
 
 };

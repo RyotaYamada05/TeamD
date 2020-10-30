@@ -68,12 +68,14 @@ HRESULT CRenderer::Init(HWND hWnd, bool bWindow)
 	if (m_pD3DInterface == NULL)
 	{
 		// 作成失敗
+
 		return E_FAIL;
 	}
 
 	m_pD3DPresentParam = new D3DPRESENT_PARAMETERS;
 	if (m_pD3DPresentParam == NULL)
 	{
+
 		return E_FAIL;
 	}
 	ZeroMemory(m_pD3DPresentParam, sizeof(D3DPRESENT_PARAMETERS));
@@ -220,6 +222,7 @@ void CRenderer::Update(void)
 //=============================================================================
 void CRenderer::Draw(void)
 {
+
 	m_pD3DDevice->Clear(0, NULL, (D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER), D3DCOLOR_RGBA(0, 255, 255, 0), 1.0f, 0);
 
 	// Direct3Dによる描画の開始
@@ -254,12 +257,15 @@ void CRenderer::Draw(void)
 			//オブジェクトクラスの全描画処理呼び出し
 			CScene::AllDraw();
 
+
 			////ライティングを無効にする。
 			//m_pD3DDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
+
 
 			//// WVPを持つ一時的な行列を作成し、
 			//// 次に転置して、格納する
 			//D3DXMatrixTranspose(&trans, &(matWorld * matView * matProj));
+
 
 			//// 行列のアドレスを送る（メモリ内では4行の4浮動小数点)
 			//// レジスタr0で始まる全部で4つのレジスタに置く
@@ -268,14 +274,17 @@ void CRenderer::Draw(void)
 			//	trans,			// 値のアドレス
 			//	4);				// ロードする4成分値の数
 
+
 			//// 色の設定
 			//float fteal[4] = { 0.0f, 1.0f, 0.7f, 0.0f };	// rgbaの値
+
 
 			//// レジスタc12を指定する
 			//m_pD3DDevice->SetVertexShaderConstantF(
 			//	12,				// 設定する定数レジスタ
 			//	fteal,			// 値の配列
 			//	1);				// ロードする4成分値の数
+
 
 			////射影座標変換・透過変換の設定
 			//D3DXMatrixPerspectiveFovLH(&matProj,
@@ -284,15 +293,19 @@ void CRenderer::Draw(void)
 			//	0.1f,
 			//	500.0f);
 
+
 			//m_pD3DDevice->SetTransform(D3DTS_PROJECTION, &matProj);
+
 
 			////ビュー座標変換
 			//D3DXMatrixIdentity(&matView);
 			//m_pD3DDevice->SetTransform(D3DTS_VIEW, &matView);
 
+
 			////ワールド座標変換
 			//D3DXMatrixIdentity(&matWorld);
 			//m_pD3DDevice->SetTransform(D3DTS_WORLD, &matWorld);
+
 
 
 			////メモリを確保できていたら
@@ -324,6 +337,7 @@ void CRenderer::Draw(void)
 			}
 
 			// バックバッファとフロントバッファの入れ替え
+
 			m_pD3DDevice->Present(NULL, NULL, NULL, NULL);
 		}
 
@@ -331,6 +345,7 @@ void CRenderer::Draw(void)
 		m_pD3DDevice->EndScene();
 	}
 
+	
 	// バックバッファとフロントバッファの入れ替え
 	m_pD3DDevice->Present(NULL, NULL, NULL, NULL);
 }

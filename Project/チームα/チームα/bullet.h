@@ -13,6 +13,11 @@
 #include "billboard.h"
 
 //=============================================================================
+//前方宣言
+//=============================================================================
+class CPlayer;
+
+//=============================================================================
 //バレットクラス
 //=============================================================================
 class CBullet :public CBillboard
@@ -41,7 +46,7 @@ public:
 	void Update(void);
 	void Draw(void);
 	bool Collision(void);
-
+	D3DXVECTOR3 VectorMath(D3DXVECTOR3 TargetPos, float fSpeed);
 private:
 	//=========================================================================
 	//メンバ変数宣言
@@ -50,9 +55,10 @@ private:
 	D3DXVECTOR3 m_move;	//移動量
 	D3DXVECTOR3 m_size;	//大きさ
 	int m_nAtk;	//攻撃力
-	int m_nLife;	//ライフ
+	int m_nLife;	//ライフ	
+	int m_nCounter;
 	BULLET_USER m_user;	//使用者
+	CPlayer * m_pTargetPL;	//敵プレイヤーのポインタ
+
 };
-
-
-#endif 
+#endif

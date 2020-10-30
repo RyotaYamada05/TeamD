@@ -1,6 +1,6 @@
 //=====================================================
 //
-// ビルボードクラスヘッダー [billboard.h]
+// ビルボードクラスヘッダー [billboard.cpp]
 // Author : 小西優斗
 //
 //=====================================================
@@ -11,6 +11,7 @@
 #include "billboard.h"
 #include "manager.h"
 #include "renderer.h"
+
 
 //=====================================================
 // コンストラクタ
@@ -64,18 +65,21 @@ HRESULT CBillboard::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 	//頂点座標設定の設定
+	
 	pVtx[0].pos = D3DXVECTOR3(- m_size.x / 2, + m_size.y / 2, 0.0f);
 	pVtx[1].pos = D3DXVECTOR3(+ m_size.x / 2, + m_size.y / 2, 0.0f);
 	pVtx[2].pos = D3DXVECTOR3(- m_size.x / 2, - m_size.y / 2, 0.0f);
 	pVtx[3].pos = D3DXVECTOR3(+ m_size.x / 2, - m_size.y / 2, 0.0f);
 
 	//各頂点の法線の設定（※ベクトルの大きさは１にする必要がある）
+
 	pVtx[0].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
 	pVtx[1].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
 	pVtx[2].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
 	pVtx[3].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
 
 	//頂点カラーの設定（0～255の数値で設定）
+
 	pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
@@ -130,6 +134,7 @@ void CBillboard::Draw(void)
 
 	//現在アンビエント情報を保存
 	pDevice->GetRenderState(D3DRS_AMBIENT, &ambient);
+
 	pDevice->SetRenderState(D3DRS_AMBIENT, 0xff030303);   // 世の中をちょっと白く照らす	//ライティングをOFFにする
 	pDevice->SetRenderState(D3DRS_AMBIENT, ambient);
 

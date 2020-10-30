@@ -53,15 +53,19 @@ public:
 
 	void SetPos(const D3DXVECTOR3 pos);
 	D3DXVECTOR3 GetPos(void)const;
+
 	void SetRot(const D3DXVECTOR3 rot);		// 座標の情報
 	D3DXVECTOR3 GetRot(void);
 	void SetType(MODEL_TYPE Mtype);
 	void SetSize(D3DXVECTOR3 size);
 	D3DXVECTOR3 GetSize(void);
+
+	LPD3DXBUFFER GetBuffMat(void);
 private:
 	//=========================================================================
 	//メンバ変数宣言
 	//=========================================================================
+
 	LPDIRECT3DTEXTURE9 m_pTexture;
 	LPD3DXMESH m_pMesh;			// メッシュ情報へのポインタ
 	LPD3DXBUFFER m_pBuffMat;	// マテリアル情報へのポインタ

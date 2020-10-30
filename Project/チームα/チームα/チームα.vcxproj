@@ -155,9 +155,11 @@
     <ClCompile Include="bg.cpp" />
     <ClCompile Include="billboard.cpp" />
     <ClCompile Include="board.cpp" />
+    <ClCompile Include="bomb.cpp" />
     <ClCompile Include="bullet.cpp" />
     <ClCompile Include="bullet2.cpp" />
     <ClCompile Include="camera.cpp" />
+    <ClCompile Include="charge.cpp" />
     <ClCompile Include="conection.cpp" />
     <ClCompile Include="effect.cpp" />
     <ClCompile Include="fade.cpp" />
@@ -194,9 +196,11 @@
     <ClInclude Include="bg.h" />
     <ClInclude Include="billboard.h" />
     <ClInclude Include="board.h" />
+    <ClInclude Include="bomb.h" />
     <ClInclude Include="bullet.h" />
     <ClInclude Include="bullet2.h" />
     <ClInclude Include="camera.h" />
+    <ClInclude Include="charge.h" />
     <ClInclude Include="conection.h" />
     <ClInclude Include="effect.h" />
     <ClInclude Include="fade.h" />

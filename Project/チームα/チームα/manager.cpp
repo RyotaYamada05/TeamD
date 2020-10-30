@@ -27,11 +27,15 @@
 #include "bg.h"
 #include "joypad.h"
 #include "life.h"
+#include "ui.h"
+#include "charge.h"
+
 #include "2d_explosion.h"
 #include "beam.h"
 #include "effect.h"
 #include "particle.h"
 #include "shock.h"
+#include "bomb.h"
 
 //=============================================================================
 //静的メンバ変数宣言
@@ -211,6 +215,7 @@ void CManager::Update(void)
 		//フェードクラスの更新処理呼び出し
 		m_pFade->Update();
 	}
+
 }
 
 //=============================================================================
@@ -236,13 +241,18 @@ void CManager::LoadAll(void)
 	CTitle::Load();
 	CResult::Load();
 	CMeshField::Load();
-	CBg::Load();
+
+	CBg::Load();	
+	CLife::Load();
+	CUi::Load();
+	CCharge::Load();
 	CLife::Load();
 	C2dExplosion::Load();
 	CBeam::Load();
 	CEffect::Load();
 	CParticle::Load();
 	CShock::Load();
+	CBomb::Load();
 }
 
 //=============================================================================
@@ -255,11 +265,16 @@ void CManager::UnLoadAll(void)
 	CPlayer::Unload();
 	CMeshField::UnLoad();
 	CBg::UnLoad();
+
+	CLife::Unload();
+	CUi::Unload();
+	CCharge::Unload();
 	C2dExplosion::UnLoad();
 	CBeam::UnLoad();
 	CEffect::UnLoad();
 	CParticle::UnLoad();
 	CShock::UnLoad();
+	CBomb::UnLoad();
 }
 
 //=============================================================================
@@ -327,6 +342,7 @@ void CManager::SetMode(MODE_TYPE mode)
 			m_pResult = CResult::Create();
 		}
 		break;
+
 
 	default:
 		break;

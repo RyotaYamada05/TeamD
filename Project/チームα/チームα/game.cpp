@@ -25,15 +25,19 @@
 #include "life.h"
 #include "ui.h"
 
+#include "charge.h"
 //=======================================================================================
 // static初期化
 //=======================================================================================
+
 CCamera *CGame::m_apCamera[MAX_PLAYER] = {};			// カメラクラスのポインタ変数
 CLight *CGame::m_pLight = NULL;						// ライトクラスのポインタ変数
 CMeshField *CGame::m_pMeshField = NULL;				// メッシュフィールド
 CBg *CGame::m_pBg = NULL;							// 背景のポインタ
-CPlayer *CGame::m_apPlayer[MAX_PLAYER] = {};			// プレイヤーのポインタ
 
+CPlayer *CGame::m_apPlayer[MAX_PLAYER] = {};		// プレイヤーのポインタ
+CTime *CGame::m_pTime = NULL;						// タイムのポインタ
+CUi *CGame::m_pUi = NULL;							// uiのポインタ
 //=======================================================================================
 // コンストラクタ
 //=======================================================================================
@@ -70,6 +74,7 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 {
 	for (int nCount = 0; nCount < MAX_PLAYER; nCount++)
 	{
+		
 		//カメラクラスのクリエイト
 		m_apCamera[nCount] = CCamera::Create();
 	}
@@ -86,32 +91,41 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 		}
 	}
 
-	//Uiのロード
-	CUi::Load();
-	//UIライフゲージの生成
-	CUi::Create(D3DXVECTOR3(330.0f, 30.0f, 0.0f), D3DXVECTOR3(UI_LIFE_SIZE_X / 2, UI_LIFE_SIZE_PLAYERY, 0.0f), CUi::UITTYPE_LIFE);
-	CUi::Create(D3DXVECTOR3(1060.0f, 30.0f, 0.0f), D3DXVECTOR3(UI_LIFE_SIZE_X / 2, UI_LIFE_SIZE_PLAYERY, 0.0f), CUi::UITTYPE_LIFE);
 
-	CUi::Create(D3DXVECTOR3(330.0f, 65.0f, 0.0f), D3DXVECTOR3(UI_LIFE_SIZE_X / 2, UI_LIFE_SIZE_ENEMYY, 0.0f), CUi::UITTYPE_LIFE);
-	CUi::Create(D3DXVECTOR3(1060.0f, 65.0f, 0.0f), D3DXVECTOR3(UI_LIFE_SIZE_X / 2, UI_LIFE_SIZE_ENEMYY, 0.0f), CUi::UITTYPE_LIFE);
+	//ui
+	if (m_pUi == NULL)
+	{
+		//UIライフゲージ(外枠)の生成
+		CUi::Create(D3DXVECTOR3(330.0f, 30.0f, 0.0f), D3DXVECTOR3(UI_LIFE_SIZE_X / 2, UI_LIFE_SIZE_PLAYERY, 0.0f), CUi::UITTYPE_LIFE);
+		CUi::Create(D3DXVECTOR3(1060.0f, 30.0f, 0.0f), D3DXVECTOR3(UI_LIFE_SIZE_X / 2, UI_LIFE_SIZE_PLAYERY, 0.0f), CUi::UITTYPE_LIFE);
 
-	//UIのタイム生成
-	CUi::Create(D3DXVECTOR3(640.0f, 50.0f, 0.0f), D3DXVECTOR3(UI_TIME_SIZE_X, UI_TIME_SIZE_Y, 0.0f), CUi::UITYPE_TIME);
+		CUi::Create(D3DXVECTOR3(330.0f, 65.0f, 0.0f), D3DXVECTOR3(UI_LIFE_SIZE_X / 2, UI_LIFE_SIZE_ENEMYY, 0.0f), CUi::UITTYPE_LIFE);
+		CUi::Create(D3DXVECTOR3(1060.0f, 65.0f, 0.0f), D3DXVECTOR3(UI_LIFE_SIZE_X / 2, UI_LIFE_SIZE_ENEMYY, 0.0f), CUi::UITTYPE_LIFE);
 
-	//UIのプレイヤー・エネミー文字の生成
-	CUi::Create(D3DXVECTOR3(70.0f, 30.0f, 0.0f), D3DXVECTOR3(UI_PLAYER_SIZE_X, UI_PLAYER_SIZE_Y, 0.0f), CUi::UITYPE_PLAYER);
-	CUi::Create(D3DXVECTOR3(75.0f, 65.0f, 0.0f), D3DXVECTOR3(UI_ENEMY_SIZE_X, UI_ENEMY_SIZE_Y, 0.0f), CUi::UITYPE_ENEMY);
+		//UIのタイム生成
+		CUi::Create(D3DXVECTOR3(640.0f, 50.0f, 0.0f), D3DXVECTOR3(UI_TIME_SIZE_X, UI_TIME_SIZE_Y, 0.0f), CUi::UITYPE_TIME);
 
-	CUi::Create(D3DXVECTOR3(800.0f, 30.0f, 0.0f), D3DXVECTOR3(UI_PLAYER_SIZE_X, UI_PLAYER_SIZE_Y, 0.0f), CUi::UITYPE_PLAYER);
-	CUi::Create(D3DXVECTOR3(805.0f, 65.0f, 0.0f), D3DXVECTOR3(UI_ENEMY_SIZE_X, UI_ENEMY_SIZE_Y, 0.0f), CUi::UITYPE_ENEMY);
+		//UIのプレイヤー・エネミー文字の生成
+		CUi::Create(D3DXVECTOR3(70.0f, 30.0f, 0.0f), D3DXVECTOR3(UI_PLAYER_SIZE_X, UI_PLAYER_SIZE_Y, 0.0f), CUi::UITYPE_PLAYER);
+		CUi::Create(D3DXVECTOR3(75.0f, 65.0f, 0.0f), D3DXVECTOR3(UI_ENEMY_SIZE_X, UI_ENEMY_SIZE_Y, 0.0f), CUi::UITYPE_ENEMY);
+
+		CUi::Create(D3DXVECTOR3(800.0f, 30.0f, 0.0f), D3DXVECTOR3(UI_PLAYER_SIZE_X, UI_PLAYER_SIZE_Y, 0.0f), CUi::UITYPE_PLAYER);
+		CUi::Create(D3DXVECTOR3(805.0f, 65.0f, 0.0f), D3DXVECTOR3(UI_ENEMY_SIZE_X, UI_ENEMY_SIZE_Y, 0.0f), CUi::UITYPE_ENEMY);
+
+		//標準生成
+		CUi::Create(D3DXVECTOR3(UI_LOCKON_POS_LEFT_X, UI_RESULT_POS_Y, 0.0f), D3DXVECTOR3(40.0f, 40.0f, 0.0f), CUi::UITYPE_STANDARD);
+		CUi::Create(D3DXVECTOR3(UI_RESULT_POS_RIGHT_X, UI_RESULT_POS_Y, 0.0f), D3DXVECTOR3(40.0f, 40.0f, 0.0f), CUi::UITYPE_STANDARD);
+	}
 
 	// プレイヤーの生成
 	if (m_apPlayer[0] == NULL)
 	{
+	
 		m_apPlayer[0] = CPlayer::Create(D3DXVECTOR3(0.0f, 50.0f, 0.0f), D3DXVECTOR3(PLAYER_SIZE_X, PLAYER_SIZE_Y, PLAYER_SIZE_Z));
 	}
 	if (m_apPlayer[1] == NULL)
 	{
+
 		m_apPlayer[1] = CPlayer::Create(D3DXVECTOR3(0.0f, 50.0f, -500.0f), D3DXVECTOR3(PLAYER_SIZE_X, PLAYER_SIZE_Y, PLAYER_SIZE_Z));
 	}
 
@@ -127,8 +141,12 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 		m_pBg = CBg::Create();
 	}
 
-	//タイム生成
-	CTime::Create(D3DXVECTOR3(585.0f, 55.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+
+	//タイム
+	if (m_pTime == NULL)
+	{
+		CTime::Create(D3DXVECTOR3(TIME_POS_X, TIME_POS_Y, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	}
 
 	//デバイス情報の取得
 	LPDIRECT3DDEVICE9 pD3DDevice = CManager::GetRenderer()->GetDevice();
@@ -136,6 +154,7 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 	//フォントの生成
 	D3DXCreateFont(pD3DDevice, 18, 0, 0, 0, FALSE, SHIFTJIS_CHARSET,
 		OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, "Terminal", &m_pFont);
+
 
 	return S_OK;
 }
@@ -147,20 +166,22 @@ void CGame::Uninit(void)
 {
 	for (int nCount = 0; nCount < MAX_PLAYER; nCount++)
 	{
+
 		if (m_apCamera[nCount] != NULL)
 		{
 			//カメラクラスの終了処理呼び出し
+
 			m_apCamera[nCount]->Uninit();
 
 			//メモリの破棄
+
 			delete[] * m_apCamera;
 
 			//メモリのクリア
+
 			m_apCamera[nCount] = NULL;
 		}
 	}
-	//ui
-	CUi::Unload();
 
 	// メッシュフィールド
 	if (m_pMeshField != NULL)
@@ -174,7 +195,12 @@ void CGame::Uninit(void)
 		m_pBg->Uninit();
 	}
 
+
 	CManager::GetConection()->Uninit();
+
+
+	//オブジェクトの破棄
+	Release();
 }
 
 //=======================================================================================
@@ -184,9 +210,11 @@ void CGame::Update(void)
 {
 	for (int nCount = 0; nCount < MAX_PLAYER; nCount++)
 	{
+	
 		if (m_apCamera[nCount] != NULL)
 		{
 			//カメラクラスの更新処理
+			
 			m_apCamera[nCount]->Update();
 		}
 	}
@@ -223,6 +251,7 @@ void CGame::Draw(void)
 //=======================================================================================
 CCamera * CGame::GetCamera(int nCount)
 {
+
 	return m_apCamera[nCount];
 }
 
@@ -240,4 +269,20 @@ CLight * CGame::GetLight(void)
 CPlayer * CGame::GetPlayer(int nCount)
 {
 	return m_apPlayer[nCount];
+}
+
+//=======================================================================================
+// タイムの情報
+//=======================================================================================
+CTime * CGame::GetTime(void)
+{
+	return m_pTime;
+}
+
+//=======================================================================================
+// uiの情報
+//=======================================================================================
+CUi * CGame::GetUi(void)
+{
+	return m_pUi;
 }

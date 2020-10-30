@@ -350,3 +350,4 @@ float CCamera::GetƒÓ(void)
 {
 	return m_fƒÓ;
 }
+

@@ -44,7 +44,6 @@ public:
 	static void UnLoad(void);											// テクスチャアンロード
 
 private:
-	D3DXVECTOR3 m_move;											// 移動量
 	static LPDIRECT3DTEXTURE9 m_apTexture[MAX_BEAM_TEXTURE];	// テクスチャ情報のポインタ
 	static LPD3DXMESH m_pMesh;									// メッシュ情報へのポインタ
 	static LPD3DXBUFFER m_pBuffMat;								// マテリアル情報へのポインタ

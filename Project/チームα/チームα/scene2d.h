@@ -30,18 +30,22 @@ public:
 	void SetPos(const D3DXVECTOR3 pos) { m_pos = pos; }
 	void SetPolygonSize(const D3DXVECTOR3 nSize) { m_PolygonSize = nSize; }
 	void SetCol(D3DXCOLOR col);
+	void SetAnim(int PatternAnim, float Countea);
 
 	D3DXVECTOR3 GetPos(void)const { return m_pos; }
 	D3DXVECTOR3 GetSize(void)const { return m_PolygonSize; }
+
 	D3DXCOLOR   GetCol(void) { return m_col; }
 	
 private:
+
 
 	LPDIRECT3DTEXTURE9 m_pTextuer;			// テクスチャへのポインタ
 	LPDIRECT3DVERTEXBUFFER9 m_pVetxBuff;	 // 頂点バッファへのポインタ
 	D3DXVECTOR3 m_pos;						// ポリゴンの位置
 	D3DXVECTOR3 m_PolygonSize;				// ポリゴンのサイズ
 	D3DXCOLOR   m_col;						// ポリゴンのカラー	
+	D3DXVECTOR2 m_tex;						// テクスチャー設定
 };
 
 #endif // !_SCENE2D_H_
