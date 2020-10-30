@@ -1,6 +1,6 @@
 //=================================================================================
 //
-// レーザークラス [beam.cpp]
+// ボムクラス [bomb.cpp]
 // Author : Konishi Yuuto
 //
 //=================================================================================
@@ -8,7 +8,7 @@
 //=================================================================================
 // インクルード
 //=================================================================================
-#include "beam.h"
+#include "bomb.h"
 #include "manager.h"
 #include "renderer.h"
 #include "effect.h"
@@ -17,54 +17,55 @@
 //=================================================================================
 // マクロ定義
 //=================================================================================
-#define BEAM_LIFE	(70)			// ビームのライフ
+#define BOMB_LIFE			(60)			// ボムのライフ
+#define BOMB_GRAVITY_POWAR	(0.2f)			// ボムの重力
 
 //=================================================================================
 // static初期化
 //=================================================================================
-LPDIRECT3DTEXTURE9 CBeam::m_apTexture[MAX_BEAM_TEXTURE] = {};
-LPD3DXMESH CBeam::m_pMesh = NULL;
-LPD3DXBUFFER CBeam::m_pBuffMat = NULL;		//マテリアル情報へのポインタ
-DWORD CBeam::m_nNumMat = 0;					//マテリアル情報の数
+LPDIRECT3DTEXTURE9 CBomb::m_apTexture[MAX_BOMB_TEXTURE] = {};
+LPD3DXMESH CBomb::m_pMesh = NULL;
+LPD3DXBUFFER CBomb::m_pBuffMat = NULL;		//マテリアル情報へのポインタ
+DWORD CBomb::m_nNumMat = 0;					//マテリアル情報の数
 
 //=================================================================================
 // インスタンス生成
 //=================================================================================
-CBeam * CBeam::Create(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXVECTOR3 size, BULLET2_USER user)
+CBomb * CBomb::Create(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXVECTOR3 size, BULLET2_USER user)
 {
 	// メモリ確保
-	CBeam *pBeam = new CBeam;
+	CBomb *pBomb = new CBomb;
 
-	if (pBeam != NULL)
+	if (pBomb != NULL)
 	{
 		// 初期化処理
-		pBeam->Init(pos, move, size, user);		// 初期化情報
-		pBeam->SetMove(move);					// 移動量
-		pBeam->SetLife(BEAM_LIFE);				// ライフの情報
+		pBomb->Init(pos, size, user);		// 初期化情報
+		pBomb->SetMove(move);					// 移動量
+		pBomb->SetLife(BOMB_LIFE);				// ライフの情報
 	}
 
-	return pBeam;
+	return pBomb;
 }
 
 //=================================================================================
 // コンストラクタ
 //=================================================================================
-CBeam::CBeam()
+CBomb::CBomb()
 {
-
+	m_fAddRotNum = 0.0f;
 }
 
 //=================================================================================
 // デストラクタ
 //=================================================================================
-CBeam::~CBeam()
+CBomb::~CBomb()
 {
 }
 
 //=================================================================================
 // 初期化処理
 //=================================================================================
-HRESULT CBeam::Init(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXVECTOR3 size, BULLET2_USER user)
+HRESULT CBomb::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size, BULLET2_USER user)
 {
 	MODEL model;
 
@@ -86,7 +87,7 @@ HRESULT CBeam::Init(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXVECTOR3 size, BULLET2
 //=================================================================================
 // 終了処理
 //=================================================================================
-void CBeam::Uninit(void)
+void CBomb::Uninit(void)
 {
 	// 終了処理
 	CBullet2::Uninit();
@@ -95,22 +96,43 @@ void CBeam::Uninit(void)
 //=================================================================================
 // 更新処理
 //=================================================================================
-void CBeam::Update(void)
+void CBomb::Update(void)
 {
 	// 更新処理
 	CBullet2::Update();
 
+	// 回転
+	AddRot();
+
+	// 座標を受け取る
 	D3DXVECTOR3 pos = GetPos();
 
 	// エフェクト生成
-	CEffect::Create(pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), 
-		D3DXVECTOR3(EFFECT_SIZE_X, EFFECT_SIZE_Y, 0.0f), D3DXCOLOR(0.3f, 0.3f, 1.0f, 1.0f));
+	//CEffect::Create(pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+	//	D3DXVECTOR3(EFFECT_SIZE_X, EFFECT_SIZE_Y, 0.0f), D3DXCOLOR(0.3f, 0.3f, 1.0f, 1.0f));
+
+	// 移動量を受け取る
+	D3DXVECTOR3 move = GetMove();
+
+	// 座標が地面より上なら
+	if (pos.y > 20.0f)
+	{
+
+		// 重力を加算
+		SetMove(D3DXVECTOR3(move.x, move.y - BOMB_GRAVITY_POWAR, move.z));
+	}
+	else
+	{
+		SetMove(D3DXVECTOR3(move.x, 0.0f, move.z));
+	}
+
+
 }
 
 //=================================================================================
 // 描画処理
 //=================================================================================
-void CBeam::Draw(void)
+void CBomb::Draw(void)
 {
 	// レンダラーの情報を受け取る
 	CRenderer *pRenderer = NULL;
@@ -135,9 +157,24 @@ void CBeam::Draw(void)
 }
 
 //=================================================================================
+// 角度を加算
+//=================================================================================
+void CBomb::AddRot(void)
+{
+	m_fAddRotNum += 1.0f;
+
+	// 角度の変化
+	D3DXVECTOR3 rot = D3DXVECTOR3(GetRot().x, GetRot().y + D3DXToRadian(m_fAddRotNum), GetRot().z);
+
+	// 角度を渡す
+	SetRot(rot);
+}
+
+
+//=================================================================================
 // テクスチャロード
 //=================================================================================
-HRESULT CBeam::Load(void)
+HRESULT CBomb::Load(void)
 {
 	// レンダラーの情報を受け取る
 	CRenderer *pRenderer = NULL;
@@ -149,7 +186,7 @@ HRESULT CBeam::Load(void)
 		&m_apTexture[0]);
 
 	// Xファイルの読み込み
-	D3DXLoadMeshFromX("data/model/beam.x",
+	D3DXLoadMeshFromX("data/model/bomb.x",
 		D3DXMESH_SYSTEMMEM,
 		pDevice,
 		NULL,
@@ -164,7 +201,7 @@ HRESULT CBeam::Load(void)
 //=================================================================================
 // テクスチャアンロード
 //=================================================================================
-void CBeam::UnLoad(void)
+void CBomb::UnLoad(void)
 {
 	//メッシュの破棄
 	if (m_pMesh != NULL)
@@ -179,7 +216,7 @@ void CBeam::UnLoad(void)
 		m_pBuffMat = NULL;
 	}
 
-	for (int nCount = 0; nCount < MAX_BEAM_TEXTURE; nCount++)
+	for (int nCount = 0; nCount < MAX_BOMB_TEXTURE; nCount++)
 	{
 		// テクスチャの破棄
 		if (m_apTexture[nCount] != NULL)

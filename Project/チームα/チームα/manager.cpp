@@ -29,12 +29,12 @@
 #include "life.h"
 #include "ui.h"
 #include "charge.h"
-
 #include "2d_explosion.h"
 #include "beam.h"
 #include "effect.h"
 #include "particle.h"
 #include "shock.h"
+#include "bomb.h"
 
 //=============================================================================
 //ê√ìIÉÅÉìÉoïœêîêÈåæ
@@ -239,7 +239,8 @@ void CManager::LoadAll(void)
 	CTitle::Load();
 	CResult::Load();
 	CMeshField::Load();
-	CBg::Load();
+
+	CBg::Load();	
 	CLife::Load();
 	CUi::Load();
 	CCharge::Load();
@@ -249,6 +250,7 @@ void CManager::LoadAll(void)
 	CEffect::Load();
 	CParticle::Load();
 	CShock::Load();
+	CBomb::Load();
 }
 
 //=============================================================================
@@ -263,12 +265,12 @@ void CManager::UnLoadAll(void)
 	CBg::UnLoad();
 	CLife::Unload();
 	CUi::Unload();
-	CCharge::Unload();
-	C2dExplosion::UnLoad();
+	CCharge::Unload();	C2dExplosion::UnLoad();
 	CBeam::UnLoad();
 	CEffect::UnLoad();
 	CParticle::UnLoad();
 	CShock::UnLoad();
+	CBomb::UnLoad();
 }
 
 //=============================================================================

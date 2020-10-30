@@ -53,7 +53,8 @@ public:
 	void Draw(void);
 
 private:
-	static CCamera *m_apCamera[MAX_PLAYER];		// カメラのポインタ
+	
+	static CCamera *m_apCamera[MAX_PLAYER];		// カメラのポインタ	
 	static CLight *m_pLight;					// ライトのポインタ
 	static CMeshField *m_pMeshField;			// メッシュフィールドのポインタ
 	static CMeshShape * m_pSphere;					// メッシュスフィアのポインタ
@@ -63,4 +64,4 @@ private:
 	static CUi *m_pUi;							// uiのポインタ
 	LPD3DXFONT m_pFont;
 };
-#endif // !_GAME_H_
+#endif

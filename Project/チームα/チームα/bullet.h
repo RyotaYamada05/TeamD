@@ -57,7 +57,7 @@ private:
 	int m_nAtk;	//攻撃力
 	int m_nLife;	//ライフ	
 	int m_nCounter;
-	BULLET_USER m_user;	//使用者
+	BULLET_USER m_user;	//使用者	
 	CPlayer * m_pTargetPL;	//敵プレイヤーのポインタ
 };
 #endif

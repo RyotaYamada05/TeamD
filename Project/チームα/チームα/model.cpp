@@ -24,7 +24,6 @@ CModel::CModel()
 	m_pBuffMat = NULL;
 	m_pMesh = NULL;
 	m_nNumMat = 0;
-
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_size = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
@@ -68,17 +67,13 @@ CModel * CModel::Create(D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 //=============================================================================
 //モデルクラスの初期化処理
 //=============================================================================
-
 HRESULT CModel::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 {
-
 	// デバイス情報の取得
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
-
 	// 位置の初期化
 	m_pos = pos;
-
 
 	// サイズ初期化
 	m_size = size;
@@ -91,7 +86,7 @@ HRESULT CModel::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 //=============================================================================
 void CModel::Uninit(void)
 {
-	
+
 	////メッシュの破棄
 	//if (m_pMesh != NULL)
 	//{
@@ -110,7 +105,6 @@ void CModel::Uninit(void)
 }
 
 //=============================================================================
-
 // モデルクラスの更新処理
 //=============================================================================
 void CModel::Update(void)
@@ -119,7 +113,6 @@ void CModel::Update(void)
 }
 
 //=============================================================================
-
 // モデルクラスの描画処理
 //=============================================================================
 void CModel::Draw(void)
@@ -127,10 +120,8 @@ void CModel::Draw(void)
 	//デバイス情報の取得
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
-
 	D3DXMATRIX mtxRot, mtxTrans, mtxScale;
 	D3DMATERIAL9 matDef;	//現在のマテリアル保持用
-
 	D3DXMATERIAL*pMat;		//マテリアルデータへのポインタ
 
 	//ワールドマトリックスの初期化
@@ -169,6 +160,9 @@ void CModel::Draw(void)
 
 		//モデルパーツの描画
 		m_pMesh->DrawSubset(nCntMat);
+
+		// 透明度戻す
+		pMat[nCntMat].MatD3D.Diffuse.a = 1.0f;
 	}
 
 	//保持していたマテリアルを戻す
@@ -229,7 +223,6 @@ void CModel::SetRot(const D3DXVECTOR3 rot)
 	m_rot = rot;
 }
 
-
 //=============================================================================
 // 角度の情報
 //=============================================================================
@@ -260,4 +253,9 @@ void CModel::SetSize(D3DXVECTOR3 size)
 D3DXVECTOR3 CModel::GetSize(void)
 {
 	return m_size;
+}
+
+LPD3DXBUFFER CModel::GetBuffMat(void)
+{
+	return m_pBuffMat;
 }

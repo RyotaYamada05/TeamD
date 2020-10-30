@@ -28,6 +28,9 @@ CBullet2::CBullet2()
 	m_user = BULLET2_USER_NONE;					// 使用者
 	m_nAtk = 0;									// 攻撃力
 	m_nLife = 0;								// ライフ
+	m_nCounter = 0;
+	m_pTargetPL = NULL;	//敵プレイヤーのポインタ
+	m_fSpeed = 0.0f;
 }
 
 //=============================================================================
@@ -83,6 +86,19 @@ HRESULT CBullet2::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size, const BULL
 	//初期化初期化処理
 	CModel::Init(pos, m_size);
 
+	switch (m_user)
+	{
+	case BULLET2_USER_PL1:
+		//2Pの情報取得
+		m_pTargetPL = CGame::GetPlayer(1);
+
+		break;
+	case BULLET2_USER_PL2:
+		//1Pの情報取得
+		m_pTargetPL = CGame::GetPlayer(0);
+
+		break;
+	}
 
 	return S_OK;
 }
@@ -103,6 +119,12 @@ void CBullet2::Update(void)
 {
 	//位置の取得
 	m_pos = GetPos();
+
+	if (m_nCounter <= 10)
+	{
+		//移動量の計算
+		m_move = VectorMath(m_pTargetPL->GetPos(), 70.0f);
+	}
 
 	//移動量を位置に与える
 	m_pos += m_move;
@@ -191,6 +213,29 @@ bool CBullet2::Collision(void)
 }
 
 //=============================================================================
+//バレットクラスののベクトル計算処理
+//=============================================================================
+D3DXVECTOR3 CBullet2::VectorMath(D3DXVECTOR3 TargetPos, float fSpeed)
+{
+	//2点間のベクトルを求める（終点[目標地点] - 始点[自身の位置]）
+	D3DXVECTOR3 Vector = TargetPos - m_pos;
+
+	//ベクトルの大きさを求める(√c^2 = a^2 * b^2)
+	float fVectorSize = D3DXVec3Length(&Vector);
+
+	//単位ベクトル用変数
+	D3DXVECTOR3 UnitVector;
+
+	//単位ベクトルを求める(元のベクトル / ベクトルの大きさ)
+	D3DXVec3Normalize(&UnitVector, &Vector);
+
+
+	//単位ベクトルを速度倍にして返す(UnitVector * fSpeed)
+	return	UnitVector * fSpeed;
+}
+
+
+//=============================================================================
 // 体力の設定
 //=============================================================================
 void CBullet2::SetLife(int nLife)
@@ -204,4 +249,12 @@ void CBullet2::SetLife(int nLife)
 void CBullet2::SetMove(D3DXVECTOR3 move)
 {
 	m_move = move;
+}
+
+//=============================================================================
+// 移動量情報
+//=============================================================================
+D3DXVECTOR3 CBullet2::GetMove(void)
+{
+	return m_move;
 }

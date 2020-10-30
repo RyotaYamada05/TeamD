@@ -60,6 +60,8 @@ public:
 	void SetType(MODEL_TYPE Mtype);
 	void SetSize(D3DXVECTOR3 size);
 	D3DXVECTOR3 GetSize(void);
+
+	LPD3DXBUFFER GetBuffMat(void);
 private:
 	//=========================================================================
 	//ƒƒ“ƒo•Ï”éŒ¾

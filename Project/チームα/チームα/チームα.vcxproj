@@ -154,7 +154,9 @@
     <ClCompile Include="beam.cpp" />
     <ClCompile Include="bg.cpp" />
     <ClCompile Include="billboard.cpp" />
-    <ClCompile Include="board.cpp" />    <ClCompile Include="bullet.cpp" />
+    <ClCompile Include="board.cpp" />
+    <ClCompile Include="bomb.cpp" />
+    <ClCompile Include="bullet.cpp" />
     <ClCompile Include="bullet2.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="charge.cpp" />
@@ -195,6 +197,7 @@
     <ClInclude Include="bg.h" />
     <ClInclude Include="billboard.h" />
     <ClInclude Include="board.h" />
+    <ClInclude Include="bomb.h" />
     <ClInclude Include="bullet.h" />
     <ClInclude Include="bullet2.h" />
     <ClInclude Include="camera.h" />

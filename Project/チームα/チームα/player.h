@@ -57,7 +57,7 @@ public:
 	void Dush(void);												// ダッシュ
 	void beam(void);												// ビーム
 	D3DXVECTOR3 GetPos(void);
-
+	void bomb(void);												// ボム
 	CLife *GetLife(int nNumber);									// ライフの情報
 	CCharge *GetCgarge(void);										// チャージのポインタ
 private:

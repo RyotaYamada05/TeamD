@@ -53,6 +53,7 @@ CShock::CShock()
 	m_fScaleNum = 0.0f;		// 拡縮用の値
 	m_FirstSize = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_fAddRotNum = 0.0f;
+	m_fAlphaNum = 0.0f;
 }
 
 //=================================================================================
@@ -127,14 +128,22 @@ void CShock::Draw(void)
 	pRenderer = CManager::GetRenderer();
 	LPDIRECT3DDEVICE9 pDevice = pRenderer->GetDevice();
 
+	// 透明度加算
+	m_fAlphaNum += 0.01f;
+
 	D3DXMATERIAL*pMat;		//マテリアルデータへのポインタ
 
+	LPD3DXBUFFER pBuffMat = GetBuffMat();
+
 	//マテリアルデータへのポインタを取得
-	pMat = (D3DXMATERIAL*)m_pBuffMat->GetBufferPointer();
+	pMat = (D3DXMATERIAL*)pBuffMat->GetBufferPointer();
 
 	for (int nCntMat = 0; nCntMat < (int)m_nNumMat; nCntMat++)
 	{
 		pMat[nCntMat].MatD3D.Emissive = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);
+
+		// 透明
+		pMat[nCntMat].MatD3D.Diffuse.a -= m_fAlphaNum;
 	}
 
 	// モデルの描画

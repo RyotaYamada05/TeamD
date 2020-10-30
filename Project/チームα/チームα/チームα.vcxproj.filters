@@ -127,8 +127,10 @@
     </ClCompile>
     <ClCompile Include="shock.cpp">
       <Filter>ソース ファイル</Filter>
+    </ClCompile>    <ClCompile Include="charge.cpp">
+      <Filter>ソース ファイル</Filter>
     </ClCompile>
-	<ClCompile Include="charge.cpp">
+    <ClCompile Include="bomb.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -247,6 +249,9 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="charge.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="bomb.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

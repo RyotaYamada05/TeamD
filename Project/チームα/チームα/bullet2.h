@@ -13,6 +13,11 @@
 #include "model.h"
 
 //=============================================================================
+// 前方宣言
+//=============================================================================
+class CPlayer;
+
+//=============================================================================
 //バレットクラス
 //=============================================================================
 class CBullet2 :public CModel
@@ -42,8 +47,12 @@ public:
 	void Draw(void);										// 描画処理
 
 	bool Collision(void);									// 当たり判定
+	D3DXVECTOR3 VectorMath(D3DXVECTOR3 TargetPos,			// 追従
+		float fSpeed);
 	void SetLife(int nLife);								// 体力の設定
 	void SetMove(D3DXVECTOR3 move);							// 移動量加算
+
+	D3DXVECTOR3 GetMove(void);								// 移動量の更新
 private:
 	//=========================================================================
 	//メンバ変数宣言
@@ -54,6 +63,9 @@ private:
 	int m_nAtk;				// 攻撃力
 	int m_nLife;			// ライフ
 	BULLET2_USER m_user;	// 使用者
+	CPlayer *m_pTargetPL;	//敵プレイヤーのポインタ
+	int m_nCounter;
+	float m_fSpeed;			// 速さ
 };
 
 #endif 
