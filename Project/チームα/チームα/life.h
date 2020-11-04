@@ -25,6 +25,7 @@
 #define LIFE_POS_UP_Y		(30.0f)		// 上側ライフのY座標
 #define LIFE_POS_DOWN_Y		(65.0f)		// 下側ライフのY座標
 #define LIFE_TYPE			(2)			// ライフの種類
+
 //=============================================================================
 //クラス宣言
 //=============================================================================
@@ -55,6 +56,7 @@ public:
 	void LifeStart(void);
 	static bool GetReadey(void);
 
+	bool GetLife(void);
 private:
 
 	static LPDIRECT3DTEXTURE9 m_apTexture[LIFE_TYPE];	// テクスチャーのポインタ
@@ -69,6 +71,7 @@ private:
 	int m_nPlayerNum;									// １Ｐか２Ｐか
 	bool m_bLife;										// 減らす処理を使用するかしないか
 	static bool m_bStart;								// スタートの処理を使用するかしないか
+	bool m_bEnd;
 
 };
 #endif // ! _LIFE_H_

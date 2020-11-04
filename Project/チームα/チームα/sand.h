@@ -1,8 +1,8 @@
-#ifndef _BOMB_H_
-#define _BOMB_H_
+#ifndef _SAND_H_
+#define _SAND_H_
 //=============================================================================
 //
-// ボムのクラスヘッダー [bomb.h]
+// 砂のクラスヘッダー [sand.h]
 // Author : Konishi Yuuto
 //
 //=============================================================================
@@ -16,41 +16,42 @@
 //=============================================================================
 // マクロ定義
 //=============================================================================
-#define BOMB_SIZE_X				(3)		// ボムのサイズ
-#define BOMB_SIZE_Y				(3)		// ボムのサイズ
-#define BOMB_SIZE_Z				(3)		// ボムのサイズ
-#define BOMB_SPEED				(30)	// ボムのスピード
-#define BOMB_MOVE_Y				(4.0f)	// ボムのスピード
-#define MAX_BOMB_TEXTURE		(1)		// テクスチャの数
+#define SAND_SIZE_X			(3)			// 煙のサイズ
+#define SAND_SIZE_Z			(3)			// 煙のサイズ
+#define SAND_SIZE_Y			(3)			// 煙のサイズ
+
+#define MAX_SAND_TEXTURE	(1)			// テクスチャの数
 
 //=============================================================================
 // 背景クラス
 //=============================================================================
-class CBomb : public CBullet2
+class CSand : public CModel
 {
 public:
-	CBomb();		// コンストラクタ
-	~CBomb();		// デストラクタ
+	CSand();		// コンストラクタ
+	~CSand();		// デストラクタ
 
-	HRESULT Init(D3DXVECTOR3 pos,
-		D3DXVECTOR3 size, BULLET2_USER user);							// 初期化処理
+	HRESULT Init(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size);	// 初期化処理
 	void Uninit(void);													// 終了処理
 	void Update(void);													// 更新処理
 	void Draw(void);													// 描画処理
 
-	static CBomb *Create(D3DXVECTOR3 pos, D3DXVECTOR3 move,
-		D3DXVECTOR3 size, BULLET2_USER user);							// インスタンス生成
-
+	static CSand *Create(D3DXVECTOR3 pos, D3DXVECTOR3 move,
+		 D3DXVECTOR3 rot, D3DXVECTOR3 size);												// インスタンス生成
 	static HRESULT Load(void);											// テクスチャロード
 	static void UnLoad(void);											// テクスチャアンロード
-	void AddRot(void);													// 角度を加算
 
+	void ScaleUp(void);													// 拡大
 private:
-	static LPDIRECT3DTEXTURE9 m_apTexture[MAX_BOMB_TEXTURE];	// テクスチャ情報のポインタ
+	static LPDIRECT3DTEXTURE9 m_apTexture[MAX_SAND_TEXTURE];	// テクスチャ情報のポインタ
 	static LPD3DXMESH m_pMesh;									// メッシュ情報へのポインタ
 	static LPD3DXBUFFER m_pBuffMat;								// マテリアル情報へのポインタ
 	static DWORD m_nNumMat;										// マテリアル情報
-	int m_fAddRotNum;
+	D3DXVECTOR3 m_FirstSize;									// 最初のサイズ
+	float m_fScale;												// 拡縮用
+	float m_fScaleNum;											// 拡縮用の値
+	float m_fAddRotNum;											// 角度の加算
+	float m_fAlphaNum;											// 透明度
 };
 
 #endif

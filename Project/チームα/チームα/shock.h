@@ -16,9 +16,9 @@
 //=============================================================================
 // マクロ定義
 //=============================================================================
-#define SHOCK_SIZE_X			(3)			// 爆発のサイズ
-#define SHOCK_SIZE_Y			(2)			// 爆発のサイズ
-#define SHOCK_SIZE_Z			(3)			// 爆発のサイズ
+#define SHOCK_SIZE_X			(5)			// 爆発のサイズ
+#define SHOCK_SIZE_Z			(5)			// 爆発のサイズ
+#define SHOCK_SIZE_Y			(4)			// 爆発のサイズ
 
 #define SHOCK_SPEED				(70)		// ビームのスピード
 #define MAX_SHOCK_TEXTURE		(1)			// テクスチャの数

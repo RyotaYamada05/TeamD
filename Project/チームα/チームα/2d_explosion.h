@@ -32,7 +32,7 @@ class C2dExplosion : public CBillboard
 {
 public:
 	C2dExplosion();									// コンストラクタ
-	~C2dExplosion();									// デストラクタ
+	~C2dExplosion();								// デストラクタ
 
 	static C2dExplosion *Create(D3DXVECTOR3 pos, D3DXVECTOR3 size);
 	HRESULT Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size);		// 初期化処理

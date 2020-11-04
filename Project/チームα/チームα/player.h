@@ -20,9 +20,21 @@
 #define MAX_PARTS			(10)		// パーツの数
 #define MOTION_KEYSET_MAX	(32)		// キーセット最大数
 
+#define PLAYER1_POS_X		(0.0f)		// 座標
+#define PLAYER1_POS_Y		(171.0f)	// 座標
+#define PLAYER1_POS_Z		(0)			// 座標
+
+#define PLAYER2_POS_X		(0.0f)		// 座標
+#define PLAYER2_POS_Y		(171.0f)	// 座標
+#define PLAYER2_POS_Z		(500)		// 座標
+
 #define PLAYER_SIZE_X		(1)			// サイズ
 #define PLAYER_SIZE_Y		(1)			// サイズ
 #define PLAYER_SIZE_Z		(1)			// サイズ
+
+#define PLAYER_COLLISION_X	(250)		// 当たり判定
+#define PLAYER_COLLISION_Y	(350)		// 当たり判定
+#define PLAYER_COLLISION_Z	(250)		// 当たり判定
 
 //=============================================================================
 // 前方宣言
@@ -30,15 +42,25 @@
 class CScore;
 class CLife;
 class CCharge;
+
 //=============================================================================
-// ターンクラス
+// プレイヤークラス
 //=============================================================================
 class CPlayer : public CModel
 {
 public:
-	CPlayer();							// コンストラクタ
-	~CPlayer();							// デストラクタ
 
+	typedef enum
+	{
+		PLAYER_STATE_NONE = 0,		// 初期置
+		PLAYER_STATE_NORMAL,		// 通常状態
+		PLAYER_STATE_DAMAGE,		// ダメージ
+		PLAYER_STATE_EXPLOSION,		// 爆発
+		PLAYER_STATE_MAX
+	}PLAYER_STATE;
+
+	CPlayer();						// コンストラクタ
+	~CPlayer();						// デストラクタ
 
 	static CPlayer*Create(D3DXVECTOR3 pos, D3DXVECTOR3 size);		// クリエイト
 	static HRESULT LoadModel(void);
@@ -49,6 +71,7 @@ public:
 	void Update(void);												// 更新処理
 	void Draw(void);												// 描画処理
 
+	void PlayerState(void);											// プレイヤーの状態
 	void PlayerControl(void);										// プレイヤーの制御
 	void Walk(void);												// プレイヤーの歩く処理
 	void Jump(void);												// ジャンプの処理
@@ -56,10 +79,13 @@ public:
 	void Fall(void);												// 急降下
 	void Dush(void);												// ダッシュ
 	void beam(void);												// ビーム
-	D3DXVECTOR3 GetPos(void);
 	void bomb(void);												// ボム
+
+	D3DXVECTOR3 GetPos(void);
 	CLife *GetLife(int nNumber);									// ライフの情報
 	CCharge *GetCgarge(void);										// チャージのポインタ
+	bool GetEnd(void);												// エンド情報
+	PLAYER_STATE GetState(void);									// プレイヤーの状態
 private:
 	CScore *pScore;							// スコアの情報
 	CLife *m_pLife[LIFE_NUM];				// ライフのポインタ
@@ -67,18 +93,21 @@ private:
 	D3DXVECTOR3 m_pos;						// 座標
 	D3DXVECTOR3 m_rot;						// 回転
 	D3DXVECTOR3 m_move;						// 移動
+	PLAYER_STATE m_state;					// プレイヤー状態
 	float m_fAngle;							// 角度
 	int m_nDushFlame;						// ダッシュのフレーム
 	int m_nDushInterCnt;					// ダッシュできないときのカウント
 	int m_nPlayerNum;						// プレイヤーの番号
+	int m_nStateCounter;					// 状態カウンター
 	bool m_bJump;							// ジャンプのフラグ
 	bool m_bDush;							// ダッシュの処理
 	bool m_bDushInter;						// ダッシュのインターバル
+	bool m_bEnd;							// 終了フラグ
+	bool m_bFall;							// 急降下フラグ
 	static LPD3DXMESH m_pMesh;				// メッシュ情報へのポインタ
 	static LPD3DXBUFFER m_pBuffMat;			// マテリアル情報へのポインタ
 	static DWORD m_nNumMat;					// マテリアル情報の数
 	static int m_nPlayerAll;				// プレイヤーの数
-
 };
 
 #endif

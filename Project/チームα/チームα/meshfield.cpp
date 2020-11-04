@@ -24,15 +24,14 @@ CMeshField::CMeshField()
 {
 	m_pVtxBuff = NULL;		// 頂点バッファへのポインタ
 	m_pIdxBuff = NULL;
-	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);					// 位置
-	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);					// 向き（回転）
+	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 位置
+	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 向き（回転）
 	D3DXMatrixIdentity(&m_mtxWorld);
 	m_nNumVertex = 0;							// 総頂点数
-	m_nNumIndex = 0;					// 総インデックス数
-	m_nNumPolygon = 0;					// 総ポリゴン数
+	m_nNumIndex = 0;							// 総インデックス数
+	m_nNumPolygon = 0;							// 総ポリゴン数
 	m_fOne_SizeW = 0.0f;
 	m_fOne_SizeH = 0.0f;
-
 }
 
 //=============================================================================
