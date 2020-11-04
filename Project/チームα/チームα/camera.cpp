@@ -16,7 +16,22 @@
 //=============================================================================
 //マクロ定義
 //=============================================================================
-#define DISTANCE (1000.0f)			//視点～注視点の距離
+#define DISTANCE					(1000.0f)				//視点～注視点の距離
+#define PLAYER_HEIGHT				(100.0f)				//注視点の高さ
+#define PLAYE_ROT_VERTICAL_FRONT	(D3DXToRadian(0.0f))	//プレイヤーの縦軸前
+#define PLAYE_ROT_VERTICAL_LEFT		(D3DXToRadian(180.0f))	//プレイヤーの縦軸左
+#define PLAYE_ROT_VERTICAL_RIGHT	(D3DXToRadian(0.0f))	//プレイヤーの縦軸右
+#define PLAYE_ROT_VERTICAL_BUCK		(D3DXToRadian(-90.0f))	//プレイヤーの縦軸後
+#define WIN_START_ROT_VERTICAL		(D3DXToRadian(90.0f))	//勝利時縦軸回転の開始角
+#define WIN_START_ROT_HORIZONTAL	(D3DXToRadian(40.0f))	//勝利時横軸回転の開始角
+#define WIN_START_DISTANCE			(1500.0f)				//勝利時の開始距離
+#define WIN_END_ROT_VERTICAL		(D3DXToRadian(360.0f+90.0f))	//勝利時縦軸回転の終了角
+#define WIN_END_ROT_HORIZONTAL		(D3DXToRadian(100.0f))	//勝利時横軸回転の終了角
+#define WIN_END_DISTANCE			(500.0f)				//勝利時の終了距離
+#define WIN_ROT_MOVE_SUBTRACTION	(0.1f)					//勝利時の横軸回転角度変化量
+#define LOSE_ROT_VERTICAL			(D3DXToRadian(90.0f))	//勝利時縦軸回転の開始角
+#define LOSE_START_DISTANCE			(500.0f)				//勝利時の開始距離
+#define LOSE_END_DISTANCE			(1000.0f)				//勝利時の終了距離
 
 //=============================================================================
 // static初期化
@@ -51,7 +66,7 @@ CCamera::CCamera()
 	m_fDistance = 0.0f;							// 視点～注視点の距離
 	m_fMove = 0.0f;								// 移動量
 	m_nCameraNum = m_nCameraAll++;						// カメラの番号
-	m_bTarget = true; //ターゲット使用
+	m_bTarget = false; //ターゲット使用
 }
 
 //=============================================================================
@@ -79,7 +94,7 @@ HRESULT CCamera::Init(void)
 		m_rot.y = 0.0f;
 		m_fθ = D3DXToRadian(75.0f);
 		m_fφ = D3DXToRadian(0.0f);
-		m_posR = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	//注視点は全て0座標を見る
+		m_posR = D3DXVECTOR3(0.0f, 100.0f, 0.0f);	//注視点は全て0座標を見る
 		m_posU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);//上方向ベクトル
 		m_posV.x = m_posR.x + m_fDistance* sinf(m_fθ) * cosf(m_fφ);
 		m_posV.y = m_posR.z + m_fDistance* cosf(m_fθ);
@@ -93,7 +108,7 @@ HRESULT CCamera::Init(void)
 		m_fθ = D3DXToRadian(75.0f);
 		m_fφ = D3DXToRadian(0.0f);
 		m_rot.y = 0.0f;
-		m_posR = D3DXVECTOR3(0.0f, 30.0f, 0.0f);			// 注視点は全て0座標を見る
+		m_posR = D3DXVECTOR3(0.0f, 100.0f, 0.0f);			// 注視点は全て0座標を見る
 		m_posU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 		m_posV.x = m_posR.x + m_fDistance* sinf(m_fθ) * cosf(m_fφ);
 		m_posV.y = m_posR.z + m_fDistance* cosf(m_fθ);
@@ -153,16 +168,19 @@ void CCamera::Update(void)
 
 		if (bPlayerWin)
 		{
-			nWinPlayer = 1;
-			CCamera::EndUpdate(pPlayerPos, nWinPlayer);
+			nWinPlayer = 0;
+			EndUpdate(pPlayerPos, nWinPlayer);
 		}
 		else
 		{
-			CCamera::NomalUpdate(pPlayerPos);
+			NomalUpdate(pPlayerPos);
 		}
 	}
 }
 
+//=============================================================================
+//カメラクラスの試合後更新処理
+//=============================================================================
 void CCamera::EndUpdate(D3DXVECTOR3 PlayerPos[], int nWinPlayer)
 {
 	//キーボードクラス情報の取得
@@ -171,72 +189,86 @@ void CCamera::EndUpdate(D3DXVECTOR3 PlayerPos[], int nWinPlayer)
 	// ジョイパッドの取得
 	DIJOYSTATE js = CInputJoypad::GetStick(m_nCameraNum);
 
+	//勝利カメラ判定
 	if (nWinPlayer == m_nCameraNum)
 	{
-		static float fφ = D3DXToRadian(-90.0f);
-		static float fθ = D3DXToRadian(30.0f);
+		//回転開始位置指定
+		static float fφ = WIN_START_ROT_VERTICAL;
+		static float fθ = WIN_START_ROT_HORIZONTAL;
+		static float fDistance = WIN_START_DISTANCE;
 
-		fφ += D3DXToRadian(0.5f);
-		fθ += D3DXToRadian(0.1f);
+		//変化量
+		fφ += (WIN_END_ROT_VERTICAL - WIN_START_ROT_VERTICAL) / 100.0f * WIN_ROT_MOVE_SUBTRACTION;
+		fθ += (WIN_END_ROT_HORIZONTAL - WIN_START_ROT_HORIZONTAL) / 100.0f * WIN_ROT_MOVE_SUBTRACTION;
 
-		m_posVDest.x = PlayerPos[m_nCameraNum].x + m_fDistance * sinf(fθ) * cosf(fφ);
+		m_posVDest.x = PlayerPos[m_nCameraNum].x + fDistance * sinf(fθ) * cosf(fφ);
 
-		m_posVDest.y = PlayerPos[m_nCameraNum].y + m_fDistance * cosf(fθ);
+		m_posVDest.y = PlayerPos[m_nCameraNum].y + fDistance * cosf(fθ);
 
 		if (m_posVDest.y <= 2)
 		{
 			m_posVDest.y = 2;
 		}
 
-		m_fDistance--;
+		fDistance -= (WIN_START_DISTANCE - WIN_END_DISTANCE) / 100.0f * WIN_ROT_MOVE_SUBTRACTION;
 
-		if (m_fDistance <= 500.0f)
+		if (fDistance <= WIN_END_DISTANCE)
 		{
-			m_fDistance = 500.0f;
+			fDistance = WIN_END_DISTANCE;
 		}
 
-		if (fφ >= D3DXToRadian(270.0f))
+		if (fφ >= WIN_END_ROT_VERTICAL)
 		{
-			fφ = D3DXToRadian(270.0f);
+			fφ = WIN_END_ROT_VERTICAL;
 		}
 
-		if (fθ >= D3DXToRadian(100.0f))
+		if (fθ >= WIN_END_ROT_HORIZONTAL)
 		{
-			fθ = D3DXToRadian(100.0f);
+			fθ = WIN_END_ROT_HORIZONTAL;
 		}
 
-		m_posVDest.z = PlayerPos[m_nCameraNum].z + m_fDistance * sinf(fθ) * sinf(fφ);
+		m_posVDest.z = PlayerPos[m_nCameraNum].z + fDistance * sinf(fθ) * sinf(fφ);
 
-		m_posRDest = D3DXVECTOR3(PlayerPos[m_nCameraNum].x, PlayerPos[m_nCameraNum].y, PlayerPos[m_nCameraNum].z);
+		m_posRDest = D3DXVECTOR3(PlayerPos[m_nCameraNum].x, PlayerPos[m_nCameraNum].y + PLAYER_HEIGHT, PlayerPos[m_nCameraNum].z);
 
 		m_posV += (m_posVDest - m_posV); //カメラフロー
 		m_posR += (m_posRDest - m_posR); //カメラフロー
 	}
 	else
 	{
+		static float fφ = WIN_START_ROT_VERTICAL;
 
-		static float fφ = D3DXToRadian(0.0f);
+		static float fDistance = LOSE_START_DISTANCE;
 
-		fφ += D3DXToRadian(0.5f);
+		fDistance++;
 
-		m_posVDest.x = PlayerPos[m_nCameraNum].x + m_fDistance * sinf(m_fθ) * cosf(fφ);
+		if (fDistance >= LOSE_END_DISTANCE)
+		{
+			fDistance = LOSE_END_DISTANCE;
+		}
 
-		m_posVDest.y = PlayerPos[m_nCameraNum].y + m_fDistance * cosf(m_fθ);
+
+		m_posVDest.x = PlayerPos[m_nCameraNum].x + fDistance * sinf(m_fθ) * cosf(fφ);
+
+		m_posVDest.y = PlayerPos[m_nCameraNum].y + fDistance * cosf(m_fθ);
 
 		if (m_posVDest.y <= 2)
 		{
 			m_posVDest.y = 2;
 		}
 
-		m_posVDest.z = PlayerPos[m_nCameraNum].z + m_fDistance * sinf(m_fθ) * sinf(fφ);
+		m_posVDest.z = PlayerPos[m_nCameraNum].z + fDistance * sinf(m_fθ) * sinf(fφ);
 
-		m_posRDest = D3DXVECTOR3(PlayerPos[m_nCameraNum].x, PlayerPos[m_nCameraNum].y, PlayerPos[m_nCameraNum].z);
+		m_posRDest = D3DXVECTOR3(PlayerPos[m_nCameraNum].x, PlayerPos[m_nCameraNum].y + PLAYER_HEIGHT, PlayerPos[m_nCameraNum].z);
 
 		m_posV += (m_posVDest - m_posV); //カメラフロー
 		m_posR += (m_posRDest - m_posR); //カメラフロー
 	}
 }
 
+//=============================================================================
+//カメラクラスの試合前更新処理
+//=============================================================================
 void CCamera::NomalUpdate(D3DXVECTOR3 PlayerPos[])
 {
 	int nCameraSecond = 0;
@@ -256,26 +288,11 @@ void CCamera::NomalUpdate(D3DXVECTOR3 PlayerPos[])
 	// ジョイパッドの取得
 	DIJOYSTATE js = CInputJoypad::GetStick(m_nCameraNum);
 
-	if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_R3, m_nCameraNum))
+	if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_R3, m_nCameraNum) || pKeyInput->GetTrigger(DIK_TAB))
 	{
 		if (m_bTarget == false)
 		{
 			m_fθ = D3DXToRadian(75.0f);
-			m_fφ = D3DXToRadian(0.0f);
-			m_bTarget = true;
-		}
-		else
-		{
-			m_bTarget = false;
-		}
-	}
-
-	if (pKeyInput->GetTrigger(DIK_TAB))
-	{
-		if (m_bTarget == false)
-		{
-			m_fθ = D3DXToRadian(75.0f);
-			m_fφ = D3DXToRadian(0.0f);
 			m_bTarget = true;
 		}
 		else
@@ -299,7 +316,7 @@ void CCamera::NomalUpdate(D3DXVECTOR3 PlayerPos[])
 			m_bTarget = false;
 		}
 
-		m_posRDest = D3DXVECTOR3(PlayerPos[nCameraSecond].x, PlayerPos[nCameraSecond].y, PlayerPos[nCameraSecond].z);
+		m_posRDest = D3DXVECTOR3(PlayerPos[nCameraSecond].x, PlayerPos[nCameraSecond].y + PLAYER_HEIGHT, PlayerPos[nCameraSecond].z);
 
 		m_posV += (m_posVDest - m_posV); //カメラフロー
 		m_posR += (m_posRDest - m_posR); //カメラフロー
@@ -341,7 +358,7 @@ void CCamera::NomalUpdate(D3DXVECTOR3 PlayerPos[])
 
 		m_posVDest.z = PlayerPos[m_nCameraNum].z + m_fDistance * sinf(m_fθ) * sinf(m_fφ);
 
-		m_posRDest = D3DXVECTOR3(PlayerPos[m_nCameraNum].x, PlayerPos[m_nCameraNum].y + 100, PlayerPos[m_nCameraNum].z);
+		m_posRDest = D3DXVECTOR3(PlayerPos[m_nCameraNum].x, PlayerPos[m_nCameraNum].y + PLAYER_HEIGHT, PlayerPos[m_nCameraNum].z);
 
 		m_posV += (m_posVDest - m_posV);
 		m_posR += (m_posRDest - m_posR);

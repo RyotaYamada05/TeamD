@@ -19,7 +19,7 @@ class CCamera
 {
 public:
 	//=========================================================================
-	//メンバ関数宣言
+	//パブリックメンバ関数宣言
 	//=========================================================================
 	CCamera();
 	~CCamera();
@@ -27,8 +27,6 @@ public:
 	HRESULT Init(void);
 	void Uninit(void);
 	void Update(void);
-	void EndUpdate(D3DXVECTOR3 PlayerPos[], int nWinPlayer);
-	void NomalUpdate(D3DXVECTOR3 PlayerPos[]);
 	void SetCamera(void);
 	bool GetTargetBool(void);
 	float Getθ(void);
@@ -37,6 +35,11 @@ public:
 	D3DXVECTOR3 GetposR(void);
 	D3DXMATRIX GetMtxView(void);
 private:
+	//=========================================================================
+	//プライベートメンバ関数宣言
+	//=========================================================================
+	void EndUpdate(D3DXVECTOR3 PlayerPos[], int nWinPlayer);
+	void NomalUpdate(D3DXVECTOR3 PlayerPos[]);
 	//=========================================================================
 	//メンバ変数宣言
 	//=========================================================================

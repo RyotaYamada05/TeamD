@@ -33,7 +33,11 @@
 #define PLAYER_JUMP				(5.0f)				// ジャンプの処理
 #define GRAVITY_POWAR			(0.05f)				// 重力の強さ
 #define PLAYER_FALL				(-8.0f)				// 急降下の処理
-#define GROUND_RIMIT			(160.0f)				// 地面の制限
+#define GROUND_RIMIT			(160.0f)			// 地面の制限
+#define PLAYE_ROT_Y_FRONT		(D3DXToRadian(90.0f))	//プレイヤーの縦軸前
+#define PLAYE_ROT_Y_LEFT		(D3DXToRadian(180.0f))	//プレイヤーの縦軸左
+#define PLAYE_ROT_Y_RIGHT		(D3DXToRadian(0.0f))	//プレイヤーの縦軸右
+#define PLAYE_ROT_Y_BUCK		(D3DXToRadian(-90.0f))	//プレイヤーの縦軸後
 
 //=============================================================================
 // static初期化
@@ -283,7 +287,7 @@ void CPlayer::Update(void)
 	case 0:
 		if (CGame::GetCamera(m_nPlayerNum)->GetTargetBool())
 		{
-			m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ() + D3DXToRadian(90.0f));
+			m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ() + PLAYE_ROT_Y_FRONT);
 		}
 
 		break;
@@ -291,7 +295,7 @@ void CPlayer::Update(void)
 	case 1:
 		if (CGame::GetCamera(m_nPlayerNum)->GetTargetBool())
 		{
-			m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ() + D3DXToRadian(90.0f));
+			m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ() + PLAYE_ROT_Y_FRONT);
 		}
 
 		break;
@@ -358,7 +362,7 @@ void CPlayer::Walk(void)
 		{
 			if (!CGame::GetCamera(m_nPlayerNum)->GetTargetBool())
 			{
-				m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ() - D3DXToRadian(180.0f));
+				m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ() - PLAYE_ROT_Y_LEFT);
 			}
 
 			// ジョイパッド操作
@@ -370,7 +374,7 @@ void CPlayer::Walk(void)
 		{
 			if (!CGame::GetCamera(m_nPlayerNum)->GetTargetBool())
 			{
-				m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ());
+				m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ() - PLAYE_ROT_Y_RIGHT);
 			}
 
 			// ジョイパッド操作
@@ -386,7 +390,7 @@ void CPlayer::Walk(void)
 		{
 			if (!CGame::GetCamera(m_nPlayerNum)->GetTargetBool())
 			{
-				m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ() + D3DXToRadian(90.0f));
+				m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ() + PLAYE_ROT_Y_FRONT);
 			}
 
 			// ジョイパッド操作
@@ -397,7 +401,7 @@ void CPlayer::Walk(void)
 		{
 			if (!CGame::GetCamera(m_nPlayerNum)->GetTargetBool())
 			{
-				m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ() + D3DXToRadian(-90.0f));
+				m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ() + PLAYE_ROT_Y_BUCK);
 			}
 			// ジョイパッド操作
 
