@@ -33,7 +33,11 @@
 #define PLAYER_JUMP				(5.0f)				// ジャンプの処理
 #define GRAVITY_POWAR			(0.05f)				// 重力の強さ
 #define PLAYER_FALL				(-8.0f)				// 急降下の処理
-#define GROUND_RIMIT			(0.0f)				// 地面の制限
+#define GROUND_RIMIT			(160.0f)			// 地面の制限
+#define PLAYE_ROT_Y_FRONT		(D3DXToRadian(90.0f))	//プレイヤーの縦軸前
+#define PLAYE_ROT_Y_LEFT		(D3DXToRadian(180.0f))	//プレイヤーの縦軸左
+#define PLAYE_ROT_Y_RIGHT		(D3DXToRadian(0.0f))	//プレイヤーの縦軸右
+#define PLAYE_ROT_Y_BUCK		(D3DXToRadian(-90.0f))	//プレイヤーの縦軸後
 
 //=============================================================================
 // static初期化
@@ -43,9 +47,9 @@ LPD3DXBUFFER CPlayer::m_pBuffMat = NULL;	// マテリアル情報へのポインタ
 DWORD CPlayer::m_nNumMat = 0;				// マテリアル情報の数
 int CPlayer::m_nPlayerAll = 0;				// プレイヤーの総数
 
-//=============================================================================
-// クリエイト
-//=============================================================================
+											//=============================================================================
+											// クリエイト
+											//=============================================================================
 CPlayer * CPlayer::Create(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 {
 	// 初期化処理
@@ -70,7 +74,7 @@ HRESULT CPlayer::LoadModel(void)
 
 	// モデルの生成
 
-	D3DXLoadMeshFromX("data/model/ti-muiro.x",		D3DXMESH_SYSTEMMEM,
+	D3DXLoadMeshFromX("data/model/ti-muiro.x", D3DXMESH_SYSTEMMEM,
 		pD3DDevice,
 		NULL,
 		&m_pBuffMat,
@@ -149,7 +153,7 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 
 	switch (m_nPlayerNum)
 	{
-	//1Pだった場合
+		//1Pだった場合
 	case 0:
 		//1Pのライフゲージ		
 		if (m_pLife[0] == NULL)
@@ -186,7 +190,7 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 		SetType(MODEL_TYPE_PLAYER1);
 		break;
 
-	//2Pだった場合
+		//2Pだった場合
 	case 1:
 		//２Ｐのライフゲージ
 		if (m_pLife[0] == NULL)
@@ -199,7 +203,7 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 		//１Ｐのライフゲージ		
 		if (m_pLife[1] == NULL)
 		{
-			
+
 			m_pLife[1] = CLife::Create(D3DXVECTOR3(LIFE_POS_LEFT_X, LIFE_POS_DOWN_Y, 0.0f),
 				D3DXVECTOR3(MAX_LIFE, LIFE_SIZE_ENEMY_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255),
 				CLife::LIFETYPE_SECOND_PLAYER);
@@ -218,7 +222,7 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 
 		break;
 
-			
+
 	default:
 		break;
 	}
@@ -254,7 +258,7 @@ void CPlayer::Update(void)
 
 	//位置の取得
 	m_pos = CModel::GetPos();
-	
+
 	// プレイヤーの制御
 	PlayerControl();
 
@@ -283,7 +287,7 @@ void CPlayer::Update(void)
 	case 0:
 		if (CGame::GetCamera(m_nPlayerNum)->GetTargetBool())
 		{
-			m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ() + D3DXToRadian(90.0f));
+			m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ() + PLAYE_ROT_Y_FRONT);
 		}
 
 		break;
@@ -291,7 +295,7 @@ void CPlayer::Update(void)
 	case 1:
 		if (CGame::GetCamera(m_nPlayerNum)->GetTargetBool())
 		{
-			m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ() + D3DXToRadian(90.0f));
+			m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ() + PLAYE_ROT_Y_FRONT);
 		}
 
 		break;
@@ -358,7 +362,7 @@ void CPlayer::Walk(void)
 		{
 			if (!CGame::GetCamera(m_nPlayerNum)->GetTargetBool())
 			{
-				m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ() - D3DXToRadian(180.0f));
+				m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ() - PLAYE_ROT_Y_LEFT);
 			}
 
 			// ジョイパッド操作
@@ -370,7 +374,7 @@ void CPlayer::Walk(void)
 		{
 			if (!CGame::GetCamera(m_nPlayerNum)->GetTargetBool())
 			{
-				m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ());
+				m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ() - PLAYE_ROT_Y_RIGHT);
 			}
 
 			// ジョイパッド操作
@@ -386,7 +390,7 @@ void CPlayer::Walk(void)
 		{
 			if (!CGame::GetCamera(m_nPlayerNum)->GetTargetBool())
 			{
-				m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ() + D3DXToRadian(90.0f));
+				m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ() + PLAYE_ROT_Y_FRONT);
 			}
 
 			// ジョイパッド操作
@@ -397,7 +401,7 @@ void CPlayer::Walk(void)
 		{
 			if (!CGame::GetCamera(m_nPlayerNum)->GetTargetBool())
 			{
-				m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ() + D3DXToRadian(-90.0f));
+				m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ() + PLAYE_ROT_Y_BUCK);
 			}
 			// ジョイパッド操作
 
@@ -423,7 +427,6 @@ void CPlayer::Walk(void)
 	// Aキーを押したとき
 	if (pKeyboard->GetPress(DIK_A))
 	{
-
 		m_pos.x += sinf(-D3DX_PI / 2)*PLAYER_SPEED;
 	}
 	// Dキーを押したとき
@@ -443,14 +446,14 @@ void CPlayer::Jump(void)
 	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
 
 	// SPACEキーを押したとき・コントローラのYを押したとき
-	
+
 	if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_Y, m_nPlayerNum) && m_bJump == false
-		|| pKeyboard->GetTrigger(DIK_SPACE) && m_bJump == false )
+		|| pKeyboard->GetTrigger(DIK_SPACE) && m_bJump == false)
 	{
-			// ジャンプの処理
-			m_move.y = 0.0f;
-			m_move.y = PLAYER_JUMP;
-			m_bJump = true;
+		// ジャンプの処理
+		m_move.y = 0.0f;
+		m_move.y = PLAYER_JUMP;
+		m_bJump = true;
 	}
 
 }
@@ -465,7 +468,7 @@ void CPlayer::GroundLimit(void)
 	if (m_pos.y <= GROUND_RIMIT)
 	{
 
-		m_move.y = GROUND_RIMIT;
+		m_move.y = 0.0f;
 		m_pos.y = GROUND_RIMIT;
 		m_bJump = false;
 	}
@@ -481,7 +484,7 @@ void CPlayer::Fall(void)
 
 	// SPACEキーを押したとき
 	if (pKeyboard->GetTrigger(DIK_B) && m_bJump == true ||
-		
+
 		CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_A, m_nPlayerNum) && m_bJump == true)
 	{
 		// ジャンプの処理
@@ -502,7 +505,7 @@ void CPlayer::Dush(void)
 	if (m_bDushInter == false)
 	{
 		// Xボタンの時
-	
+
 		if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_X, m_nPlayerNum))
 		{
 			// ジョイパッドの取得
@@ -523,7 +526,7 @@ void CPlayer::Dush(void)
 		}
 
 		// Bボタンの時
-	
+
 		if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_B, m_nPlayerNum))
 		{
 			// ジョイパッドの取得
@@ -670,7 +673,7 @@ void CPlayer::bomb(void)
 
 		case 1:
 			//バレットの生成
-			CBomb::Create(D3DXVECTOR3(m_pos.x, m_pos.y +50.0f, m_pos.z), 
+			CBomb::Create(D3DXVECTOR3(m_pos.x, m_pos.y + 50.0f, m_pos.z),
 				D3DXVECTOR3(0.0f, BOMB_MOVE_Y, BOMB_SPEED),
 				D3DXVECTOR3(BOMB_SIZE_X, BOMB_SIZE_Y, BOMB_SIZE_Z), CBullet2::BULLET2_USER_PL2);
 			//弾うったらゲージを減らす
