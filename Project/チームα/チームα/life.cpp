@@ -15,7 +15,7 @@
 //静的メンバ変数宣言
 //================================================
 LPDIRECT3DTEXTURE9 CLife::m_apTexture[LIFETYPE_PLAYER_MAX] = {};
-
+bool CLife::m_bStart = true;
 //================================================
 //クリエイト処理
 //================================================
@@ -131,10 +131,13 @@ void CLife::Update(void)
 {
 	CGauge::Update();
 
+	//ライフの最初の動き
+	LifeStart();
 	//ライフを減らす
 	Lifereduce();
 	//ライフが半分になると点滅させる
 	LifeFlashing();
+	
 }
 
 //================================================
@@ -255,3 +258,33 @@ void CLife::LifeFlashing(void)
 	SetCol(col);
 }
 
+//================================================
+//ゲームスタート時のライフの動き
+//================================================
+void CLife::LifeStart(void)
+{
+	//サイズの取得
+	D3DXVECTOR3 size = GetSize();
+
+	if (size.x < MAX_LIFE)
+	{
+		if (m_bStart == true)
+		{
+			size.x += 2;
+		}
+	}
+	else
+	{
+		m_bStart = false;
+	}
+	//サイズの設定
+	SetSize(size);
+}
+
+//================================================
+//READYの使用してるかしてないかの取得
+//================================================
+bool CLife::GetReadey(void)
+{
+	return m_bStart;
+}

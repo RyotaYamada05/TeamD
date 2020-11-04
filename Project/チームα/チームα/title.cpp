@@ -17,8 +17,13 @@
 #include "conection.h"
 #include "tcp_client.h"
 #include "fade.h"
+#include "titlelogo.h"
 
+//=======================================================================================
+//静的メンバ変数宣言
+//=======================================================================================
 LPDIRECT3DTEXTURE9 CTitle::m_pTexture[1] = {};
+CTitlelogo *CTitle::m_apTitlelogo[MAX_TITLE] = {};
 
 //=======================================================================================
 // タイトルクラスのコンストラクタ
@@ -58,7 +63,7 @@ HRESULT CTitle::Load(void)
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
 	//テクスチャの読み込み
-	D3DXCreateTextureFromFile(pDevice, "data/Texture/derttitle.jpg", &m_pTexture[0]);
+	D3DXCreateTextureFromFile(pDevice, "data/Texture/bg001.png", &m_pTexture[0]);
 		return S_OK;
 }
 
@@ -75,6 +80,19 @@ HRESULT CTitle::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 		m_pScene->BindTexture(m_pTexture[0]);
 	}
 
+	
+	if (m_apTitlelogo[0] == NULL)
+	{
+		m_apTitlelogo[0] = CTitlelogo::Create(D3DXVECTOR3(TITLE_UI_POS_X, TITLE_UI_POS_Y, 0.0f), D3DXVECTOR3(TITLE_UI_SIZE, TITLE_UI_SIZE, 0.0f), CTitlelogo::LOGOTIPE_UI);
+	}
+	if (m_apTitlelogo[1] == NULL)
+	{
+		m_apTitlelogo[1] = CTitlelogo::Create(D3DXVECTOR3(TITLE_PLESS_POS_X, TITLE_PLESS_POS_Y, 0.0f), D3DXVECTOR3(TITLE_PLESS_SIZE_X, TITLE_PLESS_SIZE_Y, 0.0f), CTitlelogo::LOGOTIPE_PRESS);
+	}
+	if (m_apTitlelogo[2] == NULL)
+	{
+		m_apTitlelogo[2] = CTitlelogo::Create(D3DXVECTOR3(TITLE_POS_X, TITLE_POS_Y, 0.0f), D3DXVECTOR3(TITLE_SIZE_X, TITLE_SIZE_Y, 0.0f), CTitlelogo::LOGOTIPE_TITLE);
+	}
 	return S_OK;
 }
 
@@ -83,11 +101,30 @@ HRESULT CTitle::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 //=======================================================================================
 void CTitle::Uninit(void)
 {
+	if (m_apTitlelogo[0] != NULL)
+	{
+		m_apTitlelogo[0]->Uninit();
+		m_apTitlelogo[0] = NULL;
+	}
+
+	if (m_apTitlelogo[1] != NULL)
+	{
+		m_apTitlelogo[1]->Uninit();
+		m_apTitlelogo[1] = NULL;
+	}
+
+	if (m_apTitlelogo[2] != NULL)
+	{
+		m_apTitlelogo[2]->Uninit();
+		m_apTitlelogo[2] = NULL;
+	}
+
 	if (m_pScene != NULL)
 	{
 		m_pScene->Uninit();
 	}
 
+	
 	//オブジェクトの破棄
 	Release();
 }

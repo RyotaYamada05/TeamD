@@ -18,8 +18,8 @@
 //=============================================================================
 #define FIELD_WIDTH					(4)
 #define FIELD_HEIGHT				(4)
-#define FIELD_WIDTH_SIZE			(10000.0f)
-#define FIELD_HEIGHT_SIZE			(10000.0f)
+#define FIELD_WIDTH_SIZE			(7000.0f)
+#define FIELD_HEIGHT_SIZE			(7000.0f)
 
 #define FIELD_WIDTH_SIZE_TUTORIAL	(300.0f)
 #define FIELD_HEIGHT_SIZE_TUTORIAL	(300.0f)

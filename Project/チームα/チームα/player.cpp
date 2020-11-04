@@ -33,7 +33,7 @@
 #define PLAYER_JUMP				(5.0f)				// ジャンプの処理
 #define GRAVITY_POWAR			(0.05f)				// 重力の強さ
 #define PLAYER_FALL				(-8.0f)				// 急降下の処理
-#define GROUND_RIMIT			(0.0f)				// 地面の制限
+#define GROUND_RIMIT			(170.0f)			// 地面の制限
 
 //=============================================================================
 // static初期化
@@ -156,7 +156,7 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 		{
 			//1P側に体力ゲージを生成
 			m_pLife[0] = CLife::Create(D3DXVECTOR3(LIFE_POS_LEFT_X, LIFE_POS_UP_Y, 0.0f),
-				D3DXVECTOR3(MAX_LIFE, LIFE_SIZE_PLAYER_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255),
+				D3DXVECTOR3(0.0f, LIFE_SIZE_PLAYER_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255),
 				CLife::LIFETYPE_FAST_PLAYER);
 		}
 
@@ -167,7 +167,7 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 
 			//2P側に体力ゲージを生成
 			m_pLife[1] = CLife::Create(D3DXVECTOR3(LIFE_POS_RIGHT_X, LIFE_POS_DOWN_Y, 0.0f),
-				D3DXVECTOR3(MAX_LIFE, LIFE_SIZE_ENEMY_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255),
+				D3DXVECTOR3(0.0f, LIFE_SIZE_ENEMY_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255),
 				CLife::LIFETYPE_SECOND_PLAYER);
 		}
 
@@ -192,7 +192,7 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 		if (m_pLife[0] == NULL)
 		{
 			m_pLife[0] = CLife::Create(D3DXVECTOR3(LIFE_POS_RIGHT_X, LIFE_POS_UP_Y, 0.0f),
-				D3DXVECTOR3(MAX_LIFE, LIFE_SIZE_PLAYER_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255),
+				D3DXVECTOR3(0.0f, LIFE_SIZE_PLAYER_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255),
 				CLife::LIFETYPE_FAST_PLAYER);
 		}
 
@@ -201,7 +201,7 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 		{
 			
 			m_pLife[1] = CLife::Create(D3DXVECTOR3(LIFE_POS_LEFT_X, LIFE_POS_DOWN_Y, 0.0f),
-				D3DXVECTOR3(MAX_LIFE, LIFE_SIZE_ENEMY_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255),
+				D3DXVECTOR3(0.0f, LIFE_SIZE_ENEMY_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255),
 				CLife::LIFETYPE_SECOND_PLAYER);
 		}
 
@@ -465,7 +465,7 @@ void CPlayer::GroundLimit(void)
 	if (m_pos.y <= GROUND_RIMIT)
 	{
 
-		m_move.y = GROUND_RIMIT;
+		m_move.y = 0.0f;
 		m_pos.y = GROUND_RIMIT;
 		m_bJump = false;
 	}

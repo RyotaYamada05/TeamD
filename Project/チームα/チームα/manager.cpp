@@ -35,8 +35,10 @@
 #include "particle.h"
 #include "shock.h"
 #include "bomb.h"
-
 #include "lockon.h"
+#include "bill.h"
+#include "uistart.h"
+#include "titlelogo.h"
 //=============================================================================
 //ê√ìIÉÅÉìÉoïœêîêÈåæ
 //=============================================================================
@@ -252,6 +254,9 @@ void CManager::LoadAll(void)
 	CShock::Load();
 	CBomb::Load();
 	CLockon::Load();
+	CBill::LoadModel();
+	CUiStart::Load();
+	CTitlelogo::Load();
 }
 
 //=============================================================================
@@ -266,13 +271,17 @@ void CManager::UnLoadAll(void)
 	CBg::UnLoad();
 	CLife::Unload();
 	CUi::Unload();
-	CCharge::Unload();	C2dExplosion::UnLoad();
+	CCharge::Unload();	
+	C2dExplosion::UnLoad();
 	CBeam::UnLoad();
 	CEffect::UnLoad();
 	CParticle::UnLoad();
 	CShock::UnLoad();
 	CBomb::UnLoad();
 	CLockon::Unload();
+	CBill::Unload();
+	CUiStart::Unload();
+	CTitlelogo::Unload();
 }
 
 //=============================================================================

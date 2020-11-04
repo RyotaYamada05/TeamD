@@ -22,6 +22,7 @@ CScene2d::CScene2d()
 	m_pVetxBuff = NULL;
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_PolygonSize = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_fRotasion = 0.0f;
 }
 
 //=======================================================================================
@@ -209,4 +210,39 @@ void CScene2d::SetAnim(int PatternAnim, float Countea)
 
 	//頂点データをアンロック
 	m_pVetxBuff->Unlock();
+}
+
+//======================================================
+//ローテーションの取得
+//======================================================
+void CScene2d::SetRotation(float rotasion)
+{
+	rotasion += m_fRotasion;
+	float r = sqrtf(pow(m_PolygonSize.x / 2, 2.0) + pow(m_PolygonSize.x / 2, 2.0));	//半径
+	float fTheta = atan2(m_PolygonSize.x / 2, m_PolygonSize.x / 2);					//シータ
+
+	float XAngle = r*cos(fTheta + rotasion);	//Xの角度
+	float YAngle = r*sin(fTheta + rotasion);	//Yの角度
+
+	VERTEX_2D*pVtx;	//頂点情報へのポインタ
+
+	//頂点データ範囲をロックし、頂点バッファへのポインタを所得
+	m_pVetxBuff->Lock(0, 0, (void**)&pVtx, 0);
+
+	pVtx[0].pos = D3DXVECTOR3(m_pos.x + XAngle, m_pos.y + YAngle, 0.0f);
+	XAngle = r*cos(fTheta + D3DXToRadian(90) + rotasion);
+	YAngle = r*sin(fTheta + D3DXToRadian(90) + rotasion);
+	pVtx[1].pos = D3DXVECTOR3(m_pos.x + XAngle, m_pos.y + YAngle, 0.0f);
+	XAngle = r*cos(fTheta + D3DXToRadian(-90) + rotasion);
+	YAngle = r*sin(fTheta + D3DXToRadian(-90) + rotasion);
+	pVtx[2].pos = D3DXVECTOR3(m_pos.x + XAngle, m_pos.y + YAngle, 0.0f);
+	XAngle = r*cos(fTheta + D3DXToRadian(180) + rotasion);
+	YAngle = r*sin(fTheta + D3DXToRadian(180) + rotasion);
+	pVtx[3].pos = D3DXVECTOR3(m_pos.x + XAngle, m_pos.y + YAngle, 0.0f);
+
+
+	//頂点データをアンロック
+	m_pVetxBuff->Unlock();
+
+	m_fRotasion += 0.01f;
 }
