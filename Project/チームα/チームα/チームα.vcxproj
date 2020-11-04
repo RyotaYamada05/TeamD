@@ -153,6 +153,7 @@
     <ClCompile Include="2d_explosion.cpp" />
     <ClCompile Include="beam.cpp" />
     <ClCompile Include="bg.cpp" />
+    <ClCompile Include="bill.cpp" />
     <ClCompile Include="billboard.cpp" />
     <ClCompile Include="board.cpp" />
     <ClCompile Include="bomb.cpp" />
@@ -190,12 +191,15 @@
     <ClCompile Include="tcp_client.cpp" />
     <ClCompile Include="time.cpp" />
     <ClCompile Include="title.cpp" />
+    <ClCompile Include="titlelogo.cpp" />
     <ClCompile Include="ui.cpp" />
+    <ClCompile Include="uistart.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="2d_explosion.h" />
     <ClInclude Include="beam.h" />
     <ClInclude Include="bg.h" />
+    <ClInclude Include="bill.h" />
     <ClInclude Include="billboard.h" />
     <ClInclude Include="board.h" />
     <ClInclude Include="bomb.h" />
@@ -233,7 +237,9 @@
     <ClInclude Include="tcp_client.h" />
     <ClInclude Include="time.h" />
     <ClInclude Include="title.h" />
+    <ClInclude Include="titlelogo.h" />
     <ClInclude Include="ui.h" />
+    <ClInclude Include="uistart.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

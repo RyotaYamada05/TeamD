@@ -37,9 +37,14 @@
 #define UI_RESULT_POS_LEFT_X	(320.0f)	// 勝敗文字出すX軸（左側）
 #define UI_RESULT_POS_RIGHT_X	(960.0f)	// 勝敗文字出すX軸（右側）
 #define UI_RESULT_POS_Y			(360.0f)	// 勝敗文字出す場所のY軸
-
+//標準
+#define UI_LOCKON_SIZE_SMALL_X	(40.0f)		// ロックオンのXサイズ
+#define UI_LOCKON_SIZE_SMALL_Y	(40.0f)		// ロックオンのYサイズ
+#define UI_LOCKON_POS_LEFT_X	(320.0f)	// ロックオンの左側のX軸
+#define UI_LOCKON_POS_RIGHT_X	(960.0f)	// ロックオンの右側のX軸
+#define UI_LOCKON_POS_Y			(360.0f)	// ロックオンのY軸
 //種類
-#define UI_TYPE					(11)		// UIの種類の最大数
+#define UI_TYPE					(12)		// UIの種類の最大数
 
 //=============================================================================
 //クラス宣言
@@ -58,6 +63,7 @@ public:
 		UITYPE_WIN,			// WIN文字
 		UITYPE_LOSE,		// LOSE文字
 		UITYPE_STANDARD,	// 標準表示
+		UYTYPE_READY,		// READY文字
 		UITYPE_MAX
 	}UITYPE;
 	CUi();

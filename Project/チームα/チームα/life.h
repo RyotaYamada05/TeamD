@@ -52,6 +52,8 @@ public:
 	void Decrease(int Reduce,int PlayerNamber,bool Life);
 	void Lifereduce(void);
 	void LifeFlashing(void);
+	void LifeStart(void);
+	static bool GetReadey(void);
 
 private:
 
@@ -66,6 +68,7 @@ private:
 	int m_nReduce;										// いくつ減らすか
 	int m_nPlayerNum;									// １Ｐか２Ｐか
 	bool m_bLife;										// 減らす処理を使用するかしないか
+	static bool m_bStart;								// スタートの処理を使用するかしないか
 
 };
 #endif // ! _LIFE_H_

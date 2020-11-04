@@ -109,6 +109,7 @@ HRESULT CRenderer::Init(HWND hWnd, bool bWindow)
 		D3DCREATE_HARDWARE_VERTEXPROCESSING,						// D3DCREATE_SOFTWARE_VERTEXPROCESSING：ソフトウェアによる頂点処理を指定
 		&d3dpp, &m_pD3DDevice)))									// D3DCREATE_HARDWARE_VERTEXPROCESSING：ハードウェアによる頂点処理。
 	{																// D3DCREATE_MIXED_VERTEXPROCESSING   ：ミックス(ソフトウェアとハードウェアの両方)による頂点処理を指定します。
+
 																	// 上記の設定が失敗したら								
 																	// 描画をハードウェアで行い、頂点処理はCPUで行なう
 		if (FAILED(m_pD3D->CreateDevice(D3DADAPTER_DEFAULT,
@@ -146,7 +147,7 @@ HRESULT CRenderer::Init(HWND hWnd, bool bWindow)
 	// ビューポート深度設定
 	view_port.MinZ = 0.0f;
 	view_port.MaxZ = 1.0f;
-
+	
 	// ビューポート設定
 	if (FAILED(m_pD3DDevice->SetViewport(&view_port)))
 	{
@@ -175,13 +176,15 @@ HRESULT CRenderer::Init(HWND hWnd, bool bWindow)
 	m_pD3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);			// αソースカラーの指定
 	m_pD3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);		// αデスティネーションカラーの設定
 
-																				// サンプラーステートの設定
+	// 
+// サンプラーステートの設定
 	m_pD3DDevice->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP);		// テクスチャのU値の繰り返し
 	m_pD3DDevice->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);		// テクスチャのV値の繰り返し
 	m_pD3DDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);		// テクスチャ拡大時の補完設定
 	m_pD3DDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);		// テクスチャ縮小時の補完設定
 
-																				// テクスチャステージステートの設定
+	// 
+// テクスチャステージステートの設定
 	m_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);		// アルファブレンディング処理
 	m_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);		// 最初のアルファ引数（初期値）
 	m_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_CURRENT);		// 2番目のアルファ引数（初期値）

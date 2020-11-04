@@ -12,7 +12,8 @@
 #include "game.h"
 #include "player.h"
 #include "joypad.h"
-
+#include "lockon.h"
+#include "ui.h"
 //=============================================================================
 //ƒ}ƒNƒ’è‹`
 //=============================================================================
@@ -271,6 +272,7 @@ void CCamera::EndUpdate(D3DXVECTOR3 PlayerPos[], int nWinPlayer)
 //=============================================================================
 void CCamera::NomalUpdate(D3DXVECTOR3 PlayerPos[])
 {
+	CLockon *pLockon = CGame::GetLockon();
 	int nCameraSecond = 0;
 
 	if (m_nCameraNum == 0)
@@ -310,6 +312,15 @@ void CCamera::NomalUpdate(D3DXVECTOR3 PlayerPos[])
 		m_posVDest.z = m_posR.z + m_fDistance * sinf(m_fƒÆ) * sinf(m_fƒÓ) + PlayerPos[m_nCameraNum].z - PlayerPos[nCameraSecond].z;
 
 
+		if (m_nCameraNum == 0)
+		{
+			pLockon->Create(D3DXVECTOR3(UI_LOCKON_POS_LEFT_X, UI_RESULT_POS_Y, 0.0f), D3DXVECTOR3(UI_LOCKON_SIZE_X, UI_LOCKON_SIZE_Y, 0.0f), CLockon::LOCKONTYPE_FAST_PLAYER);
+		}
+
+		if (m_nCameraNum == 1)
+		{
+			pLockon->Create(D3DXVECTOR3(UI_LOCKON_POS_RIGHT_X, UI_RESULT_POS_Y, 0.0f), D3DXVECTOR3(UI_LOCKON_SIZE_X, UI_LOCKON_SIZE_Y, 0.0f), CLockon::LOCKONTYPE_SECOND_PLAYER);
+		}
 		if (PlayerPos[nCameraSecond].x <= PlayerPos[m_nCameraNum].x + 10 && PlayerPos[m_nCameraNum].x - 10 <= PlayerPos[nCameraSecond].x  &&
 			PlayerPos[nCameraSecond].z <= PlayerPos[m_nCameraNum].z + 10 && PlayerPos[m_nCameraNum].z - 10 <= PlayerPos[nCameraSecond].z)
 		{
