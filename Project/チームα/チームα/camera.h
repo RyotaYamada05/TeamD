@@ -27,6 +27,8 @@ public:
 	HRESULT Init(void);
 	void Uninit(void);
 	void Update(void);
+	void EndUpdate(D3DXVECTOR3 PlayerPos[], int nWinPlayer);
+	void NomalUpdate(D3DXVECTOR3 PlayerPos[]);
 	void SetCamera(void);
 	bool GetTargetBool(void);
 	float GetƒÆ(void);
