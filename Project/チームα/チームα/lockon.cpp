@@ -39,6 +39,7 @@ CLockon* CLockon::Create(D3DXVECTOR3 pos, D3DXVECTOR3 size, LOCKONTYPE type)
 
 		return pLockon;
 	}
+	return S_OK;
 }
 
 //================================================

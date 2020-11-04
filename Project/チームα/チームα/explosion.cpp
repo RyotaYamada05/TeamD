@@ -1,6 +1,6 @@
 //=================================================================================
 //
-// ボムクラス [bomb.cpp]
+// 爆発クラス [explosion.cpp]
 // Author : Konishi Yuuto
 //
 //=================================================================================
@@ -8,65 +8,68 @@
 //=================================================================================
 // インクルード
 //=================================================================================
-#include "bomb.h"
+#include "explosion.h"
 #include "manager.h"
 #include "renderer.h"
 #include "effect.h"
-#include "shock.h"
-#include "explosion.h"
 
 //=================================================================================
 // マクロ定義
 //=================================================================================
-#define BOMB_LIFE			(170)			// ボムのライフ
-#define BOMB_GRAVITY_POWAR	(0.2f)			// ボムの重力
+#define EXPLOSION_LIFE			(100)		// 体力
+#define EXPLOSION_SCALE_NUM		(0.05f)		// スケールの値
+#define EXPLOSION_SCALE_LIMIT	(5.0f)		// スケールの最大量
+#define EXPLOSION_ADD_ROT		(0.1f)		// 角度の加算量
+#define EXPLOSION_SUB_ALPHA		(0.005f)	// 透明度の減算量
 
 //=================================================================================
 // static初期化
 //=================================================================================
-LPDIRECT3DTEXTURE9 CBomb::m_apTexture[MAX_BOMB_TEXTURE] = {};
-LPD3DXMESH CBomb::m_pMesh = NULL;
-LPD3DXBUFFER CBomb::m_pBuffMat = NULL;		//マテリアル情報へのポインタ
-DWORD CBomb::m_nNumMat = 0;					//マテリアル情報の数
+LPDIRECT3DTEXTURE9 CExplosion::m_apTexture[MAX_EXPLOSION_TEXTURE] = {};
+LPD3DXMESH CExplosion::m_pMesh = NULL;
+LPD3DXBUFFER CExplosion::m_pBuffMat = NULL;			//マテリアル情報へのポインタ
+DWORD CExplosion::m_nNumMat = 0;					//マテリアル情報の数
 
 //=================================================================================
 // インスタンス生成
 //=================================================================================
-CBomb * CBomb::Create(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXVECTOR3 size, BULLET2_USER user)
+CExplosion * CExplosion::Create(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXVECTOR3 size)
 {
 	// メモリ確保
-	CBomb *pBomb = new CBomb;
+	CExplosion *pExplosion = new CExplosion;
 
-	if (pBomb != NULL)
+	if (pExplosion != NULL)
 	{
 		// 初期化処理
-		pBomb->Init(pos, size, user);		// 初期化情報
-		pBomb->SetMove(move);				// 移動量
-		pBomb->SetLife(BOMB_LIFE);			// ライフの情報
+		pExplosion->Init(pos, move, size);		// 初期化情報
 	}
 
-	return pBomb;
+	return pExplosion;
 }
 
 //=================================================================================
 // コンストラクタ
 //=================================================================================
-CBomb::CBomb()
+CExplosion::CExplosion()
 {
+	m_fScale = 0.0f;		// 拡縮用
+	m_fScaleNum = 0.0f;		// 拡縮用の値
+	m_FirstSize = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_fAddRotNum = 0.0f;
+	m_fAlphaNum = 0.0f;
 }
 
 //=================================================================================
 // デストラクタ
 //=================================================================================
-CBomb::~CBomb()
+CExplosion::~CExplosion()
 {
 }
 
 //=================================================================================
 // 初期化処理
 //=================================================================================
-HRESULT CBomb::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size, BULLET2_USER user)
+HRESULT CExplosion::Init(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXVECTOR3 size)
 {
 	MODEL model;
 
@@ -79,70 +82,59 @@ HRESULT CBomb::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size, BULLET2_USER user)
 	BindTexture(m_apTexture[0]);
 
 	// 初期化処理
-	CBullet2::Init(pos, size, user, BOMB_SPEED);	// 初期化情報
-	SetRot(D3DXVECTOR3(0.0f, 0.0f, 0.0f));			// 向き
-	SetType(BULLET2_TYPE_BOMB);						// タイプの設定
-	SetHeight(4.0f);
+	CModel::Init(pos, size);				// 初期化情報
+	SetRot(D3DXVECTOR3(0.0f, 0.0f, 0.0f));	// 向き
+
+	// 最初のサイズ取得
+	m_FirstSize = size;
+
+	// 拡縮の倍率
+	m_fScale = 1.0f;
+
+	// スケールを増やす値
+	m_fScaleNum = EXPLOSION_SCALE_NUM;
+
 	return S_OK;
 }
 
 //=================================================================================
 // 終了処理
 //=================================================================================
-void CBomb::Uninit(void)
+void CExplosion::Uninit(void)
 {
-	// 座標受け取り
-	D3DXVECTOR3 pos = GetPos();
-
-	//CExplosion::Create(pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), 
-	//	D3DXVECTOR3(EXPLOSION_SIZE_X, EXPLOSION_SIZE_Y, EXPLOSION_SIZE_Z));
-
 	// 終了処理
-	CBullet2::Uninit();
+	CModel::Uninit();
 }
 
 //=================================================================================
 // 更新処理
 //=================================================================================
-void CBomb::Update(void)
+void CExplosion::Update(void)
 {
 	// 更新処理
-	CBullet2::Update();
+	CModel::Update();
 
-	// 回転
+	// 回転の加算
 	AddRot();
 
-	// 高さの情報を受け取る
-	float fHeight = GetHeight();
-
-	// 座標を受け取る
-	D3DXVECTOR3 pos = GetPos();
-
-	// 座標が地面より上なら
-	if (pos.y > 15.0f)
-	{
-		// 重力を加算
-		SetHeight(fHeight -BOMB_GRAVITY_POWAR);
-	}
-	else
-	{
-		// 移動量加算
-		SetHeight(0.0f);
-	}
+	// 拡大
+	ScaleUp();
 }
 
 //=================================================================================
 // 描画処理
 //=================================================================================
-void CBomb::Draw(void)
+void CExplosion::Draw(void)
 {
 	// レンダラーの情報を受け取る
 	CRenderer *pRenderer = NULL;
 	pRenderer = CManager::GetRenderer();
 	LPDIRECT3DDEVICE9 pDevice = pRenderer->GetDevice();
 
-	//マテリアルデータへのポインタ
-	D3DXMATERIAL*pMat;
+	// 透明度加算
+	m_fAlphaNum += EXPLOSION_SUB_ALPHA;
+
+	D3DXMATERIAL*pMat;		//マテリアルデータへのポインタ
 
 	LPD3DXBUFFER pBuffMat = GetBuffMat();
 
@@ -151,19 +143,48 @@ void CBomb::Draw(void)
 
 	for (int nCntMat = 0; nCntMat < (int)m_nNumMat; nCntMat++)
 	{
+		// 自己発光
 		pMat[nCntMat].MatD3D.Emissive = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);
+
+		// 透明
+		pMat[nCntMat].MatD3D.Diffuse.a -= m_fAlphaNum;
 	}
 
 	// モデルの描画
-	CBullet2::Draw();
+	CModel::Draw();
+}
+
+//=================================================================================
+// 拡大の処理
+//=================================================================================
+void CExplosion::ScaleUp(void)
+{
+	// スケールの加算
+	m_fScale += m_fScaleNum;
+
+	// サイズの取得
+	D3DXVECTOR3 size =
+		D3DXVECTOR3(m_FirstSize.x * m_fScale, m_FirstSize.y * m_fScale, m_FirstSize.z * m_fScale);
+
+	// サイズを渡す
+	SetSize(size);
+
+	// 終了フラグ
+	if (m_fScale >= EXPLOSION_SCALE_LIMIT)
+	{
+		// 終了処理
+		Uninit();
+
+		return;
+	}
 }
 
 //=================================================================================
 // 角度を加算
 //=================================================================================
-void CBomb::AddRot(void)
+void CExplosion::AddRot(void)
 {
-	m_fAddRotNum += 1.0f;
+	m_fAddRotNum += EXPLOSION_ADD_ROT;
 
 	// 角度の変化
 	D3DXVECTOR3 rot = D3DXVECTOR3(GetRot().x, GetRot().y + D3DXToRadian(m_fAddRotNum), GetRot().z);
@@ -175,7 +196,7 @@ void CBomb::AddRot(void)
 //=================================================================================
 // テクスチャロード
 //=================================================================================
-HRESULT CBomb::Load(void)
+HRESULT CExplosion::Load(void)
 {
 	// レンダラーの情報を受け取る
 	CRenderer *pRenderer = NULL;
@@ -187,7 +208,7 @@ HRESULT CBomb::Load(void)
 		&m_apTexture[0]);
 
 	// Xファイルの読み込み
-	D3DXLoadMeshFromX("data/model/bomb.x",
+	D3DXLoadMeshFromX("data/model/Explosion.x",
 		D3DXMESH_SYSTEMMEM,
 		pDevice,
 		NULL,
@@ -202,7 +223,7 @@ HRESULT CBomb::Load(void)
 //=================================================================================
 // テクスチャアンロード
 //=================================================================================
-void CBomb::UnLoad(void)
+void CExplosion::UnLoad(void)
 {
 	//メッシュの破棄
 	if (m_pMesh != NULL)
@@ -217,7 +238,7 @@ void CBomb::UnLoad(void)
 		m_pBuffMat = NULL;
 	}
 
-	for (int nCount = 0; nCount < MAX_BOMB_TEXTURE; nCount++)
+	for (int nCount = 0; nCount < MAX_EXPLOSION_TEXTURE; nCount++)
 	{
 		// テクスチャの破棄
 		if (m_apTexture[nCount] != NULL)

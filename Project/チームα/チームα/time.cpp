@@ -13,6 +13,8 @@
 #include "number.h"
 #include "manager.h"
 #include "renderer.h"
+#include "player.h"
+#include "game.h"
 
 //=============================================================================
 // クリエイト関数
@@ -102,18 +104,36 @@ void CTime::Uninit(void)
 //=============================================================================
 void CTime::Update(void)
 {
-	for (int nCount = 0; nCount < MAX_TIME; nCount++)
+	// プレイヤーの状態情報
+	CPlayer::PLAYER_STATE state[MAX_PLAYER] = 
+	{ CPlayer::PLAYER_STATE_NONE, CPlayer::PLAYER_STATE_NONE };
+
+	for (int nCount = 0; nCount < MAX_PLAYER; nCount++)
 	{
-		m_apNumber[nCount]->Update();
+		// プレイヤー情報受け取り
+		if (CGame::GetPlayer(nCount) != NULL)
+		{
+			// 終了情報受け取り
+			state[nCount] = CGame::GetPlayer(nCount)->GetState();
+		}
 	}
 
-	m_nTimeCount++;
-
-	if (m_nTimeCount % 1 == 0)
+	// どちらも死んでいないなら
+	if (state[0] != CPlayer::PLAYER_STATE_EXPLOSION && state[1] != CPlayer::PLAYER_STATE_EXPLOSION)
 	{
-		if (m_nTime > 0)
+		for (int nCount = 0; nCount < MAX_TIME; nCount++)
 		{
-			AddTime(1);
+			m_apNumber[nCount]->Update();
+		}
+
+		m_nTimeCount++;
+
+		if (m_nTimeCount % 1 == 0)
+		{
+			if (m_nTime > 0)
+			{
+				AddTime(1);
+			}
 		}
 	}
 }

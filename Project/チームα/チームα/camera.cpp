@@ -222,8 +222,8 @@ void CCamera::Update(void)
 			m_posVDest.z = m_posR.z + m_fDistance * sinf(m_fƒÆ) * sinf(m_fƒÓ) + pPlayerPos1.z - pPlayerPos2.z;
 
 
-			if (pPlayerPos2.x <= pPlayerPos1.x + 10 && pPlayerPos1.x - 10 <= pPlayerPos2.x  &&
-				pPlayerPos2.z <= pPlayerPos1.z + 10 && pPlayerPos1.z - 10 <= pPlayerPos2.z)
+			if (pPlayerPos2.x <= pPlayerPos1.x + 30 && pPlayerPos1.x - 30 <= pPlayerPos2.x  &&
+				pPlayerPos2.z <= pPlayerPos1.z + 30 && pPlayerPos1.z - 30 <= pPlayerPos2.z)
 			{
 				m_bTarget = false;
 			}
@@ -242,7 +242,6 @@ void CCamera::Update(void)
 			{
 				pLockon->Create(D3DXVECTOR3(UI_LOCKON_POS_RIGHT_X, UI_RESULT_POS_Y, 0.0f), D3DXVECTOR3(UI_LOCKON_SIZE_X, UI_LOCKON_SIZE_Y, 0.0f), CLockon::LOCKONTYPE_SECOND_PLAYER);
 			}
-
 		}
 		else
 		{

@@ -35,8 +35,11 @@
 #include "particle.h"
 #include "shock.h"
 #include "bomb.h"
-
 #include "lockon.h"
+#include "explosion.h"
+#include "smoke.h"
+#include "sand.h"
+
 //=============================================================================
 //静的メンバ変数宣言
 //=============================================================================
@@ -94,7 +97,6 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindow)
 		}
 	}
 
-
 	//入力処理クラスのインスタンス生成
 	m_pJoypad = new CInputJoypad;
 
@@ -106,7 +108,6 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindow)
 			return -1;
 		}
 	}
-
 
 	m_pConection = new CConection;
 	if (m_pConection != NULL)
@@ -252,6 +253,9 @@ void CManager::LoadAll(void)
 	CShock::Load();
 	CBomb::Load();
 	CLockon::Load();
+	CExplosion::Load();
+	CSmoke::Load();
+	CSand::Load();
 }
 
 //=============================================================================
@@ -266,13 +270,17 @@ void CManager::UnLoadAll(void)
 	CBg::UnLoad();
 	CLife::Unload();
 	CUi::Unload();
-	CCharge::Unload();	C2dExplosion::UnLoad();
+	CCharge::Unload();	
+	C2dExplosion::UnLoad();
 	CBeam::UnLoad();
 	CEffect::UnLoad();
 	CParticle::UnLoad();
 	CShock::UnLoad();
 	CBomb::UnLoad();
 	CLockon::Unload();
+	CExplosion::UnLoad();
+	CSmoke::UnLoad();
+	CSand::UnLoad();
 }
 
 //=============================================================================

@@ -17,7 +17,9 @@
 // マクロ定義
 //=================================================================================
 #define SHOCK_LIFE			(100)		// 体力
-#define SHOCK_SCALE_NUM		(0.05f)	// スケールの値
+#define SHOCK_SCALE_NUM		(0.05f)		// スケールの値
+#define SHOCK_SCALE_LIMIT	(4.0f)		// スケールの最大量
+#define SHOCK_ROT_NUM		(0.2f)		// 回転数
 
 //=================================================================================
 // static初期化
@@ -129,7 +131,7 @@ void CShock::Draw(void)
 	LPDIRECT3DDEVICE9 pDevice = pRenderer->GetDevice();
 
 	// 透明度加算
-	m_fAlphaNum += 0.01f;
+	m_fAlphaNum += 0.005f;
 
 	D3DXMATERIAL*pMat;		//マテリアルデータへのポインタ
 
@@ -166,7 +168,7 @@ void CShock::ScaleUp(void)
 	SetSize(size);
 	
 	// 終了フラグ
-	if (m_fScale >= 3.5f)
+	if (m_fScale >= SHOCK_SCALE_LIMIT)
 	{
 		// 終了処理
 		Uninit();
@@ -180,7 +182,7 @@ void CShock::ScaleUp(void)
 //=================================================================================
 void CShock::AddRot(void)
 {
-	m_fAddRotNum += 0.3f;
+	m_fAddRotNum += SHOCK_ROT_NUM;
 
 	// 角度の変化
 	D3DXVECTOR3 rot = D3DXVECTOR3(GetRot().x , GetRot().y + D3DXToRadian(m_fAddRotNum), GetRot().z);

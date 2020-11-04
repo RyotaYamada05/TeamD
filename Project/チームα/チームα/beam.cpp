@@ -77,7 +77,7 @@ HRESULT CBeam::Init(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXVECTOR3 size, BULLET2
 	BindTexture(m_apTexture[0]);
 
 	// ‰Šú‰»ˆ—
-	CBullet2::Init(pos, size, user);		// ‰Šú‰»î•ñ
+	CBullet2::Init(pos, size, user, BEAM_SPEED);		// ‰Šú‰»î•ñ
 	SetRot(D3DXVECTOR3(0.0f, 0.0f, 0.0f));	// Œü‚«
 
 	return S_OK;

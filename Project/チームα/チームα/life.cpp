@@ -79,7 +79,7 @@ CLife::CLife()
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);		//カラー
 	m_type = LIFETYPE_NONE;		//タイプ
-
+	m_bEnd = false;
 }
 
 //================================================
@@ -215,6 +215,10 @@ void CLife::Lifereduce(void)
 			}
 		}
 	}
+	else
+	{
+		m_bEnd = true;
+	}
 
 	//サイズの設定
 	SetSize(size);
@@ -255,3 +259,10 @@ void CLife::LifeFlashing(void)
 	SetCol(col);
 }
 
+//================================================
+// エンドフラグの情報
+//================================================
+bool CLife::GetLife(void)
+{
+	return m_bEnd;
+}

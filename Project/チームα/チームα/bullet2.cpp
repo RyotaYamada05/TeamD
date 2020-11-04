@@ -4,20 +4,27 @@
 // Author : Konishi Yuuto
 //
 //=============================================================================
+
+//=============================================================================
+// インクルード
+//=============================================================================
 #include "bullet2.h"
 #include "player.h"
 #include "game.h"
 #include "life.h"
 #include "2d_explosion.h"
 #include "shock.h"
+#include "explosion.h"
 
 //=============================================================================
 //マクロ定義
 //=============================================================================
-#define BULLET2_ATK	(20)	//攻撃力
+#define BULLET2_ATK			(20)		// 攻撃力
+#define FOLLOW_TIME_NONE	(50)		// 通常弾の追従タイム
+#define FOLLOW_TIME_BOMB	(50)		// ボムの追従タイム
 
 //=============================================================================
-//バレットクラスのコンストラクタ
+// コンストラクタ
 //=============================================================================
 CBullet2::CBullet2()
 {
@@ -26,11 +33,13 @@ CBullet2::CBullet2()
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 移動量
 	m_size = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// サイズ
 	m_user = BULLET2_USER_NONE;					// 使用者
+	m_type = BULLET2_TYPE_NONE;					// タイプ
 	m_nAtk = 0;									// 攻撃力
 	m_nLife = 0;								// ライフ
 	m_nCounter = 0;
-	m_pTargetPL = NULL;	//敵プレイヤーのポインタ
+	m_pTargetPL = NULL;							//敵プレイヤーのポインタ
 	m_fSpeed = 0.0f;
+	m_fHeight = 0.0f;
 }
 
 //=============================================================================
@@ -43,7 +52,8 @@ CBullet2::~CBullet2()
 //=============================================================================
 //バレットクラスのクリエイト処理
 //=============================================================================
-CBullet2 * CBullet2::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 size, const BULLET2_USER user)
+CBullet2 * CBullet2::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 size, 
+	const BULLET2_USER user, float fSpeed)
 {
 	CBullet2 *pBullet2 = NULL;
 
@@ -54,7 +64,7 @@ CBullet2 * CBullet2::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 size, const
 	if (pBullet2)
 	{
 		//初期化処理呼び出し
-		pBullet2->Init(pos, size, user);
+		pBullet2->Init(pos, size, user, fSpeed);		// 初期化情報
 	}
 	else
 	{
@@ -67,7 +77,8 @@ CBullet2 * CBullet2::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 size, const
 //=============================================================================
 //バレットクラスの初期化処理
 //=============================================================================
-HRESULT CBullet2::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size, const BULLET2_USER user)
+HRESULT CBullet2::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size, 
+	const BULLET2_USER user, float fSpeed)
 {
 	//位置の設定
 	m_pos = pos;
@@ -75,6 +86,10 @@ HRESULT CBullet2::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size, const BULL
 	//サイズの設定
 	m_size = size;
 
+	// スピード
+	m_fSpeed = fSpeed;
+
+	// サイズの設定
 	SetSize(size);
 
 	//使用者の設定
@@ -119,11 +134,32 @@ void CBullet2::Update(void)
 {
 	//位置の取得
 	m_pos = GetPos();
+	m_nCounter++;
 
-	if (m_nCounter <= 10)
-	{
-		//移動量の計算
-		m_move = VectorMath(m_pTargetPL->GetPos(), 70.0f);
+		switch (m_type)
+		{
+		case BULLET2_TYPE_NONE:
+			// 通常の場合
+			if (m_nCounter <= FOLLOW_TIME_NONE)
+			{
+				//移動量の計算
+				m_move = VectorMath(m_pTargetPL->GetPos(), m_fSpeed);
+			}
+			break;
+
+		case BULLET2_TYPE_BOMB:
+			// ボムの時
+			if (m_nCounter <= FOLLOW_TIME_BOMB)
+			{
+				m_move = VectorMath(D3DXVECTOR3(
+					m_pTargetPL->GetPos().x, m_pTargetPL->GetPos().y, m_pTargetPL->GetPos().z),
+					m_fSpeed);
+			}
+
+			// 高さの調整
+			m_move.y = m_fHeight;
+			break;
+		
 	}
 
 	//移動量を位置に与える
@@ -145,7 +181,7 @@ void CBullet2::Update(void)
 	if (m_nLife <= 0)
 	{
 		// 衝撃を生成
-		CShock::Create(m_pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+		CShock::Create(D3DXVECTOR3(m_pos.x, 0.0f, m_pos.z), D3DXVECTOR3(0.0f, 0.0f, 0.0f),
 			D3DXVECTOR3(SHOCK_SIZE_X, SHOCK_SIZE_Y, SHOCK_SIZE_Z));
 
 		//終了処理呼び出し
@@ -188,12 +224,13 @@ bool CBullet2::Collision(void)
 	//位置の取得
 	D3DXVECTOR3 targetPos = pPlayer->GetPos();
 
-	if (targetPos.x >= m_pos.x - 50.0f / 2 &&
-		targetPos.x <= m_pos.x + 50.0f / 2 &&
-		targetPos.y >= m_pos.y - 50.0f / 2 &&
-		targetPos.y <= m_pos.y + 50.0f / 2 &&
-		targetPos.z >= m_pos.z - 50.0f / 2 &&
-		targetPos.z <= m_pos.z + 50.0f / 2)
+	// 当たり判定
+	if (targetPos.x >= m_pos.x - PLAYER_COLLISION_X / 2 &&
+		targetPos.x <= m_pos.x + PLAYER_COLLISION_X / 2 &&
+		targetPos.y >= m_pos.y - PLAYER_COLLISION_Y / 2 &&
+		targetPos.y <= m_pos.y + PLAYER_COLLISION_Y / 2 &&
+		targetPos.z >= m_pos.z - PLAYER_COLLISION_Z / 2 &&
+		targetPos.z <= m_pos.z + PLAYER_COLLISION_Z / 2)
 	{
 		for (int nCount = 0; nCount < LIFE_NUM; nCount++)
 		{
@@ -203,6 +240,9 @@ bool CBullet2::Collision(void)
 			// 爆発生成
 			C2dExplosion::Create(m_pos,
 				D3DXVECTOR3(EXPLOSION_SIZE_X_2D, EXPLOSION_SIZE_Y_2D, EXPLOSION_SIZE_Z_2D));
+
+			CExplosion::Create(D3DXVECTOR3(m_pos.x, 0.0f, m_pos.z), D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+				D3DXVECTOR3(EXPLOSION_SIZE_X, EXPLOSION_SIZE_Y, EXPLOSION_SIZE_Z));
 		}
 
 		m_nLife = 0;
@@ -217,6 +257,7 @@ bool CBullet2::Collision(void)
 //=============================================================================
 D3DXVECTOR3 CBullet2::VectorMath(D3DXVECTOR3 TargetPos, float fSpeed)
 {
+
 	//2点間のベクトルを求める（終点[目標地点] - 始点[自身の位置]）
 	D3DXVECTOR3 Vector = TargetPos - m_pos;
 
@@ -228,7 +269,6 @@ D3DXVECTOR3 CBullet2::VectorMath(D3DXVECTOR3 TargetPos, float fSpeed)
 
 	//単位ベクトルを求める(元のベクトル / ベクトルの大きさ)
 	D3DXVec3Normalize(&UnitVector, &Vector);
-
 
 	//単位ベクトルを速度倍にして返す(UnitVector * fSpeed)
 	return	UnitVector * fSpeed;
@@ -252,9 +292,33 @@ void CBullet2::SetMove(D3DXVECTOR3 move)
 }
 
 //=============================================================================
+// タイプの設定
+//=============================================================================
+void CBullet2::SetType(BULLET2_TYPE type)
+{
+	m_type = type;
+}
+
+//=============================================================================
+// 高さの設定
+//=============================================================================
+void CBullet2::SetHeight(float fHeight)
+{
+	m_fHeight = fHeight;
+}
+
+//=============================================================================
 // 移動量情報
 //=============================================================================
 D3DXVECTOR3 CBullet2::GetMove(void)
 {
 	return m_move;
+}
+
+//=============================================================================
+// 高さの情報
+//=============================================================================
+float CBullet2::GetHeight(void)
+{
+	return m_fHeight;
 }
