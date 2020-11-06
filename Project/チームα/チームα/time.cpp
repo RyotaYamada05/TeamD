@@ -15,7 +15,7 @@
 #include "renderer.h"
 #include "player.h"
 #include "game.h"
-
+#include "life.h"
 //=============================================================================
 // クリエイト関数
 //=============================================================================
@@ -49,9 +49,6 @@ CTime::~CTime()
 //=============================================================================
 HRESULT CTime::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 {
-	// ナンバーテクスチャをロード
-	CNumber::Load();
-
 	m_nTimeCount = 0;
 
 	m_nTime = TIME_LIMIT;
@@ -60,15 +57,15 @@ HRESULT CTime::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 	{
 		if (nCount < 2)
 		{
-			m_apNumber[nCount] = CNumber::Create(D3DXVECTOR3(pos.x + nCount*50.0f, pos.y, 0.0f), D3DXVECTOR3(TIME_S_SIZE_X, TIME_S_SIZE_Y, 0.0f));
+			m_apNumber[nCount] = CNumber::Create(D3DXVECTOR3(pos.x + nCount*TIME_INTERVAL, pos.y, 0.0f), D3DXVECTOR3(TIME_S_SIZE_X, TIME_S_SIZE_Y, 0.0f), CNumber::NUMBERTYPE_GAME);
 		}
 		else if (nCount < 3)
 		{
-			m_apNumber[nCount] = CNumber::Create(D3DXVECTOR3(pos.x + nCount*45.0f, pos.y+10, 0.0f), D3DXVECTOR3(TIME_MS_SIZE_X, TIME_MS_SIZE_Y, 0.0f));
+			m_apNumber[nCount] = CNumber::Create(D3DXVECTOR3(pos.x + nCount*TIME_INTERVAL2, pos.y+ TIME_INTERVAL_Y, 0.0f), D3DXVECTOR3(TIME_MS_SIZE_X, TIME_MS_SIZE_Y, 0.0f),CNumber::NUMBERTYPE_GAME);
 		}
 		else
 		{
-			m_apNumber[nCount] = CNumber::Create(D3DXVECTOR3(pos.x + nCount*40.0f, pos.y + 10, 0.0f), D3DXVECTOR3(TIME_MS_SIZE_X, TIME_MS_SIZE_Y, 0.0f));
+			m_apNumber[nCount] = CNumber::Create(D3DXVECTOR3(pos.x + nCount*TIME_INTERVAL3, pos.y + TIME_INTERVAL_Y, 0.0f), D3DXVECTOR3(TIME_MS_SIZE_X, TIME_MS_SIZE_Y, 0.0f),CNumber::NUMBERTYPE_GAME);
 		}
 		
 	}
@@ -95,8 +92,7 @@ void CTime::Uninit(void)
 	// リリース
 	Release();
 
-	// ナンバーテクスチャをアンロード
-	CNumber::Unload();
+	
 }
 
 //=============================================================================
@@ -128,11 +124,15 @@ void CTime::Update(void)
 
 		m_nTimeCount++;
 
-		if (m_nTimeCount % 1 == 0)
+		//Readyが消えたら時間が動き出す
+		if (CLife::GetReadey() == false)
 		{
-			if (m_nTime > 0)
+			if (m_nTimeCount % 1 == 0)
 			{
-				AddTime(1);
+				if (m_nTime > 0)
+				{
+					AddTime(1);
+				}
 			}
 		}
 	}

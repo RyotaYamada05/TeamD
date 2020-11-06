@@ -187,7 +187,7 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 			m_pLife[1] = CLife::Create(D3DXVECTOR3(LIFE_POS_RIGHT_X, LIFE_POS_DOWN_Y, 0.0f),
 
 			
-				D3DXVECTOR3(0.1f, LIFE_SIZE_ENEMY_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255),
+				D3DXVECTOR3(0.0f, LIFE_SIZE_ENEMY_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255),
 				CLife::LIFETYPE_SECOND_PLAYER);
 		}
 
@@ -196,10 +196,10 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 		{
 			//2P側に体力ゲージを生成
 			m_pCharge = CCharge::Create(D3DXVECTOR3(CHARGE_POS_LEFT_X, CHARGE_POS_Y, 0.0f),
-				D3DXVECTOR3(MAX_CHARGE, CHARGE_SIZE_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255));
+				D3DXVECTOR3(MAX_CHARGE, CHARGE_SIZE_Y, 0.0f), D3DCOLOR_RGBA(87, 210, 128, 255));
 		}
 
-		m_rot = D3DXVECTOR3(0.1f, D3DXToRadian(0.0f), 0.0f);
+		m_rot = D3DXVECTOR3(0.0f, D3DXToRadian(0.0f), 0.0f);
 
 		// モデルタイプ設定
 		SetType(MODEL_TYPE_PLAYER1);
@@ -213,7 +213,7 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 		{
 			m_pLife[0] = CLife::Create(D3DXVECTOR3(LIFE_POS_RIGHT_X, LIFE_POS_UP_Y, 0.0f),
 				
-				D3DXVECTOR3(0.1f, LIFE_SIZE_PLAYER_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255),
+				D3DXVECTOR3(0.0f, LIFE_SIZE_PLAYER_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255),
 				CLife::LIFETYPE_FAST_PLAYER);
 		}
 
@@ -224,7 +224,7 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 			m_pLife[1] = CLife::Create(D3DXVECTOR3(LIFE_POS_LEFT_X, LIFE_POS_DOWN_Y, 0.0f),
 				
 				
-				D3DXVECTOR3(0.1f, LIFE_SIZE_ENEMY_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255),
+				D3DXVECTOR3(0.0f, LIFE_SIZE_ENEMY_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255),
 				CLife::LIFETYPE_SECOND_PLAYER);
 		}
 
@@ -232,7 +232,7 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 		if (m_pCharge == NULL)
 		{
 			m_pCharge = CCharge::Create(D3DXVECTOR3(CHARGE_POS_RIGHT_X, CHARGE_POS_Y, 0.0f),
-				D3DXVECTOR3(MAX_CHARGE, CHARGE_SIZE_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255));
+				D3DXVECTOR3(MAX_CHARGE, CHARGE_SIZE_Y, 0.0f), D3DCOLOR_RGBA(87, 210, 128, 255));
 		}
 		m_rot = D3DXVECTOR3(0.1f, D3DXToRadian(180.0f), 0.0f);
 
@@ -283,7 +283,7 @@ void CPlayer::Update(void)
 	D3DXVECTOR3 size = m_pLife[0]->GetSize();
 
 	// 終了処理
-	if (size.x <= 0)
+	if (size.x <= 0 && CLife::GetReadey() == false)
 	{
 		// 爆発状態
 		m_state = PLAYER_STATE_EXPLOSION;
@@ -291,7 +291,7 @@ void CPlayer::Update(void)
 		//Uninit();
 		return;
 	}
-	
+
 	// プレイヤーの制御
 	PlayerControl();
 
@@ -302,7 +302,7 @@ void CPlayer::Update(void)
 		m_move.y -= GRAVITY_POWAR;
 		m_pos.y += m_move.y;		// 落下
 	}
-	
+
 	//位置へ移動量を加算
 	m_pos += m_move;
 
@@ -314,7 +314,7 @@ void CPlayer::Update(void)
 	case 0:
 		if (CGame::GetCamera(m_nPlayerNum)->GetTargetBool())
 		{
-			
+
 			m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ() + PLAYE_ROT_Y_FRONT);
 		}
 
@@ -324,7 +324,7 @@ void CPlayer::Update(void)
 		if (CGame::GetCamera(m_nPlayerNum)->GetTargetBool())
 		{
 
-			
+
 			m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ() + PLAYE_ROT_Y_FRONT);
 		}
 
@@ -403,27 +403,30 @@ void CPlayer::PlayerState(void)
 //=============================================================================
 void CPlayer::PlayerControl()
 {
-	// ダッシュしていないとき
-	if (m_bDush == false)
+	if (CLife::GetReadey() == false)
 	{
-		// プレイヤーの移動処理
-		Walk();
+		// ダッシュしていないとき
+		if (m_bDush == false)
+		{
+			// プレイヤーの移動処理
+			Walk();
+		}
+
+		// ジャンプの処理
+		Jump();
+
+		// 急降下の処理
+		Fall();
+
+		// 回避の処理
+		Dush();
+
+		// ビームの処理
+		beam();
+
+		// ボムの処理
+		bomb();
 	}
-
-	// ジャンプの処理
-	Jump();
-
-	// 急降下の処理
-	Fall();
-
-	// 回避の処理
-	Dush();
-
-	// ビームの処理
-	beam();
-
-	// ボムの処理
-	bomb();
 }
 
 //=============================================================================

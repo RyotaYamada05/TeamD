@@ -39,10 +39,12 @@
 #include "explosion.h"
 #include "smoke.h"
 #include "sand.h"
-
+#include "number.h"
 #include "bill.h"
 #include "uistart.h"
 #include "titlelogo.h"
+#include "uiend.h"
+#include "sound.h"
 //=============================================================================
 //静的メンバ変数宣言
 //=============================================================================
@@ -55,7 +57,7 @@ CTitle *CManager::m_pTitle = NULL;
 CGame *CManager::m_pGame = NULL;
 CResult *CManager::m_pResult = NULL;
 CInputJoypad *CManager::m_pJoypad = NULL;
-
+CSound *CManager::m_pSound = NULL;			//サウンドクラスのポインタ
 //=============================================================================
 //コンストラクタ
 //=============================================================================
@@ -112,6 +114,13 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindow)
 		}
 	}
 
+	//サウンドのインスタンス生成
+	m_pSound = new CSound;
+	if (m_pSound != NULL)
+	{
+		m_pSound->Init(hWnd);
+	}
+
 	m_pConection = new CConection;
 	if (m_pConection != NULL)
 	{
@@ -121,6 +130,8 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindow)
 			return -1;
 		}
 	}
+
+
 	//タイトルクラスのクリエイト
 	m_pTitle = CTitle::Create();
 
@@ -256,13 +267,14 @@ void CManager::LoadAll(void)
 	CShock::Load();
 	CBomb::Load();
 	CLockon::Load();
-
+	CNumber::Load();
 	CBill::LoadModel();
 	CUiStart::Load();
 	CTitlelogo::Load();
 	CExplosion::Load();
 	CSmoke::Load();
 	CSand::Load();
+	CUiEnd::Load();
 }
 
 //=============================================================================
@@ -286,13 +298,14 @@ void CManager::UnLoadAll(void)
 	CShock::UnLoad();
 	CBomb::UnLoad();
 	CLockon::Unload();
-
+	CNumber::Unload();
 	CBill::Unload();
 	CUiStart::Unload();
 	CTitlelogo::Unload();
 	CExplosion::UnLoad();
 	CSmoke::UnLoad();
 	CSand::UnLoad();
+	CUiEnd::Unload();
 }
 
 //=============================================================================
@@ -409,4 +422,12 @@ CFade * CManager::GetFade(void)
 CInputJoypad * CManager::GetJoypad(void)
 {
 	return m_pJoypad;
+}
+
+//=============================================================================
+//ジョイパッド情報取得
+//=============================================================================
+CSound * CManager::GetSound(void)
+{
+	return m_pSound;
 }

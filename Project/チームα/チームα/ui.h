@@ -63,7 +63,7 @@ public:
 		UITYPE_WIN,			// WINï∂éö
 		UITYPE_LOSE,		// LOSEï∂éö
 		UITYPE_STANDARD,	// ïWèÄï\é¶
-		UYTYPE_READY,		// READYï∂éö
+		UYTYPE_CONTINUE,	// CONTINUEï∂éö
 		UITYPE_MAX
 	}UITYPE;
 	CUi();

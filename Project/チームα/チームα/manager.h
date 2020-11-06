@@ -23,7 +23,7 @@ class CTitle;
 class CGame;
 class CResult;
 class CInputJoypad;
-
+class CSound;
 //=============================================================================
 //マネージャークラス
 //=============================================================================
@@ -63,6 +63,7 @@ public:
 	static CConection *GetConection(void);
 	static CFade *GetFade(void);
 	static CInputJoypad *GetJoypad(void);
+	static CSound *GetSound(void);
 
 private:
 	//=========================================================================
@@ -77,6 +78,7 @@ private:
 	static CGame *m_pGame;
 	static CResult *m_pResult;
 	static CInputJoypad *m_pJoypad;
+	static CSound *m_pSound;
 };
 
 #endif
