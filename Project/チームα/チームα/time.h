@@ -21,15 +21,18 @@ class CNumber;
 //=============================================================================
 // マクロ定義
 //=============================================================================
-#define TIME_LIMIT		(8000)		// 制限時間
+#define TIME_LIMIT		(8000.0f)	// 制限時間
 #define MAX_TIME		(4)			// 桁数
-#define TIME_S_SIZE_X	(50)		// 数字のＸサイズ
-#define TIME_S_SIZE_Y	(50)		// 数字のＹサイズ
-#define TIME_MS_SIZE_X	(35)		// ミリ秒数字のＸサイズ
-#define TIME_MS_SIZE_Y	(35)		// ミリ秒数字のＹサイズ
+#define TIME_S_SIZE_X	(50.0f)		// 数字のＸサイズ
+#define TIME_S_SIZE_Y	(50.0f)		// 数字のＹサイズ
+#define TIME_MS_SIZE_X	(35.0f)		// ミリ秒数字のＸサイズ
+#define TIME_MS_SIZE_Y	(35.0f)		// ミリ秒数字のＹサイズ
 #define TIME_POS_X		(585.0f)	// タイムのX座標
 #define TIME_POS_Y		(55.0f)		// タイムのY座標
-#define TIME_INTERVAL	(50)		// 数字の置く間隔
+#define TIME_INTERVAL	(50.0f)		// 最初の2桁の数字の置く間隔
+#define TIME_INTERVAL2	(45.0f)		// 小数点の数字の置く間隔
+#define TIME_INTERVAL3	(40.0f)		// 小数点の数字の置く間隔
+#define TIME_INTERVAL_Y	(10.0f)		// Y軸の数字の置く間隔
 
 //================================================
 //クラス宣言

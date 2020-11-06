@@ -1,6 +1,6 @@
 //================================================
 //
-// ui処理 [ui.cpp]
+// 終了時のui処理 [uiend.cpp]
 // Author : 佐藤颯紀
 //
 //================================================
@@ -8,7 +8,7 @@
 //================================================
 // インクルード
 //================================================
-#include "uistart.h"
+#include "uiend.h"
 #include "manager.h"
 #include "renderer.h"
 #include "game.h"
@@ -16,15 +16,15 @@
 //================================================
 //静的メンバ変数宣言
 //================================================
-LPDIRECT3DTEXTURE9 CUiStart::m_apTexture[UISTART_TYPE] = {};
+LPDIRECT3DTEXTURE9 CUiEnd::m_apTexture[UIEND_TYPE] = {};
 
 //================================================
 //クリエイト処理
 //================================================
-CUiStart* CUiStart::Create(D3DXVECTOR3 pos, D3DXVECTOR3 size, UISTARTTYPE type)
+CUiEnd* CUiEnd::Create(D3DXVECTOR3 pos, D3DXVECTOR3 size, UIENDTYPE type)
 {
 	// オブジェクトを生成
-	CUiStart* pUiStart = new CUiStart;
+	CUiEnd* pUiStart = new CUiEnd;
 
 	// 初期化処理
 	pUiStart->Init(pos, size, type);
@@ -36,21 +36,20 @@ CUiStart* CUiStart::Create(D3DXVECTOR3 pos, D3DXVECTOR3 size, UISTARTTYPE type)
 //================================================
 //ロード処理
 //================================================
-HRESULT CUiStart::Load(void)
+HRESULT CUiEnd::Load(void)
 {
 	LPDIRECT3DDEVICE9 pDevice;
 	pDevice = CManager::GetRenderer()->GetDevice();
 
 	//テクスチャの読み込み
 	D3DXCreateTextureFromFile(pDevice,
-		"data/Texture/READY.png", //ファイルの読み込み
-		&m_apTexture[UISTARTTYPE_READY]);
+		"data/Texture/continue000.png", //ファイルの読み込み
+		&m_apTexture[UIENDTYPE_CONTINUE]);
 
 	//テクスチャの読み込み
 	D3DXCreateTextureFromFile(pDevice,
-		"data/Texture/ROUND1.png", //ファイルの読み込み
-		&m_apTexture[UISTARTTYPE_ROUND]);
-
+		"data/Texture/Thanks.png", //ファイルの読み込み
+		&m_apTexture[UIENDTYPE_THANKS]);
 
 	return S_OK;
 }
@@ -58,9 +57,9 @@ HRESULT CUiStart::Load(void)
 //================================================
 //ロードの終了
 //================================================
-void CUiStart::Unload(void)
+void CUiEnd::Unload(void)
 {
-	for (int nCount = 0; nCount < UISTART_TYPE; nCount++)
+	for (int nCount = 0; nCount < UIEND_TYPE; nCount++)
 	{
 		//テクスチャの開放
 		if (m_apTexture[nCount] != NULL)
@@ -74,18 +73,18 @@ void CUiStart::Unload(void)
 //================================================
 //コンストラクタ
 //================================================
-CUiStart::CUiStart()
+CUiEnd::CUiEnd()
 {
 	m_pos = (D3DXVECTOR3(0.0f, 0.0f, 0.0f));	// 座標
 	m_move = (D3DXVECTOR3(0.0f, 0.0f, 0.0f));	// 移動量
 	m_size = (D3DXVECTOR3(0.0f, 0.0f, 0.0f));	// サイズ
-	m_type = UISTARTTYPE_NONE;						// タイプ
+	m_type = UIENDTYPE_NONE;						// タイプ
 }
 
 //================================================
 //デストラクタ
 //================================================
-CUiStart::~CUiStart()
+CUiEnd::~CUiEnd()
 {
 
 }
@@ -93,13 +92,13 @@ CUiStart::~CUiStart()
 //================================================
 //初期化処理
 //================================================
-HRESULT CUiStart::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size, UISTARTTYPE type)
+HRESULT CUiEnd::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size, UIENDTYPE type)
 {
 	m_pos = pos;	//位置情報
 	m_size = size;	//サイズ
 	m_type = type;	//タイプ
 
-	//CScene2dの初期化
+					//CScene2dの初期化
 	CScene2d::Init(pos, size);
 
 	CScene2d::BindTexture(m_apTexture[type]);
@@ -118,7 +117,7 @@ HRESULT CUiStart::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size, UISTARTTYPE type)
 //================================================
 //終了処理
 //================================================
-void CUiStart::Uninit(void)
+void CUiEnd::Uninit(void)
 {
 	CScene2d::Uninit();
 }
@@ -126,20 +125,15 @@ void CUiStart::Uninit(void)
 //================================================
 //更新処理
 //================================================
-void CUiStart::Update(void)
+void CUiEnd::Update(void)
 {
 	CScene2d::Update();
-
-	if (CLife::GetReadey() == false)
-	{
-		Uninit();
-	}
 }
 
 //================================================
 //描画処理
 //================================================
-void CUiStart::Draw(void)
+void CUiEnd::Draw(void)
 {
 	CScene2d::Draw();
 }

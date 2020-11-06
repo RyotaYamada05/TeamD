@@ -33,6 +33,8 @@ class CUi;
 class CUiStart;
 class CLockon;
 class CBill;
+class CContinue;
+class CUiEnd;
 //***************************************************************************************
 // インクルードファイル
 //***************************************************************************************
@@ -49,8 +51,10 @@ public:
 	static CMeshShape*GetSphere();
 	static CUi *GetUi(void);
 	static CUiStart *GetUiStart(void);
+	static CUiEnd *GetUiEnd(void);
 	static CLockon *GetLockon(void);
 	static CBill *GetBill(void);
+	static CContinue *GetContinue(void);
 
 	HRESULT Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size);
 	void Uninit(void);
@@ -67,9 +71,11 @@ private:
 	static CPlayer *m_apPlayer[MAX_PLAYER];		// プレイヤーのポインタ
 	static CTime *m_pTime;						// タイムのポインタ
 	static CUi *m_pUi;							// uiのポインタ
-	static CUiStart *m_pUiStart;
+	static CUiStart *m_pUiStart;				// uistartのポインタ
+	static CUiEnd *m_pUiEnd;					// uiendのポインタ
 	static CLockon *m_pLockon;					// ロックオンのポインタ
 	static CBill *m_pBill;						// ビルのポインタ
+	static CContinue *m_pContinue;
 	LPD3DXFONT m_pFont;
 };
 #endif

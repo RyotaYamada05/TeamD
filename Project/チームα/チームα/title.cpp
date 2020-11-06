@@ -18,6 +18,7 @@
 #include "tcp_client.h"
 #include "fade.h"
 #include "titlelogo.h"
+#include "sound.h"
 
 //=======================================================================================
 //ê√ìIÉÅÉìÉoïœêîêÈåæ
@@ -93,6 +94,7 @@ HRESULT CTitle::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 	{
 		m_apTitlelogo[2] = CTitlelogo::Create(D3DXVECTOR3(TITLE_POS_X, TITLE_POS_Y, 0.0f), D3DXVECTOR3(TITLE_SIZE_X, TITLE_SIZE_Y, 0.0f), CTitlelogo::LOGOTIPE_TITLE);
 	}
+
 	return S_OK;
 }
 
@@ -101,24 +103,14 @@ HRESULT CTitle::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 //=======================================================================================
 void CTitle::Uninit(void)
 {
-	if (m_apTitlelogo[0] != NULL)
+	for (int nCount = 0; nCount < TITLELOGO_TYPE; nCount++)
 	{
-		m_apTitlelogo[0]->Uninit();
-		m_apTitlelogo[0] = NULL;
+		if (m_apTitlelogo[nCount] != NULL)
+		{
+			m_apTitlelogo[nCount]->Uninit();
+			m_apTitlelogo[nCount] = NULL;
+		}
 	}
-
-	if (m_apTitlelogo[1] != NULL)
-	{
-		m_apTitlelogo[1]->Uninit();
-		m_apTitlelogo[1] = NULL;
-	}
-
-	if (m_apTitlelogo[2] != NULL)
-	{
-		m_apTitlelogo[2]->Uninit();
-		m_apTitlelogo[2] = NULL;
-	}
-
 	if (m_pScene != NULL)
 	{
 		m_pScene->Uninit();

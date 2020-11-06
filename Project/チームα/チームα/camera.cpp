@@ -14,7 +14,7 @@
 #include "joypad.h"
 #include "lockon.h"
 #include "ui.h"
-
+#include "life.h"
 //=============================================================================
 //マクロ定義
 //=============================================================================
@@ -311,20 +311,22 @@ void CCamera::NomalUpdate(D3DXVECTOR3 PlayerPos[])
 	// ジョイパッドの取得
 	DIJOYSTATE js = CInputJoypad::GetStick(m_nCameraNum);
 
-	if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_R3, m_nCameraNum) || pKeyInput->GetTrigger(DIK_TAB))
+	if (CLife::GetReadey() == false)
 	{
-		if (m_bTarget == false)
+		if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_R3, m_nCameraNum) || pKeyInput->GetTrigger(DIK_TAB))
 		{
-			m_fθ = D3DXToRadian(75.0f);
-			m_bTarget = true;
-		}
-		else
-		{
-		
-			m_bTarget = false;
+			if (m_bTarget == false)
+			{
+				m_fθ = D3DXToRadian(75.0f);
+				m_bTarget = true;
+			}
+			else
+			{
+
+				m_bTarget = false;
+			}
 		}
 	}
-
 			
 	if (m_bTarget == true)
 	{
@@ -334,17 +336,7 @@ void CCamera::NomalUpdate(D3DXVECTOR3 PlayerPos[])
 		m_posVDest.x = m_posR.x + m_fDistance * sinf(m_fθ) * cosf(m_fφ) + PlayerPos[m_nCameraNum].x - PlayerPos[nCameraSecond].x;
 		m_posVDest.y = m_posR.y + m_fDistance * cosf(m_fθ) + PlayerPos[m_nCameraNum].y - PlayerPos[nCameraSecond].y;
 		m_posVDest.z = m_posR.z + m_fDistance * sinf(m_fθ) * sinf(m_fφ) + PlayerPos[m_nCameraNum].z - PlayerPos[nCameraSecond].z;
-
-
-		if (m_nCameraNum == 0)
-		{
-			pLockon->Create(D3DXVECTOR3(UI_LOCKON_POS_LEFT_X, UI_RESULT_POS_Y, 0.0f), D3DXVECTOR3(UI_LOCKON_SIZE_X, UI_LOCKON_SIZE_Y, 0.0f), CLockon::LOCKONTYPE_FAST_PLAYER);
-		}
-
-		if (m_nCameraNum == 1)
-		{
-			pLockon->Create(D3DXVECTOR3(UI_LOCKON_POS_RIGHT_X, UI_RESULT_POS_Y, 0.0f), D3DXVECTOR3(UI_LOCKON_SIZE_X, UI_LOCKON_SIZE_Y, 0.0f), CLockon::LOCKONTYPE_SECOND_PLAYER);
-		}
+		
 		if (PlayerPos[nCameraSecond].x <= PlayerPos[m_nCameraNum].x + 10 && PlayerPos[m_nCameraNum].x - 10 <= PlayerPos[nCameraSecond].x  &&
 			PlayerPos[nCameraSecond].z <= PlayerPos[m_nCameraNum].z + 10 && PlayerPos[m_nCameraNum].z - 10 <= PlayerPos[nCameraSecond].z)
 		{
@@ -355,6 +347,7 @@ void CCamera::NomalUpdate(D3DXVECTOR3 PlayerPos[])
 
 		m_posV += (m_posVDest - m_posV); //カメラフロー
 		m_posR += (m_posRDest - m_posR); //カメラフロー
+
 	}
 	else
 	{
@@ -398,6 +391,15 @@ void CCamera::NomalUpdate(D3DXVECTOR3 PlayerPos[])
 		m_posV += (m_posVDest - m_posV);
 		m_posR += (m_posRDest - m_posR);
 
+		if (m_nCameraNum == 0)
+		{
+			pLockon->Create(D3DXVECTOR3(UI_LOCKON_POS_LEFT_X, UI_RESULT_POS_Y, 0.0f), D3DXVECTOR3(UI_LOCKON_SIZE_X, UI_LOCKON_SIZE_Y, 0.0f), CLockon::LOCKONTYPE_FAST_PLAYER);
+		}
+
+		if (m_nCameraNum == 1)
+		{
+			pLockon->Create(D3DXVECTOR3(UI_LOCKON_POS_RIGHT_X, UI_RESULT_POS_Y, 0.0f), D3DXVECTOR3(UI_LOCKON_SIZE_X, UI_LOCKON_SIZE_Y, 0.0f), CLockon::LOCKONTYPE_SECOND_PLAYER);
+		}
 	}
 }
 

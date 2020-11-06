@@ -29,6 +29,9 @@
 #include "charge.h"
 #include "bill.h"
 #include "uistart.h"
+#include "continue.h"
+#include "uiend.h"
+
 //=======================================================================================
 // static初期化
 //=======================================================================================
@@ -43,6 +46,8 @@ CUi *CGame::m_pUi = NULL;							// uiのポインタ
 CUiStart *CGame::m_pUiStart = NULL;
 CLockon *CGame::m_pLockon = NULL;
 CBill *CGame::m_pBill = NULL;
+CContinue *CGame::m_pContinue = NULL;
+CUiEnd *CGame::m_pUiEnd = NULL;
 //=======================================================================================
 // コンストラクタ
 //=======================================================================================
@@ -127,6 +132,7 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 		m_pUi = CUi::Create(D3DXVECTOR3(UI_LOCKON_POS_RIGHT_X, UI_LOCKON_POS_Y, 0.0f), D3DXVECTOR3(UI_LOCKON_SIZE_SMALL_X, UI_LOCKON_SIZE_SMALL_Y, 0.0f), CUi::UITYPE_STANDARD);
 	}
 
+	//startのUI
 	if (m_pUiStart == NULL)
 	{
 		//ready文字
@@ -135,8 +141,14 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 		//round文字
 		m_pUiStart = CUiStart::Create(D3DXVECTOR3(UI_ROUND_POS_LEFT_X, UI_ROUND_POS_Y, 0.0f), D3DXVECTOR3(UI_ROUND_SIZE_X, UI_ROUND_SIZE_Y, 0.0f), CUiStart::UISTARTTYPE_ROUND);
 		m_pUiStart = CUiStart::Create(D3DXVECTOR3(UI_ROUND_POS_RIGHT_X, UI_ROUND_POS_Y, 0.0f), D3DXVECTOR3(UI_ROUND_SIZE_X, UI_ROUND_SIZE_Y, 0.0f), CUiStart::UISTARTTYPE_ROUND);
-
 	}
+
+	//最後に出すUI
+	/*if (m_pUiEnd == NULL)
+	{
+		m_pUiEnd = CUiEnd::Create(D3DXVECTOR3(UI_CONTINUE_POS_X, UI_CONTINUE_POS_Y, 0.0f), D3DXVECTOR3(UI_CONTINUE_SIZE_X, UI_CONTINUE_SIZE_Y, 0.0f), CUiEnd::UIENDTYPE_CONTINUE);
+		m_pUiEnd = CUiEnd::Create(D3DXVECTOR3(UI_CONTINUE_POS_X, 500.0f, 0.0f), D3DXVECTOR3(400, 40, 0.0f), CUiEnd::UIENDTYPE_THANKS);
+	}*/
 
 	// プレイヤーの生成
 	if (m_apPlayer[0] == NULL)
@@ -184,6 +196,12 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 	{
 		CTime::Create(D3DXVECTOR3(TIME_POS_X, TIME_POS_Y, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 	}
+
+	//コンテニューのタイム
+	/*if (m_pContinue == NULL)
+	{
+		CContinue::Create(D3DXVECTOR3(CONTINUE_POS_X, CONTINUE_POS_Y, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	}*/
 
 	//デバイス情報の取得
 	LPDIRECT3DDEVICE9 pD3DDevice = CManager::GetRenderer()->GetDevice();
@@ -345,6 +363,14 @@ CUiStart * CGame::GetUiStart(void)
 	return m_pUiStart;
 }
 
+//=======================================================================================
+// uiendの情報
+//=======================================================================================
+CUiEnd *CGame::GetUiEnd(void)
+{
+	return m_pUiEnd;
+}
+
 CMeshShape * CGame::GetSphere()
 {
 	return m_pSphere;
@@ -365,3 +391,12 @@ CBill * CGame::GetBill(void)
 {
 	return m_pBill;
 }
+
+//=======================================================================================
+// コンテニューの情報
+//=======================================================================================
+CContinue * CGame::GetContinue(void)
+{
+	return m_pContinue;
+}
+

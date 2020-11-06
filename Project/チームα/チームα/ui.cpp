@@ -89,10 +89,11 @@ HRESULT CUi::Load(void)
 		"Data/TEXTURE/Lockon001.png", //ファイルの読み込み
 		&m_apTexture[UITYPE_STANDARD]);
 
-	//READY
+	//CONTINUE
 	D3DXCreateTextureFromFile(pDevice,
-		"Data/TEXTURE/.png", //ファイルの読み込み
-		&m_apTexture[UYTYPE_READY]);
+		"Data/TEXTURE/continue.png", //ファイルの読み込み
+		&m_apTexture[UYTYPE_CONTINUE]);
+
 
 	return S_OK;
 }

@@ -12,16 +12,15 @@
 //================================================
 //静的メンバ変数宣言
 //================================================
-LPDIRECT3DTEXTURE9 CNumber::m_pTexture = NULL;
-
+LPDIRECT3DTEXTURE9 CNumber::m_apTexture[NUMBER_TYPE] = {};
 //================================================
 //クリエイト処理
 //================================================
-CNumber *CNumber::Create(D3DXVECTOR3 pos, D3DXVECTOR3 size)
+CNumber *CNumber::Create(D3DXVECTOR3 pos, D3DXVECTOR3 size, NUMBERTYPE type)
 {
 	CNumber *pNumber;
 	pNumber = new CNumber;
-	pNumber->Init(pos, size);
+	pNumber->Init(pos, size,type);
 
 	return pNumber;
 
@@ -38,7 +37,12 @@ HRESULT CNumber::Load(void)
 	//テクスチャの読み込み
 	D3DXCreateTextureFromFile(pDevice,
 		"data/Texture/Number.png", //ファイルの読み込み
-		&m_pTexture);
+		&m_apTexture[NUMBERTYPE_GAME]);
+
+	//テクスチャの読み込み
+	D3DXCreateTextureFromFile(pDevice,
+		"data/Texture/Number002.png", //ファイルの読み込み
+		&m_apTexture[NUMBERTYPE_CONTINUE]);
 
 	return S_OK;
 }
@@ -48,12 +52,16 @@ HRESULT CNumber::Load(void)
 //================================================
 void CNumber::Unload(void)
 {
-	//テクスチャの開放
-	if (m_pTexture != NULL)
+	for (int nCount = 0; nCount < NUMBER_TYPE; nCount++)
 	{
-		m_pTexture->Release();
-		m_pTexture = NULL;
+		//テクスチャの開放
+		if (m_apTexture[nCount] != NULL)
+		{
+			m_apTexture[nCount]->Release();
+			m_apTexture[nCount] = NULL;
+		}
 	}
+	
 }
 
 //====================================================
@@ -75,14 +83,14 @@ CNumber::~CNumber()
 //================================================
 //初期化処理
 //================================================
-HRESULT CNumber::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
+HRESULT CNumber::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size, NUMBERTYPE type)
 {
 	LPDIRECT3DDEVICE9 pDevice;
 	pDevice = CManager::GetRenderer()->GetDevice();
 
 	m_pos = pos;	//位置の取得
 	m_size = size;	//サイズの取得
-
+	m_type = type;
 	//頂点バッファの生成
 	pDevice->CreateVertexBuffer(
 		sizeof(VERTEX_2D)*NUM_VERTEX,
@@ -155,21 +163,26 @@ void CNumber::Update(void)
 //================================================
 void CNumber::Draw(void)
 {
-	LPDIRECT3DDEVICE9 pDevice;
-	pDevice = CManager::GetRenderer()->GetDevice();
+	for (int nCount = 0; nCount < NUMBER_TYPE; nCount++)
+	{
+		LPDIRECT3DDEVICE9 pDevice;
+		pDevice = CManager::GetRenderer()->GetDevice();
 
-	//頂点フォーマットの設定
-	pDevice->SetFVF(FVF_VERTEX_2D);
-	//頂点バッファをデバイスのデータストリームにバインド
-	pDevice->SetStreamSource(0, m_pVtxBuff, 0, sizeof(VERTEX_2D));
-	//頂点フォーマットの設定
-	pDevice->SetTexture(0, m_pTexture);
+		//頂点フォーマットの設定
+		pDevice->SetFVF(FVF_VERTEX_2D);
 
-	// ポリゴンの描画
-	pDevice->DrawPrimitive(
-		D3DPT_TRIANGLESTRIP, //プリミティブの種類
-		0,
-		NUM_POLYGON);
+		//頂点バッファをデバイスのデータストリームにバインド
+		pDevice->SetStreamSource(0, m_pVtxBuff, 0, sizeof(VERTEX_2D));
+
+		//頂点フォーマットの設定
+		pDevice->SetTexture(0, m_apTexture[m_type]);
+
+		// ポリゴンの描画
+		pDevice->DrawPrimitive(
+			D3DPT_TRIANGLESTRIP, //プリミティブの種類
+			0,
+			NUM_POLYGON);
+	}
 }
 
 //=====================================================
