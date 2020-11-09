@@ -16,7 +16,6 @@
 //=============================================================================
 // マクロ定義
 //=============================================================================
-#define THROWING_COUNTS		(3)			// 投げることができる回数
 #define LIFE_NUM			(2)			// 表示するライフの数
 #define MAX_PARTS			(10)		// パーツの数
 #define MOTION_KEYSET_MAX	(32)		// キーセット最大数
@@ -31,7 +30,7 @@
 #define PLAYER_SIZE_X		(1)			// サイズ
 #define PLAYER_SIZE_Y		(1)			// サイズ
 #define PLAYER_SIZE_Z		(1)			// サイズ
-#define MODEL_PARTS 20	//モデルのパーツ数
+#define MODEL_PARTS			(20)		//モデルのパーツ数
 
 #define PLAYER_COLLISION_X	(250)		// 当たり判定
 #define PLAYER_COLLISION_Y	(350)		// 当たり判定
@@ -44,24 +43,33 @@ class CScore;
 class CLife;
 class CCharge;
 
+//=============================================================================
+//　モーション状態の列挙型
+//=============================================================================
 typedef enum
 {
-	M_MOTION_STATE =-1,
-	M_MOTION_STATE_IDOL,	//アイドルモーション
-	M_MOTION_STATE_WALK,	//歩行モーション
-	M_MOTION_STATE_DUSH,	
-	M_MOTION_STATE_JUMP,
-	M_MOTION_STATE_MAX,	//モーション最大数
+	MOTION_NONE = -1,
+	MOTION_IDOL,	//アイドルモーション
+	MOTION_WALK,	//歩行モーション
+	MOTION_DUSH,	//ダッシュモーション
+	MOTION_JUMP,	//ジャンプモーション
+	MOTION_MAX,	//モーション最大数
 }MOTION_STATE;
 
+//=============================================================================
+//　モデルファイル情報の構造体
+//=============================================================================
 typedef struct
 {
-	char xFileName[1024];
-	D3DXVECTOR3 offsetPos;
-	D3DXVECTOR3 offsetRot;
-	int nParent;
+	char xFileName[1024];	//ファイルネーム
+	D3DXVECTOR3 offsetPos;	//位置のオフセット情報
+	D3DXVECTOR3 offsetRot;	//向きのオフセット情報
+	int nParent;	//親情報
 }MODELFILLE;
 
+//=============================================================================
+//　各要素のキー情報
+//=============================================================================
 typedef struct
 {
 	float fPosX;
@@ -72,17 +80,23 @@ typedef struct
 	float fRotZ;
 }KEY;
 
+//=============================================================================
+//	キー情報の構造体
+//=============================================================================
 typedef struct
 {
-	int nFrame;
-	KEY aKey[MODEL_PARTS];
+	int nFrame;	//フレーム数
+	KEY aKey[MODEL_PARTS];	//各パーツのキー情報
 }KEY_INFO;
 
+//=============================================================================
+//　モーション情報の構造体
+//=============================================================================
 typedef struct
 {
-	bool bLoop;
-	int nNumKey;
-	KEY_INFO aKeyInfo[20];
+	bool bLoop;	//ループするかどうか
+	int nNumKey;	//キー数
+	KEY_INFO aKeyInfo[20];	//キー情報
 }Motion_Info;
 
 //=============================================================================
@@ -131,35 +145,35 @@ public:
 	HRESULT ReadFile(void);	bool GetEnd(void);												// エンド情報
 	PLAYER_STATE GetState(void);									// プレイヤーの状態
 private:
-	CScore *pScore;							// スコアの情報
-	CLife *m_pLife[LIFE_NUM];				// ライフのポインタ
-	CCharge *m_pCharge;						// チャージのポインタ
-	D3DXVECTOR3 m_pos;						// 座標
-	D3DXVECTOR3 m_rot;						// 回転
-	D3DXVECTOR3 m_move;						// 移動
-	PLAYER_STATE m_state;					// プレイヤー状態
-	float m_fAngle;							// 角度
-	int m_nDushFlame;						// ダッシュのフレーム
-	int m_nDushInterCnt;					// ダッシュできないときのカウント
-	int m_nPlayerNum;						// プレイヤーの番号
-	int m_nStateCounter;					// 状態カウンター
-	bool m_bJump;							// ジャンプのフラグ
-	bool m_bDush;							// ダッシュの処理
-	bool m_bDushInter;						// ダッシュのインターバル
-	bool m_bEnd;							// 終了フラグ
-	bool m_bFall;							// 急降下フラグ
-	static LPD3DXMESH m_pMesh;				// メッシュ情報へのポインタ
-	static LPD3DXBUFFER m_pBuffMat;			// マテリアル情報へのポインタ
-	static DWORD m_nNumMat;					// マテリアル情報の数
-	static int m_nPlayerAll;				// プレイヤーの数
+	CScore *pScore;								// スコアの情報
+	CLife *m_pLife[LIFE_NUM];					// ライフのポインタ
+	CCharge *m_pCharge;							// チャージのポインタ
+	D3DXVECTOR3 m_pos;							// 座標
+	D3DXVECTOR3 m_rot;							// 回転
+	D3DXVECTOR3 m_move;							// 移動
+	PLAYER_STATE m_state;						// プレイヤー状態
+	float m_fAngle;								// 角度
+	int m_nDushFlame;							// ダッシュのフレーム
+	int m_nDushInterCnt;						// ダッシュできないときのカウント
+	int m_nPlayerNum;							// プレイヤーの番号
+	int m_nStateCounter;						// 状態カウンター
+	bool m_bJump;								// ジャンプのフラグ
+	bool m_bDush;								// ダッシュの処理
+	bool m_bDushInter;							// ダッシュのインターバル
+	bool m_bEnd;								// 終了フラグ
+	bool m_bFall;								// 急降下フラグ
+	static LPD3DXMESH m_pMesh;					// メッシュ情報へのポインタ
+	static LPD3DXBUFFER m_pBuffMat;				// マテリアル情報へのポインタ
+	static DWORD m_nNumMat;						// マテリアル情報の数
+	static int m_nPlayerAll;					// プレイヤーの数
 	D3DXMATRIX m_mtxWorld;						// ワールドマトリックス
 	CModelAnime *m_apModelAnime[MODEL_PARTS];	//モデルパーツ用のポインタ
 	int m_nNumKey;								//キーの総数
 	int m_nKey;									//現在キーのNo
 	int m_nCountMotion;							//モーションカウンター
 	KEY_INFO *m_apKeyInfo;						//キー情報のポインタ
-	MOTION_STATE m_MotionState;
-	Motion_Info m_Motion[M_MOTION_STATE_MAX];
-	int m_nFlame;};
+	MOTION_STATE m_MotionState;					//モーションの状態
+	Motion_Info m_Motion[MOTION_MAX];			//モーション情報
+};
 
 #endif

@@ -30,8 +30,6 @@
 //=============================================================================
 // マクロ定義
 //=============================================================================
-
-
 #define PLAYER_SPEED			(15.0f)				// プレイヤーの移動量
 #define PLAYER_DUSH				(30.0f)				// プレイヤーのダッシュ
 #define PLAYER_DUSH_INTER		(80)				// ダッシュができる長さ
@@ -51,14 +49,15 @@
 #define STATE_EXPLOSION_END		(500)				// 爆発状態の終了フレーム
 #define LBX_XFAILE_NAME "data/Text/motion_LBX.txt"	//LBXのXファイルパス
 
-//モデルパーツ情報
-MODELFILLE g_modelfile[MODEL_PARTS];
+//=============================================================================
+// グローバル変数宣言
+//=============================================================================
+MODELFILLE g_modelfile[MODEL_PARTS];	//モデルパーツ情報
 
 //=============================================================================
 // static初期化
 //=============================================================================
 int CPlayer::m_nPlayerAll = 0;				// プレイヤーの総数
-
 
 //=============================================================================
 // クリエイト
@@ -105,9 +104,7 @@ CPlayer::CPlayer()
 	m_nKey = 0;;
 	m_nCountMotion = 0;
 	memset(&m_Motion, 0, sizeof(m_Motion));
-	m_MotionState = M_MOTION_STATE_IDOL;
-	m_nFlame = 0;
-		 
+	m_MotionState = MOTION_NONE;
 }
 
 //=============================================================================
@@ -128,9 +125,6 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 
 	switch (m_nPlayerNum)
 	{
-
-
-
 		//1Pだった場合
 	case 0:
 		//1Pのライフゲージ		
@@ -164,10 +158,7 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 
 		m_rot = D3DXVECTOR3(0.0f, D3DXToRadian(90.0f), 0.0f);
 
-
 		break;
-
-
 
 		//2Pだった場合
 	case 1:
@@ -196,12 +187,12 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 		}
 		m_rot = D3DXVECTOR3(0.0f, D3DXToRadian(90.0f), 0.0f);
 
-
 		break;
 
 	default:
 		break;
 	}
+
 	//ファイル読み込み
 	if (FAILED(ReadFile()))
 	{
@@ -233,9 +224,8 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 	}
 	
 	//アニメーションの設定
-	SetMotion(M_MOTION_STATE_IDOL);
-	SetMotion(M_MOTION_STATE_DUSH);
-	//SetMotion(M_MOTION_STATE_JUMP);
+	SetMotion(MOTION_IDOL);
+	//SetMotion(MOTION_DUSH);
 
 	//オブジェクトタイプの設定
 	SetObjType(CScene::OBJTYPE_PLAYER);
@@ -248,7 +238,6 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 //=============================================================================
 void CPlayer::Uninit(void)
 {
-
 	for (int nCntModelNum = 0; nCntModelNum < MODEL_PARTS; nCntModelNum++)
 	{
 		if (m_apModelAnime[nCntModelNum] != NULL)
@@ -275,7 +264,6 @@ void CPlayer::Update(void)
 {
 	// キーボード更新
 	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
-
 
 	// プレイヤーの状態
 	PlayerState();
@@ -314,7 +302,6 @@ void CPlayer::Update(void)
 	case 0:
 		if (CGame::GetCamera(m_nPlayerNum)->GetTargetBool())
 		{
-
 			m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ() + PLAYE_ROT_Y_FRONT);
 		}
 
@@ -323,18 +310,14 @@ void CPlayer::Update(void)
 	case 1:
 		if (CGame::GetCamera(m_nPlayerNum)->GetTargetBool())
 		{
-
-
 			m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ() + PLAYE_ROT_Y_FRONT);
 		}
 
 		break;
 	}
 
-
 	//アニメーションの更新処理
 	UpdateMotion();
-
 }
 
 //=============================================================================
@@ -342,21 +325,14 @@ void CPlayer::Update(void)
 //=============================================================================
 void CPlayer::UpdateMotion(void)
 {
-	KEY *pKey[MODEL_PARTS];	//現在キーと次のキー情報
 	KEY *pKeyNext[MODEL_PARTS];
 	D3DXVECTOR3 diffPos, diffRot, startPos, startRot, setPos, setRot;
-	float fRateMotion;	//現在キーから次キーの相対値
 
 	//現在キーが最大キー数未満の場合
 	if (m_nKey < m_Motion[m_MotionState].nNumKey)
 	{
 		for (int nCntModel = 0; nCntModel < MODEL_PARTS; nCntModel++)
 		{
-			m_apKeyInfo = &m_Motion[m_MotionState].aKeyInfo[m_nKey];
-
-			//現在キーの取得
-			pKey[nCntModel] = &m_apKeyInfo->aKey[nCntModel];
-
 			if (m_nKey + 1 == m_Motion[m_MotionState].nNumKey)
 			{
 				m_apKeyInfo = &m_Motion[m_MotionState].aKeyInfo[0];
@@ -369,9 +345,6 @@ void CPlayer::UpdateMotion(void)
 			//次キーの取得
 			pKeyNext[nCntModel] = &m_apKeyInfo->aKey[nCntModel];
 		}
-
-		//相対値の算出
-		fRateMotion = (float)m_nCountMotion / (float)m_Motion[m_MotionState].aKeyInfo[m_nKey].nFrame;
 
 		for (int nCntModel = 0; nCntModel < MODEL_PARTS; nCntModel++)
 		{
@@ -507,7 +480,8 @@ void CPlayer::SetMotion(MOTION_STATE motion)
 	}
 }
 
-//=============================================================================// プレイヤーの状態
+//=============================================================================
+// プレイヤーの状態
 //=============================================================================
 void CPlayer::PlayerState(void)
 {
@@ -574,21 +548,18 @@ void CPlayer::PlayerControl()
 			Walk();
 		}
 
-
 		// ジャンプの処理
 		Jump();
-
 
 		// 急降下の処理
 		Fall();
 
-	
 		// 回避の処理
 		Dush();
 
-
 		// ビームの処理
 		beam();
+
 		// ボムの処理
 		bomb();
 	}
@@ -613,8 +584,6 @@ void CPlayer::Walk(void)
 		{
 			if (!CGame::GetCamera(m_nPlayerNum)->GetTargetBool())
 			{
-
-				
 				m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ() - PLAYE_ROT_Y_LEFT);
 			}
 
@@ -626,9 +595,6 @@ void CPlayer::Walk(void)
 		{
 			if (!CGame::GetCamera(m_nPlayerNum)->GetTargetBool())
 			{
-
-
-			
 				m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ() - PLAYE_ROT_Y_RIGHT);
 			}
 
@@ -645,9 +611,6 @@ void CPlayer::Walk(void)
 		{
 			if (!CGame::GetCamera(m_nPlayerNum)->GetTargetBool())
 			{
-
-
-				
 				m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ() + PLAYE_ROT_Y_FRONT);
 			}
 
@@ -659,8 +622,6 @@ void CPlayer::Walk(void)
 		{
 			if (!CGame::GetCamera(m_nPlayerNum)->GetTargetBool())
 			{
-
-				
 				m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ() + PLAYE_ROT_Y_BUCK);
 			}
 			// ジョイパッド操作
@@ -693,7 +654,6 @@ void CPlayer::Walk(void)
 	{
 		m_pos.x += sinf(D3DX_PI / 2)*PLAYER_SPEED;
 	}
-
 }
 
 //=============================================================================
@@ -708,12 +668,11 @@ void CPlayer::Jump(void)
 		if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_Y, m_nPlayerNum) && m_bJump == false
 		|| pKeyboard->GetTrigger(DIK_SPACE) && m_bJump == false)
 	{
-	
 		// ジャンプの処理
 		m_move.y = 0.0f;
 		m_move.y = PLAYER_JUMP;
 		m_bJump = true;
-		SetMotion(M_MOTION_STATE_JUMP);
+		SetMotion(MOTION_JUMP);
 	}
 }
 
@@ -823,7 +782,6 @@ void CPlayer::Dush(void)
 						D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(m_rot.x , m_rot.y + 3.14f, m_rot.z + 0.0f),
 						D3DXVECTOR3(SAND_SIZE_X, SAND_SIZE_Y, SAND_SIZE_Z));
 				}
-
 			}
 		}
 
@@ -871,7 +829,6 @@ void CPlayer::Dush(void)
 		m_nDushFlame++;
 
 		//int nNum = rand() % 3;
-
 
 		//if (nNum % 3 == 0)
 		//{
@@ -964,7 +921,6 @@ void CPlayer::bomb(void)
 			break;
 		}
 	}
-
 }
 
 //=============================================================================
@@ -1034,11 +990,14 @@ HRESULT CPlayer::ReadFile(void)
 			{
 				//Xファイルの名前
 				sscanf(aHeadData, "%*s %*s %s %*s %*s", g_modelfile[nModelIndex].xFileName);
+
+				//インデックスを１つ進める
 				nModelIndex++;
 			}
 
 			if (strcmp(aModeName, "CHARACTERSET") == 0)
 			{
+				//インデックスを最初に戻す
 				nModelIndex = 0;
 
 				//END_MOTIONSETを読み込むまで繰り返す
@@ -1075,6 +1034,7 @@ HRESULT CPlayer::ReadFile(void)
 									&g_modelfile[nModelIndex].offsetRot.y, &g_modelfile[nModelIndex].offsetRot.z);
 							}
 						}
+						//インデックスを１つ進める
 						nModelIndex++;
 					}
 				}
@@ -1156,9 +1116,7 @@ HRESULT CPlayer::ReadFile(void)
 				nMotionNum = 0;
 				nMotionType++;
 			}
-
 		} while (strcmp(aModeName, "END_SCRIPT") != 0);
-
 
 		//ファイルクローズ
 		fclose(pFile);
@@ -1167,7 +1125,8 @@ HRESULT CPlayer::ReadFile(void)
 	}
 	else
 	{
-		MessageBox(NULL, "モーションファイルを開くのに失敗しました", "警告", MB_OK);
+		//失敗した場合メッセージボックスを表示
+		MessageBox(NULL, "モーションファイルを開くのに失敗しました", "警告", MB_OK | MB_ICONEXCLAMATION);
 
 		return	E_FAIL;
 	}
