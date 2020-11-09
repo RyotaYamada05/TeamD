@@ -234,7 +234,6 @@ void CManager::Draw(void)
 //=============================================================================
 void CManager::LoadAll(void)
 {
-	CPlayer::LoadModel();
 	CScene3D::Load();
 	CBoard::Load();
 	CTitle::Load();
@@ -261,7 +260,6 @@ void CManager::UnLoadAll(void)
 {
 	CScene3D::UnLoad();
 	CBoard::UnLoad();
-	CPlayer::Unload();
 	CMeshField::UnLoad();
 	CBg::UnLoad();
 	CLife::Unload();
