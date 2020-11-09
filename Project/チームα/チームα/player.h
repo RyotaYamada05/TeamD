@@ -10,7 +10,8 @@
 //=============================================================================
 // インクルード
 //=============================================================================
-#include "model.h"
+#include "scene.h"
+#include "modelanime.h"
 
 //=============================================================================
 // マクロ定義
@@ -19,7 +20,6 @@
 #define LIFE_NUM			(2)			// 表示するライフの数
 #define MAX_PARTS			(10)		// パーツの数
 #define MOTION_KEYSET_MAX	(32)		// キーセット最大数
-
 #define PLAYER1_POS_X		(0.0f)		// 座標
 #define PLAYER1_POS_Y		(171.0f)	// 座標
 #define PLAYER1_POS_Z		(0)			// 座標
@@ -31,6 +31,7 @@
 #define PLAYER_SIZE_X		(1)			// サイズ
 #define PLAYER_SIZE_Y		(1)			// サイズ
 #define PLAYER_SIZE_Z		(1)			// サイズ
+#define MODEL_PARTS 20	//モデルのパーツ数
 
 #define PLAYER_COLLISION_X	(250)		// 当たり判定
 #define PLAYER_COLLISION_Y	(350)		// 当たり判定
@@ -43,10 +44,52 @@ class CScore;
 class CLife;
 class CCharge;
 
+typedef enum
+{
+	M_MOTION_STATE =-1,
+	M_MOTION_STATE_IDOL,	//アイドルモーション
+	M_MOTION_STATE_WALK,	//歩行モーション
+	M_MOTION_STATE_DUSH,	
+	M_MOTION_STATE_JUMP,
+	M_MOTION_STATE_MAX,	//モーション最大数
+}MOTION_STATE;
+
+typedef struct
+{
+	char xFileName[1024];
+	D3DXVECTOR3 offsetPos;
+	D3DXVECTOR3 offsetRot;
+	int nParent;
+}MODELFILLE;
+
+typedef struct
+{
+	float fPosX;
+	float fPosY;
+	float fPosZ;
+	float fRotX;
+	float fRotY;
+	float fRotZ;
+}KEY;
+
+typedef struct
+{
+	int nFrame;
+	KEY aKey[MODEL_PARTS];
+}KEY_INFO;
+
+typedef struct
+{
+	bool bLoop;
+	int nNumKey;
+	KEY_INFO aKeyInfo[20];
+}Motion_Info;
+
 //=============================================================================
 // プレイヤークラス
 //=============================================================================
-class CPlayer : public CModel
+
+class CPlayer : public CScene
 {
 public:
 
@@ -63,13 +106,13 @@ public:
 	~CPlayer();						// デストラクタ
 
 	static CPlayer*Create(D3DXVECTOR3 pos, D3DXVECTOR3 size);		// クリエイト
-	static HRESULT LoadModel(void);
-	static void Unload(void);
 
 	HRESULT Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size);	// 初期化処理
 	void Uninit(void);												// 終了処理
 	void Update(void);												// 更新処理
+	void UpdateMotion(void);										//モーション更新処理
 	void Draw(void);												// 描画処理
+	void SetMotion(MOTION_STATE motion);
 
 	void PlayerState(void);											// プレイヤーの状態
 	void PlayerControl(void);										// プレイヤーの制御
@@ -82,9 +125,10 @@ public:
 	void bomb(void);												// ボム
 
 	D3DXVECTOR3 GetPos(void);
+
 	CLife *GetLife(int nNumber);									// ライフの情報
 	CCharge *GetCgarge(void);										// チャージのポインタ
-	bool GetEnd(void);												// エンド情報
+	HRESULT ReadFile(void);	bool GetEnd(void);												// エンド情報
 	PLAYER_STATE GetState(void);									// プレイヤーの状態
 private:
 	CScore *pScore;							// スコアの情報
@@ -108,6 +152,14 @@ private:
 	static LPD3DXBUFFER m_pBuffMat;			// マテリアル情報へのポインタ
 	static DWORD m_nNumMat;					// マテリアル情報の数
 	static int m_nPlayerAll;				// プレイヤーの数
-};
+	D3DXMATRIX m_mtxWorld;						// ワールドマトリックス
+	CModelAnime *m_apModelAnime[MODEL_PARTS];	//モデルパーツ用のポインタ
+	int m_nNumKey;								//キーの総数
+	int m_nKey;									//現在キーのNo
+	int m_nCountMotion;							//モーションカウンター
+	KEY_INFO *m_apKeyInfo;						//キー情報のポインタ
+	MOTION_STATE m_MotionState;
+	Motion_Info m_Motion[M_MOTION_STATE_MAX];
+	int m_nFlame;};
 
 #endif

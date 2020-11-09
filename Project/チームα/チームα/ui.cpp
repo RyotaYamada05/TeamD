@@ -223,7 +223,7 @@ void CUi::UiHit(void)
 		else if (m_nCounter == 5)
 		{
 			col.a = 0.0f;
-			m_nCounter = 0.0f;
+			m_nCounter = 0;
 		}
 
 		if (m_nPattern == 30)

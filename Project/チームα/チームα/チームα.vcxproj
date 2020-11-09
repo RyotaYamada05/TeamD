@@ -178,6 +178,7 @@
     <ClCompile Include="manager.cpp" />
     <ClCompile Include="meshfield.cpp" />
     <ClCompile Include="model.cpp" />
+    <ClCompile Include="modelanime.cpp" />
     <ClCompile Include="number.cpp" />
     <ClCompile Include="particle.cpp" />
     <ClCompile Include="player.cpp" />
@@ -230,6 +231,7 @@
     <ClInclude Include="manager.h" />
     <ClInclude Include="meshfield.h" />
     <ClInclude Include="model.h" />
+    <ClInclude Include="modelanime.h" />
     <ClInclude Include="number.h" />
     <ClInclude Include="particle.h" />
     <ClInclude Include="player.h" />
