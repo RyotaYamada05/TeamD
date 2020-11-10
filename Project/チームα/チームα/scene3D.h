@@ -27,22 +27,27 @@ public:
 	CScene3D();
 	virtual ~CScene3D();
 
-	static CScene3D*Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 size);
-	static HRESULT Load(void);
-	static void UnLoad(void);
+	static CScene3D *Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 size);
 	
-	virtual HRESULT Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size);		// 初期化
-	virtual void Uninit(void);													// 終了
-	virtual void Update(void);													// 更新
-	virtual void Draw(void);													// 描画
+	virtual HRESULT Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size);	// 初期化
+	virtual void Uninit(void);												// 終了
+	virtual void Update(void);												// 更新
+	virtual void Draw(void);												// 描画
 
-	void SetPos(D3DXVECTOR3 pos);												// 座標の設定
-	void SetPosision(D3DXVECTOR3 pos);											// 座標の更新
+	void SetPos(D3DXVECTOR3 pos);											// 座標の設定
+	void SetPosision(D3DXVECTOR3 pos);										// 座標の更新
+	void SetColor(D3DXCOLOR col);											// カラーの設定
+	void SetRot(D3DXVECTOR3 rot);											// 角度の設定
+	void Alpha(void);														// 透明度
+	void BindTexture(LPDIRECT3DTEXTURE9 pTexture);							// テクスチャの設定
+
+	LPDIRECT3DVERTEXBUFFER9 GetVtxBuff(void);								// バッファ情報
+	D3DXVECTOR3 GetPos(void);												// 座標
 private:
 	//=========================================================================
 	//メンバ変数宣言
 	//=========================================================================
-	static LPDIRECT3DTEXTURE9 m_pTexture;		// テクスチャポインタ
+	LPDIRECT3DTEXTURE9 m_pTexture;				// テクスチャポインタ
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;			// 頂点バッファポインタ
 	D3DXMATRIX	m_mtxWorld;						// ワールドマトリクス
 	D3DXVECTOR3 m_pos;							// 位置

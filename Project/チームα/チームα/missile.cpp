@@ -1,6 +1,6 @@
 //=================================================================================
 //
-// レーザークラス [beam.cpp]
+// ミサイルクラス [missile.cpp]
 // Author : Konishi Yuuto
 //
 //=================================================================================
@@ -8,7 +8,7 @@
 //=================================================================================
 // インクルード
 //=================================================================================
-#include "beam.h"
+#include "missile.h"
 #include "manager.h"
 #include "renderer.h"
 #include "effect.h"
@@ -17,30 +17,30 @@
 //=================================================================================
 // マクロ定義
 //=================================================================================
-#define BEAM_LIFE	(70)			// ビームのライフ
+#define MISSILE_LIFE	(70)			// ミサイルのライフ
 
 //=================================================================================
 // static初期化
 //=================================================================================
-LPDIRECT3DTEXTURE9 CBeam::m_apTexture[MAX_BEAM_TEXTURE] = {};
-LPD3DXMESH CBeam::m_pMesh = NULL;
-LPD3DXBUFFER CBeam::m_pBuffMat = NULL;		//マテリアル情報へのポインタ
-DWORD CBeam::m_nNumMat = 0;					//マテリアル情報の数
+LPDIRECT3DTEXTURE9 CMissile::m_apTexture[MAX_MISSILE_TEXTURE] = {};
+LPD3DXMESH CMissile::m_pMesh = NULL;
+LPD3DXBUFFER CMissile::m_pBuffMat = NULL;		//マテリアル情報へのポインタ
+DWORD CMissile::m_nNumMat = 0;					//マテリアル情報の数
 
 //=================================================================================
 // インスタンス生成
 //=================================================================================
-CBeam * CBeam::Create(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXVECTOR3 size, BULLET2_USER user)
+CMissile * CMissile::Create(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXVECTOR3 size, BULLET2_USER user)
 {
 	// メモリ確保
-	CBeam *pBeam = new CBeam;
+	CMissile *pBeam = new CMissile;
 
 	if (pBeam != NULL)
 	{
 		// 初期化処理
 		pBeam->Init(pos, move, size, user);		// 初期化情報
 		pBeam->SetMove(move);					// 移動量
-		pBeam->SetLife(BEAM_LIFE);				// ライフの情報
+		pBeam->SetLife(MISSILE_LIFE);				// ライフの情報
 	}
 
 	return pBeam;
@@ -49,7 +49,7 @@ CBeam * CBeam::Create(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXVECTOR3 size, BULLE
 //=================================================================================
 // コンストラクタ
 //=================================================================================
-CBeam::CBeam()
+CMissile::CMissile()
 {
 
 }
@@ -57,14 +57,14 @@ CBeam::CBeam()
 //=================================================================================
 // デストラクタ
 //=================================================================================
-CBeam::~CBeam()
+CMissile::~CMissile()
 {
 }
 
 //=================================================================================
 // 初期化処理
 //=================================================================================
-HRESULT CBeam::Init(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXVECTOR3 size, BULLET2_USER user)
+HRESULT CMissile::Init(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXVECTOR3 size, BULLET2_USER user)
 {
 	MODEL model;
 
@@ -77,7 +77,7 @@ HRESULT CBeam::Init(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXVECTOR3 size, BULLET2
 	BindTexture(m_apTexture[0]);
 
 	// 初期化処理
-	CBullet2::Init(pos, size, user, BEAM_SPEED);		// 初期化情報
+	CBullet2::Init(pos, size, user, MISSILE_SPEED);		// 初期化情報
 	SetRot(D3DXVECTOR3(0.0f, 0.0f, 0.0f));	// 向き
 
 	return S_OK;
@@ -86,7 +86,7 @@ HRESULT CBeam::Init(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXVECTOR3 size, BULLET2
 //=================================================================================
 // 終了処理
 //=================================================================================
-void CBeam::Uninit(void)
+void CMissile::Uninit(void)
 {
 	// 終了処理
 	CBullet2::Uninit();
@@ -95,7 +95,7 @@ void CBeam::Uninit(void)
 //=================================================================================
 // 更新処理
 //=================================================================================
-void CBeam::Update(void)
+void CMissile::Update(void)
 {
 	// 更新処理
 	CBullet2::Update();
@@ -103,14 +103,14 @@ void CBeam::Update(void)
 	D3DXVECTOR3 pos = GetPos();
 
 	// エフェクト生成
-	CEffect::Create(pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), 
+	CEffect::Create(pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f),
 		D3DXVECTOR3(EFFECT_SIZE_X, EFFECT_SIZE_Y, 0.0f), D3DXCOLOR(0.3f, 0.3f, 1.0f, 1.0f), EFFECT_LIFE);
 }
 
 //=================================================================================
 // 描画処理
 //=================================================================================
-void CBeam::Draw(void)
+void CMissile::Draw(void)
 {
 	// レンダラーの情報を受け取る
 	CRenderer *pRenderer = NULL;
@@ -137,7 +137,7 @@ void CBeam::Draw(void)
 //=================================================================================
 // テクスチャロード
 //=================================================================================
-HRESULT CBeam::Load(void)
+HRESULT CMissile::Load(void)
 {
 	// レンダラーの情報を受け取る
 	CRenderer *pRenderer = NULL;
@@ -149,7 +149,7 @@ HRESULT CBeam::Load(void)
 		&m_apTexture[0]);
 
 	// Xファイルの読み込み
-	D3DXLoadMeshFromX("data/model/beam.x",
+	D3DXLoadMeshFromX("data/model/missile.x",
 		D3DXMESH_SYSTEMMEM,
 		pDevice,
 		NULL,
@@ -164,7 +164,7 @@ HRESULT CBeam::Load(void)
 //=================================================================================
 // テクスチャアンロード
 //=================================================================================
-void CBeam::UnLoad(void)
+void CMissile::UnLoad(void)
 {
 	//メッシュの破棄
 	if (m_pMesh != NULL)
@@ -179,7 +179,7 @@ void CBeam::UnLoad(void)
 		m_pBuffMat = NULL;
 	}
 
-	for (int nCount = 0; nCount < MAX_BEAM_TEXTURE; nCount++)
+	for (int nCount = 0; nCount < MAX_MISSILE_TEXTURE; nCount++)
 	{
 		// テクスチャの破棄
 		if (m_apTexture[nCount] != NULL)

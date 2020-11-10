@@ -18,7 +18,6 @@
 //=============================================================================
 //マクロ定義
 //=============================================================================
-
 #define DISTANCE					(1000.0f)				//視点～注視点の距離
 #define PLAYER_HEIGHT				(100.0f)				//注視点の高さ
 #define PLAYE_ROT_VERTICAL_FRONT	(D3DXToRadian(0.0f))	//プレイヤーの縦軸前
@@ -99,13 +98,13 @@ HRESULT CCamera::Init(void)
 		m_fθ = D3DXToRadian(75.0f);
 		m_fφ = D3DXToRadian(0.0f);
 
+
 		m_posR = D3DXVECTOR3(0.0f, 100.0f, 0.0f);	//注視点は全て0座標を見る
 		m_posU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);//上方向ベクトル
 		m_posV.x = m_posR.x + m_fDistance* sinf(m_fθ) * cosf(m_fφ);
 		m_posV.y = m_posR.z + m_fDistance* cosf(m_fθ);
 		m_posV.z = m_posR.y + m_fDistance* sinf(m_fθ) * sinf(m_fφ);
 
-		
 		break;
 
 	case 1:
@@ -114,6 +113,7 @@ HRESULT CCamera::Init(void)
 		m_fθ = D3DXToRadian(75.0f);
 		m_fφ = D3DXToRadian(0.0f);
 		m_rot.y = 0.0f;
+
 
 		m_posR = D3DXVECTOR3(0.0f, 100.0f, 0.0f);			// 注視点は全て0座標を見る
 		m_posU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
@@ -159,6 +159,7 @@ void CCamera::Update(void)
 	if (CGame::GetPlayer(m_nCameraNum) != NULL)
 	{
 
+
 		pPlayerPos[m_nCameraNum] = CGame::GetPlayer(m_nCameraNum)->GetPos();
 
 		int nCameraSecond = 0;
@@ -166,16 +167,20 @@ void CCamera::Update(void)
 		if (m_nCameraNum == 0)
 		{
 
+
 			nCameraSecond = 1;
 		}
 		else
 		{
 
+
 			nCameraSecond = 0;
 		}
 
 
+
 		pPlayerPos[nCameraSecond] = CGame::GetPlayer(nCameraSecond)->GetPos();
+
 
 		if (bPlayerWin)
 		{
@@ -188,8 +193,6 @@ void CCamera::Update(void)
 		}
 	}
 }
-
-
 //=============================================================================
 //カメラクラスの試合後更新処理
 //=============================================================================
@@ -226,10 +229,12 @@ void CCamera::EndUpdate(D3DXVECTOR3 PlayerPos[], int nWinPlayer)
 		}
 
 
+
 		fDistance -= (WIN_START_DISTANCE - WIN_END_DISTANCE) / 100.0f * WIN_ROT_MOVE_SUBTRACTION;
 
 		if (fDistance <= WIN_END_DISTANCE)
 		{
+
 			
 			fDistance = WIN_END_DISTANCE;
 		}
@@ -242,10 +247,12 @@ void CCamera::EndUpdate(D3DXVECTOR3 PlayerPos[], int nWinPlayer)
 		}
 
 
+
 		if (fθ >= WIN_END_ROT_HORIZONTAL)
 		{
 			fθ = WIN_END_ROT_HORIZONTAL;
 		}
+
 
 		m_posVDest.z = PlayerPos[m_nCameraNum].z + fDistance * sinf(fθ) * sinf(fφ);
 
@@ -267,8 +274,10 @@ void CCamera::EndUpdate(D3DXVECTOR3 PlayerPos[], int nWinPlayer)
 	
 		if (fDistance >= LOSE_END_DISTANCE)
 		{
+
 			fDistance = LOSE_END_DISTANCE;
 		}
+
 
 		m_posVDest.x = PlayerPos[m_nCameraNum].x + fDistance * sinf(m_fθ) * cosf(fφ);
 
@@ -327,32 +336,34 @@ void CCamera::NomalUpdate(D3DXVECTOR3 PlayerPos[])
 			}
 		}
 	}
-			
+
 	if (m_bTarget == true)
 	{
 		m_fφ = atan2f(PlayerPos[m_nCameraNum].z - PlayerPos[nCameraSecond].z, PlayerPos[m_nCameraNum].x - PlayerPos[nCameraSecond].x);
 
-
 		m_posVDest.x = m_posR.x + m_fDistance * sinf(m_fθ) * cosf(m_fφ) + PlayerPos[m_nCameraNum].x - PlayerPos[nCameraSecond].x;
 		m_posVDest.y = m_posR.y + m_fDistance * cosf(m_fθ) + PlayerPos[m_nCameraNum].y - PlayerPos[nCameraSecond].y;
 		m_posVDest.z = m_posR.z + m_fDistance * sinf(m_fθ) * sinf(m_fφ) + PlayerPos[m_nCameraNum].z - PlayerPos[nCameraSecond].z;
-		
+
 		if (PlayerPos[nCameraSecond].x <= PlayerPos[m_nCameraNum].x + 50 && PlayerPos[m_nCameraNum].x - 50 <= PlayerPos[nCameraSecond].x  &&
-			PlayerPos[nCameraSecond].z <= PlayerPos[m_nCameraNum].z + 50 && PlayerPos[m_nCameraNum].z - 50<= PlayerPos[nCameraSecond].z)
+			PlayerPos[nCameraSecond].z <= PlayerPos[m_nCameraNum].z + 50 && PlayerPos[m_nCameraNum].z - 50 <= PlayerPos[nCameraSecond].z)
 		{
 			m_bTarget = false;
 		}
+
 
 		m_posRDest = D3DXVECTOR3(PlayerPos[nCameraSecond].x, PlayerPos[nCameraSecond].y + PLAYER_HEIGHT, PlayerPos[nCameraSecond].z);
 
 		m_posV += (m_posVDest - m_posV); //カメラフロー
 		m_posR += (m_posRDest - m_posR); //カメラフロー
 
+
 	}
 	else
 	{
 		// キーボード更新
 		CInputKeyboard *pKeyboard = CManager::GetKeyboard();
+
 
 		//視点（カメラ座標）の左旋回
 		if (pKeyInput->GetPress(DIK_LEFT))
@@ -375,10 +386,10 @@ void CCamera::NomalUpdate(D3DXVECTOR3 PlayerPos[])
 			m_fθ += D3DXToRadian(1.0f);
 		}
 
+
 		m_posVDest.x = PlayerPos[m_nCameraNum].x + m_fDistance * sinf(m_fθ) * cosf(m_fφ);
 
 		m_posVDest.y = PlayerPos[m_nCameraNum].y + m_fDistance * cosf(m_fθ);
-
 		if (m_posVDest.y <= 2)
 		{
 			m_posVDest.y = 2;
@@ -386,7 +397,9 @@ void CCamera::NomalUpdate(D3DXVECTOR3 PlayerPos[])
 
 		m_posVDest.z = PlayerPos[m_nCameraNum].z + m_fDistance * sinf(m_fθ) * sinf(m_fφ);
 
+
 		m_posRDest = D3DXVECTOR3(PlayerPos[m_nCameraNum].x, PlayerPos[m_nCameraNum].y + PLAYER_HEIGHT, PlayerPos[m_nCameraNum].z);
+
 
 		m_posV += (m_posVDest - m_posV);
 		m_posR += (m_posRDest - m_posR);
@@ -400,6 +413,7 @@ void CCamera::NomalUpdate(D3DXVECTOR3 PlayerPos[])
 		{
 			pLockon->Create(D3DXVECTOR3(UI_LOCKON_POS_RIGHT_X, UI_RESULT_POS_Y, 0.0f), D3DXVECTOR3(UI_LOCKON_SIZE_X, UI_LOCKON_SIZE_Y, 0.0f), CLockon::LOCKONTYPE_SECOND_PLAYER);
 		}
+		
 	}
 }
 
@@ -466,4 +480,5 @@ float CCamera::Getθ(void)
 float CCamera::Getφ(void)
 {
 	return m_fφ;
+
 }

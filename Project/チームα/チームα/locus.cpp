@@ -1,65 +1,108 @@
 //=============================================================================
 //
-// メイン処理 [scene3D.h]
-// Author : 山田陵太
+// 軌跡の処理 [locus.cpp]
+// Author : Konishi Yuuto
 //
 //=============================================================================
-#include "scene3D.h"
+
+//=============================================================================
+// インクルード
+//=============================================================================
+#include "locus.h"
 #include "manager.h"
 #include "renderer.h"
 
 //=============================================================================
-//静的メンバ変数宣言
+// static初期化
 //=============================================================================
+LPDIRECT3DTEXTURE9 CLocus::m_pTexture = NULL;
 
 //=============================================================================
-//3Dポリゴンクラスのコンストラクタ
+// コンストラクタ
 //=============================================================================
-CScene3D::CScene3D()
+CLocus::CLocus()
 {
-	m_pTexture = NULL;
+	m_nLife = 0;
 	m_pVtxBuff = NULL;
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_posOld = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_size = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 }
 
 //=============================================================================
-//3Dポリゴンクラスのデストラクタ
+// デストラクタ
 //=============================================================================
-CScene3D::~CScene3D()
+CLocus::~CLocus()
 {
+
 }
 
 //=============================================================================
-//3Dポリゴンクラスのクリエイト処理
+// クリエイト
 //=============================================================================
-CScene3D * CScene3D::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
+CLocus * CLocus::Create(D3DXVECTOR3 pos, D3DXVECTOR3 posOld, D3DXVECTOR3 rot, D3DXVECTOR3 size, int nLife)
 {
-	//3Dポリゴンクラスのポインタ変数
-	CScene3D *pScene3D = NULL;
+	//ポインタ変数
+	CLocus *pLocus = NULL;
 
 	//メモリの確保
-	pScene3D = new CScene3D;
+	pLocus = new CLocus;
 
 	//メモリが確保できていたら
-	if (pScene3D != NULL)
+	if (pLocus != NULL)
 	{
 		//初期化処理呼び出し
-		pScene3D->Init(pos, size);
+		pLocus->Init(pos, size);
+		pLocus->SetColor(D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f));
+		pLocus->SetRot(rot);
+		pLocus->m_posOld = posOld;
+		pLocus->m_rot = rot;
+		pLocus->m_nLife = nLife;
 	}
 	else
 	{
 		return NULL;
 	}
 
-	return pScene3D;
+	return pLocus;
 }
 
 //=============================================================================
-//3Dポリゴンクラスの初期化処理
+// テクスチャロード
 //=============================================================================
-HRESULT CScene3D::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
+HRESULT CLocus::Load(void)
 {
+	//デバイスの取得
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
+
+	//テクスチャの読み込み
+	D3DXCreateTextureFromFile(pDevice, "data/Texture/board000.png", &m_pTexture);
+
+	return S_OK;
+}
+
+//=============================================================================
+// テクスチャアンロード
+//=============================================================================
+void CLocus::UnLoad(void)
+{
+	//テクスチャの破棄
+	if (m_pTexture != NULL)
+	{
+		m_pTexture->Release();
+		m_pTexture = NULL;
+	}
+}
+
+//=============================================================================
+// 初期化処理
+//=============================================================================
+HRESULT CLocus::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
+{
+	// 初期化処理
+	CScene3D::Init(pos, size);
+
 	//デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
@@ -73,17 +116,22 @@ HRESULT CScene3D::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 
 	VERTEX_3D*pVtx = NULL;
 
+
 	m_pos = pos;
 	m_size = size;
+
+	float sizeX = sqrtf((m_posOld.x - m_pos.x)*(m_posOld.x - m_pos.x));
+	float sizeY = sqrtf((m_posOld.y - m_pos.y)*(m_posOld.y - m_pos.y));
+	float sizeZ = sqrtf((m_posOld.z - m_pos.z)*(m_posOld.z - m_pos.z));
 
 	//頂点バッファをロック
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 	//頂点座標設定の設定
-	pVtx[0].pos = D3DXVECTOR3(- (size.x / 2), + (size.y / 2), 0.0f);
-	pVtx[1].pos = D3DXVECTOR3(+ (size.x / 2), + (size.y / 2), 0.0f);
-	pVtx[2].pos = D3DXVECTOR3(- (size.x / 2), - (size.y / 2), 0.0f);
-	pVtx[3].pos = D3DXVECTOR3(+ (size.x / 2), - (size.y / 2), 0.0f);
+	pVtx[0].pos = D3DXVECTOR3(-(sizeX / 2), +(sizeY / 2), 0.0f);
+	pVtx[1].pos = D3DXVECTOR3(+(sizeX / 2), +(sizeY / 2), 0.0f);
+	pVtx[2].pos = D3DXVECTOR3(-(sizeX / 2), -(sizeY / 2), 0.0f);
+	pVtx[3].pos = D3DXVECTOR3(+(sizeX / 2), -(sizeY / 2), 0.0f);
 
 	//各頂点の法線の設定（※ベクトルの大きさは１にする必要がある）
 	pVtx[0].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
@@ -102,17 +150,19 @@ HRESULT CScene3D::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 	pVtx[1].tex = D3DXVECTOR2(1.0f, 0.0f);
 	pVtx[2].tex = D3DXVECTOR2(0.0f, 1.0f);
 	pVtx[3].tex = D3DXVECTOR2(1.0f, 1.0f);
-	
+
 	//頂点バッファのアンロック
 	m_pVtxBuff->Unlock();
+
+	return S_OK;
 
 	return S_OK;
 }
 
 //=============================================================================
-//3Dポリゴンクラスの終了処理
+// 終了処理
 //=============================================================================
-void CScene3D::Uninit(void)
+void CLocus::Uninit(void)
 {
 	//頂点バッファの破棄
 	if (m_pVtxBuff != NULL)
@@ -126,20 +176,38 @@ void CScene3D::Uninit(void)
 }
 
 //=============================================================================
-//3Dポリゴンクラスの更新処理
+// 更新処理
 //=============================================================================
-void CScene3D::Update(void)
+void CLocus::Update(void)
 {
+	m_nLife--;
 
+	if (m_nLife <= 0)
+	{
+		// 終了処理
+		Uninit();
+	}
 }
 
 //=============================================================================
-//3Dポリゴンクラスの描画処理
+// 描画処理
 //=============================================================================
-void CScene3D::Draw(void)
+void CLocus::Draw(void)
 {
-	//デバイスの取得
-	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
+	// レンダラーの情報を受け取る
+	CRenderer *pRenderer = NULL;
+	pRenderer = CManager::GetRenderer();
+	LPDIRECT3DDEVICE9 pDevice = pRenderer->GetDevice();
+
+	pDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+	pDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+	pDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_CURRENT);
+
+	// かぶさらないようにする　(Zバッファ)
+	pDevice->SetRenderState(D3DRS_ZENABLE, false);
+
+	// 加算合成を行う
+	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);			// aデスティネーションカラー
 
 	D3DXMATRIX mtxRot, mtxTrans;	//計算用のマトリクス
 
@@ -150,8 +218,12 @@ void CScene3D::Draw(void)
 	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
 
+	float sizeX = sqrtf((m_posOld.x - m_pos.x)*(m_posOld.x - m_pos.x));
+	float sizeY = sqrtf((m_posOld.y - m_pos.y)*(m_posOld.y - m_pos.y));
+	float sizeZ = sqrtf((m_posOld.z - m_pos.z)*(m_posOld.z - m_pos.z));
+
 	//位置を反映
-	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
+	D3DXMatrixTranslation(&mtxTrans, sizeX, sizeY, sizeZ);
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
 
 	//ワールドマトリックスの設定
@@ -171,75 +243,15 @@ void CScene3D::Draw(void)
 
 	//テクスチャの設定
 	pDevice->SetTexture(0, NULL);
-}
 
-void CScene3D::SetPos(D3DXVECTOR3 pos)
-{
-	m_pos = pos;
-}
+	// 描画処理
+	//CScene3D::Draw();
 
-void CScene3D::SetPosision(D3DXVECTOR3 pos)
-{
-	m_pos = pos;
+	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);	// aデスティネーションカラー
 
-	// 頂点情報を設定
-	VERTEX_2D *pVtx;
+	// Zバッファ戻す
+	pDevice->SetRenderState(D3DRS_ZENABLE, true);
 
-	// 頂点バッファをロックし、頂点情報へのポインタを取得
-	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+	pDevice->LightEnable(0, TRUE);
 
-	//頂点座標設定の設定
-	pVtx[0].pos = D3DXVECTOR3(- (m_size.x / 2), + (m_size.y / 2), 0.0f);
-	pVtx[1].pos = D3DXVECTOR3(+ (m_size.x / 2), + (m_size.y / 2), 0.0f);
-	pVtx[2].pos = D3DXVECTOR3(- (m_size.x / 2), - (m_size.y / 2), 0.0f);
-	pVtx[3].pos = D3DXVECTOR3(+ (m_size.x / 2), - (m_size.y / 2), 0.0f);
-
-	// 頂点バッファをアンロックする
-	m_pVtxBuff->Unlock();
-}
-
-//=============================================================================
-// 色の設定
-//=============================================================================
-void CScene3D::SetColor(D3DXCOLOR col)
-{
-	VERTEX_3D*pVtx = NULL;
-
-	//頂点バッファをロック
-	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
-
-	for (int nCount = 0; nCount < 4; nCount++)
-	{
-		//頂点カラーの設定（0～255の数値で設定）
-		pVtx[nCount].col = D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f);
-	}
-
-	//頂点バッファのアンロック
-	m_pVtxBuff->Unlock();
-}
-
-//=============================================================================
-// 色の設定
-//=============================================================================
-void CScene3D::SetRot(D3DXVECTOR3 rot)
-{
-	m_rot = rot;
-}
-
-//=============================================================================
-// テクスチャの設定
-//=============================================================================
-void CScene3D::BindTexture(LPDIRECT3DTEXTURE9 pTexture)
-{
-	m_pTexture = pTexture;
-}
-
-LPDIRECT3DVERTEXBUFFER9 CScene3D::GetVtxBuff(void)
-{
-	return m_pVtxBuff;
-}
-
-D3DXVECTOR3 CScene3D::GetPos(void)
-{
-	return m_pos;
 }

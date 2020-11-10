@@ -32,9 +32,11 @@
 #define PLAYER_SIZE_Z		(1)			// サイズ
 #define MODEL_PARTS			(20)		//モデルのパーツ数
 
-#define PLAYER_COLLISION_X	(250)		// 当たり判定
+#define PLAYER_COLLISION_X	(200)		// 当たり判定
 #define PLAYER_COLLISION_Y	(350)		// 当たり判定
-#define PLAYER_COLLISION_Z	(250)		// 当たり判定
+#define PLAYER_COLLISION_Z	(200)		// 当たり判定
+
+#define PLAYER_RADIUS		(200)		// 半径
 
 //=============================================================================
 // 前方宣言
@@ -42,10 +44,12 @@
 class CScore;
 class CLife;
 class CCharge;
+class CBoost;
 
 //=============================================================================
 //　モーション状態の列挙型
 //=============================================================================
+
 typedef enum
 {
 	MOTION_NONE = -1,
@@ -96,13 +100,12 @@ typedef struct
 {
 	bool bLoop;	//ループするかどうか
 	int nNumKey;	//キー数
-	KEY_INFO aKeyInfo[20];	//キー情報
+	KEY_INFO aKeyInfo[10];	//キー情報
 }Motion_Info;
 
 //=============================================================================
 // プレイヤークラス
 //=============================================================================
-
 class CPlayer : public CScene
 {
 public:
@@ -112,7 +115,9 @@ public:
 		PLAYER_STATE_NONE = 0,		// 初期置
 		PLAYER_STATE_NORMAL,		// 通常状態
 		PLAYER_STATE_DAMAGE,		// ダメージ
-		PLAYER_STATE_EXPLOSION,		// 爆発
+		PLAYER_STATE_EXPLOSION,		// 爆発7
+		PLAYER_STATE_EXPLOSIONasd,
+		PLAYER_STATE_EXPLOSIONaafff,
 		PLAYER_STATE_MAX
 	}PLAYER_STATE;
 
@@ -137,35 +142,44 @@ public:
 	void Dush(void);												// ダッシュ
 	void beam(void);												// ビーム
 	void bomb(void);												// ボム
-
-	D3DXVECTOR3 GetPos(void);
+	void Laser(void);												// レーザー
+	void BlockUp(void);												// ブロックの上に乗ったとき
+	void SetPos(D3DXVECTOR3 pos);
+	D3DXVECTOR3 GetPos(void);										// 現在の座標情報
+	D3DXVECTOR3 GetOldPos(void);									// 古い座標情報
+	void SetMove(D3DXVECTOR3 move);										// 移動量の設定
+	D3DXVECTOR3 GetMove(void);
+	D3DXVECTOR3 GetRot(void);
 
 	CLife *GetLife(int nNumber);									// ライフの情報
 	CCharge *GetCgarge(void);										// チャージのポインタ
-	HRESULT ReadFile(void);	bool GetEnd(void);												// エンド情報
+	HRESULT ReadFile(void);
+	bool GetEnd(void);												// エンド情報
 	PLAYER_STATE GetState(void);									// プレイヤーの状態
 private:
-	CScore *pScore;								// スコアの情報
-	CLife *m_pLife[LIFE_NUM];					// ライフのポインタ
-	CCharge *m_pCharge;							// チャージのポインタ
-	D3DXVECTOR3 m_pos;							// 座標
-	D3DXVECTOR3 m_rot;							// 回転
-	D3DXVECTOR3 m_move;							// 移動
-	PLAYER_STATE m_state;						// プレイヤー状態
-	float m_fAngle;								// 角度
-	int m_nDushFlame;							// ダッシュのフレーム
-	int m_nDushInterCnt;						// ダッシュできないときのカウント
-	int m_nPlayerNum;							// プレイヤーの番号
-	int m_nStateCounter;						// 状態カウンター
-	bool m_bJump;								// ジャンプのフラグ
-	bool m_bDush;								// ダッシュの処理
-	bool m_bDushInter;							// ダッシュのインターバル
-	bool m_bEnd;								// 終了フラグ
-	bool m_bFall;								// 急降下フラグ
-	static LPD3DXMESH m_pMesh;					// メッシュ情報へのポインタ
-	static LPD3DXBUFFER m_pBuffMat;				// マテリアル情報へのポインタ
-	static DWORD m_nNumMat;						// マテリアル情報の数
-	static int m_nPlayerAll;					// プレイヤーの数
+	CScore *pScore;							// スコアの情報
+	CLife *m_pLife[LIFE_NUM];				// ライフのポインタ
+	CBoost *m_pBoost;						// ブーストのポインタ
+	CCharge *m_pCharge;						// チャージのポインタ
+	D3DXVECTOR3 m_pos;						// 座標
+	D3DXVECTOR3 m_OldPos;					// 1フレーム前の座標
+	D3DXVECTOR3 m_rot;						// 回転
+	D3DXVECTOR3 m_move;						// 移動
+	PLAYER_STATE m_state;					// プレイヤー状態
+	float m_fAngle;							// 角度
+	int m_nDushFlame;						// ダッシュのフレーム
+	int m_nDushInterCnt;					// ダッシュできないときのカウント
+	int m_nPlayerNum;						// プレイヤーの番号
+	int m_nStateCounter;					// 状態カウンター
+	bool m_bJump;							// ジャンプのフラグ
+	bool m_bDush;							// ダッシュの処理
+	bool m_bDushInter;						// ダッシュのインターバル
+	bool m_bEnd;							// 終了フラグ
+	bool m_bFall;							// 急降下フラグ
+	static LPD3DXMESH m_pMesh;				// メッシュ情報へのポインタ
+	static LPD3DXBUFFER m_pBuffMat;			// マテリアル情報へのポインタ
+	static DWORD m_nNumMat;					// マテリアル情報の数
+	static int m_nPlayerAll;				// プレイヤーの数
 	D3DXMATRIX m_mtxWorld;						// ワールドマトリックス
 	CModelAnime *m_apModelAnime[MODEL_PARTS];	//モデルパーツ用のポインタ
 	int m_nNumKey;								//キーの総数
@@ -173,7 +187,6 @@ private:
 	int m_nCountMotion;							//モーションカウンター
 	KEY_INFO *m_apKeyInfo;						//キー情報のポインタ
 	MOTION_STATE m_MotionState;					//モーションの状態
-	Motion_Info m_Motion[MOTION_MAX];			//モーション情報
+	Motion_Info m_Motion[MOTION_MAX];			//モーション情報};
 };
-
 #endif

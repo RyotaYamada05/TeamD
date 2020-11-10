@@ -46,7 +46,11 @@
 #include "uiend.h"
 #include "sound.h"
 #include "tutorial.h"
-//=============================================================================
+#include "splash.h"
+#include "laser.h"
+#include "missile.h"
+#include "fire.h"
+#include "boost.h"//=============================================================================
 //静的メンバ変数宣言
 //=============================================================================
 CManager::MODE_TYPE CManager::m_mode = CManager::MODE_TYPE_TITLE;
@@ -132,7 +136,6 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindow)
 			return -1;
 		}
 	}
-
 
 	//タイトルクラスのクリエイト
 	//m_pTitle = CTitle::Create();
@@ -220,7 +223,6 @@ void CManager::Update(void)
 		m_pJoypad->Update();
 	}
 
-
 	if (m_pRenderer != NULL)
 	{
 		//レンダラークラスの更新処理呼び出し
@@ -251,7 +253,7 @@ void CManager::Draw(void)
 //=============================================================================
 void CManager::LoadAll(void)
 {
-	CScene3D::Load();
+
 	CBoard::Load();
 	CTitle::Load();
 	CResult::Load();
@@ -277,6 +279,12 @@ void CManager::LoadAll(void)
 	CSand::Load();
 	CUiEnd::Load();
 	CTutorial::Load();
+	CBill::LoadModel();
+	CSplash::Load();
+	CLaser::Load();
+	CMissile::Load();
+	CFire::Load();
+	CBoost::Load();
 }
 
 //=============================================================================
@@ -284,13 +292,11 @@ void CManager::LoadAll(void)
 //=============================================================================
 void CManager::UnLoadAll(void)
 {
-	CScene3D::UnLoad();
 	CBoard::UnLoad();
 	CMeshField::UnLoad();
 	CBg::UnLoad();
 	CLife::Unload();
 	CUi::Unload();
-
 	CCharge::Unload();	
 	C2dExplosion::UnLoad();
 	CBeam::UnLoad();
@@ -299,13 +305,19 @@ void CManager::UnLoadAll(void)
 	CShock::UnLoad();
 	CBomb::UnLoad();
 	CLockon::Unload();
-	CNumber::Unload();
 	CBill::Unload();
 	CUiStart::Unload();
 	CTitlelogo::Unload();
 	CExplosion::UnLoad();
 	CSmoke::UnLoad();
 	CSand::UnLoad();
+	CSplash::UnLoad();
+	CLaser::UnLoad();
+	CMissile::UnLoad();
+	CFire::UnLoad();
+	CBoost::UnLoad();
+	CLockon::Unload();
+	CNumber::Unload();
 	CUiEnd::Unload();
 	
 }

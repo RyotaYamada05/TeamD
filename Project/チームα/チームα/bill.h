@@ -16,9 +16,13 @@
 //=============================================================================
 // マクロ定義
 //=============================================================================
-#define BILL_SIZE_X		(12)			// サイズ
-#define BILL_SIZE_Y		(12)			// サイズ
-#define BILL_SIZE_Z		(12)			// サイズ
+#define BILL_SIZE_X				(12)			// サイズ
+#define BILL_SIZE_Y				(12)			// サイズ
+#define BILL_SIZE_Z				(12)			// サイズ
+
+#define BILL_COLLISION_SIZE_X	(780)			// サイズ
+#define BILL_COLLISION_SIZE_Y	(480)			// サイズ
+#define BILL_COLLISION_SIZE_Z	(780)			// サイズ
 
 //=============================================================================
 // クラス宣言
@@ -37,6 +41,7 @@ public:
 	void Uninit(void);												// 終了処理
 	void Update(void);												// 更新処理
 	void Draw(void);												// 描画処理
+	bool Collision(void);											// 当たり判定
 
 private:
 	D3DXVECTOR3 m_pos;						// 座標
@@ -46,5 +51,6 @@ private:
 	static LPD3DXMESH m_pMesh;				// メッシュ情報へのポインタ
 	static LPD3DXBUFFER m_pBuffMat;			// マテリアル情報へのポインタ
 	static DWORD m_nNumMat;					// マテリアル情報の数
+
 };
 #endif // ! _BILL_H_

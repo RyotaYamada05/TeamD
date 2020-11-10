@@ -16,7 +16,6 @@
 //=============================================================================
 // マクロ定義
 //=============================================================================
-#define EFFECT_LIFE			(7)					// エフェクトの体力
 #define SCALE_DOWN_NUM		(0.003f)			// エフェクトの減算
 
 //=============================================================================
@@ -27,7 +26,7 @@ LPDIRECT3DTEXTURE9 CEffect::m_apTexture[MAX_EFFECT_TEXTURE] = {};
 //=============================================================================
 // インスタンス生成
 //=============================================================================
-CEffect * CEffect::Create(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXVECTOR3 size, D3DXCOLOR col)
+CEffect * CEffect::Create(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXVECTOR3 size, D3DXCOLOR col, int nLife)
 {
 	// インスタンス生成
 	CEffect *pEffect = new CEffect;
@@ -39,6 +38,8 @@ CEffect * CEffect::Create(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXVECTOR3 size, D
 		pEffect->SetMove(move);					// 移動量
 		pEffect->BindTexture(m_apTexture[0]);	// テクスチャ設定
 		pEffect->SetColor(col);					// 色の設定
+		pEffect->m_nLife = nLife;				// ライフ
+		pEffect->m_col = col;
 	}
 
 	return pEffect;
@@ -89,6 +90,7 @@ CEffect::CEffect()
 	m_fScale = 1.0f;
 	m_fScaleNum = 0.0f;
 	m_nLife = 0;
+	m_col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
 //=============================================================================
@@ -107,7 +109,6 @@ HRESULT CEffect::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 	// 初期化処理
 	CBillboard::Init(pos, size);
 	m_Pos = pos;
-	m_nLife = EFFECT_LIFE;
 	m_fScaleNum = SCALE_DOWN_NUM;
 	return S_OK;
 }
@@ -164,10 +165,8 @@ void CEffect::Draw(void)
 
 	D3DMATERIAL9 material;
 	ZeroMemory(&material, sizeof(D3DMATERIAL9));
-	material.Ambient.r = 0.0f;
-	material.Ambient.g = 0.0f;
-	material.Ambient.b = 1.0f;
-	material.Ambient.a = 1.0f;
+	material.Ambient = m_col;
+	material.Diffuse = D3DXCOLOR(0.1f, 0.1f, 0.1f, 1.0f);
 	pDevice->SetMaterial(&material);
 	pDevice->SetRenderState(D3DRS_AMBIENT, 0x44444444);
 

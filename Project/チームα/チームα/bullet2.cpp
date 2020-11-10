@@ -15,15 +15,18 @@
 #include "2d_explosion.h"
 #include "shock.h"
 #include "explosion.h"
+#include "bill.h"
+#include "splash.h"
 
 //=============================================================================
 //マクロ定義
 //=============================================================================
 #define BULLET2_ATK			(20)		// 攻撃力
-#define FOLLOW_TIME_NONE	(50)		// 通常弾の追従タイム
+#define FOLLOW_TIME_NONE	(5)			// 通常弾の追従タイム
 #define FOLLOW_TIME_BOMB	(50)		// ボムの追従タイム
 
 //=============================================================================
+
 // コンストラクタ
 //=============================================================================
 CBullet2::CBullet2()
@@ -136,30 +139,30 @@ void CBullet2::Update(void)
 	m_pos = GetPos();
 	m_nCounter++;
 
-		switch (m_type)
+	switch (m_type)
+	{
+	case BULLET2_TYPE_NONE:
+		// 通常の場合
+		if (m_nCounter <= FOLLOW_TIME_NONE)
 		{
-		case BULLET2_TYPE_NONE:
-			// 通常の場合
-			if (m_nCounter <= FOLLOW_TIME_NONE)
-			{
-				//移動量の計算
-				m_move = VectorMath(m_pTargetPL->GetPos(), m_fSpeed);
-			}
-			break;
+			//移動量の計算
+			m_move = VectorMath(m_pTargetPL->GetPos(), m_fSpeed);
+		}
+		break;
 
-		case BULLET2_TYPE_BOMB:
-			// ボムの時
-			if (m_nCounter <= FOLLOW_TIME_BOMB)
-			{
-				m_move = VectorMath(D3DXVECTOR3(
-					m_pTargetPL->GetPos().x, m_pTargetPL->GetPos().y, m_pTargetPL->GetPos().z),
-					m_fSpeed);
-			}
+	case BULLET2_TYPE_BOMB:
+		// ボムの時
+		if (m_nCounter <= FOLLOW_TIME_BOMB)
+		{
+			m_move = VectorMath(D3DXVECTOR3(
+				m_pTargetPL->GetPos().x, m_pTargetPL->GetPos().y, m_pTargetPL->GetPos().z),
+				m_fSpeed);
+		}
 
-			// 高さの調整
-			m_move.y = m_fHeight;
-			break;
-		
+		// 高さの調整
+		m_move.y = m_fHeight;
+		break;
+
 	}
 
 	//移動量を位置に与える
@@ -219,10 +222,12 @@ bool CBullet2::Collision(void)
 		//プレイヤークラスへキャスト
 		pPlayer = CGame::GetPlayer(0);
 		break;
+
 	}
 
 	//位置の取得
 	D3DXVECTOR3 targetPos = pPlayer->GetPos();
+
 
 	// 当たり判定
 	if (targetPos.x >= m_pos.x - PLAYER_COLLISION_X / 2 &&
@@ -235,6 +240,7 @@ bool CBullet2::Collision(void)
 		for (int nCount = 0; nCount < LIFE_NUM; nCount++)
 		{
 			//　プレイヤーのライフを減らす
+
 			m_pTargetPL->GetLife(nCount)->Decrease(50, m_user, true);
 
 			// 爆発生成
@@ -249,6 +255,54 @@ bool CBullet2::Collision(void)
 		return true;
 	}
 
+	for (int nCount = 0; nCount < MAX_NUM; nCount++)
+	{
+		CScene *pScene = NULL;
+
+		// 取得
+		pScene = CScene::GetScene(nCount);
+
+		if (pScene != NULL)
+		{
+			// オブジェクトタイプを取得
+			OBJTYPE type = pScene->GetObjType();
+
+			// モデルなら
+			if (type == OBJTYPE_MODEL)
+			{
+				// キャスト
+				CModel *pModel = (CModel*)pScene;
+				CModel::MODEL_TYPE type = pModel->GetType();
+
+				// 建物なら
+				if (type == MODEL_TYPE_OBJECT)
+				{
+					//位置の取得
+					D3DXVECTOR3 targetPos = pModel->GetPos();
+
+					// 当たり判定
+					if (targetPos.x >= m_pos.x - BILL_COLLISION_SIZE_X / 2 &&
+						targetPos.x <= m_pos.x + BILL_COLLISION_SIZE_X / 2 &&
+						targetPos.y >= m_pos.y - BILL_COLLISION_SIZE_Y / 2 &&
+						targetPos.y <= m_pos.y + BILL_COLLISION_SIZE_Y / 2 &&
+						targetPos.z >= m_pos.z - BILL_COLLISION_SIZE_Z / 2 &&
+						targetPos.z <= m_pos.z + BILL_COLLISION_SIZE_Z / 2)
+					{
+						for (int nCount = 0; nCount < LIFE_NUM; nCount++)
+						{
+							// 爆発生成
+							CSplash::Create(m_pos,
+								D3DXVECTOR3(EXPLOSION_SIZE_X_2D, EXPLOSION_SIZE_Y_2D, EXPLOSION_SIZE_Z_2D));
+						}
+
+						m_nLife = 0;
+						return true;
+					}
+				}
+			}
+
+		}
+	}
 	return false;
 }
 

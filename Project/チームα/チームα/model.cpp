@@ -259,3 +259,13 @@ LPD3DXBUFFER CModel::GetBuffMat(void)
 {
 	return m_pBuffMat;
 }
+
+CModel::MODEL_TYPE CModel::GetType(void)
+{
+	return m_type;
+}
+
+D3DXMATRIX CModel::GetMtxWorld(void)
+{
+	return m_mtxWorld;
+}

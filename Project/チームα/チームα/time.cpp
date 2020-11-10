@@ -92,6 +92,7 @@ void CTime::Uninit(void)
 	// ƒŠƒŠ[ƒX
 	Release();
 
+
 	
 }
 
@@ -114,6 +115,7 @@ void CTime::Update(void)
 		}
 	}
 
+
 	// ‚Ç‚¿‚ç‚àŽ€‚ñ‚Å‚¢‚È‚¢‚È‚ç
 	if (state[0] != CPlayer::PLAYER_STATE_EXPLOSION && state[1] != CPlayer::PLAYER_STATE_EXPLOSION)
 	{
@@ -121,6 +123,7 @@ void CTime::Update(void)
 		{
 			m_apNumber[nCount]->Update();
 		}
+
 
 		m_nTimeCount++;
 

@@ -20,6 +20,7 @@
 //================================================
 LPDIRECT3DTEXTURE9 CUi::m_apTexture[UI_TYPE] = {};
 int CUi::m_nUi = 0;
+
 //================================================
 //クリエイト処理
 //================================================
@@ -89,8 +90,10 @@ HRESULT CUi::Load(void)
 		"Data/TEXTURE/Lockon001.png", //ファイルの読み込み
 		&m_apTexture[UITYPE_STANDARD]);
 
+
 	//CONTINUE
 	D3DXCreateTextureFromFile(pDevice,
+
 		"Data/TEXTURE/continue.png", //ファイルの読み込み
 		&m_apTexture[UYTYPE_CONTINUE]);
 
@@ -223,7 +226,7 @@ void CUi::UiHit(void)
 		else if (m_nCounter == 5)
 		{
 			col.a = 0.0f;
-			m_nCounter = 0;
+			m_nCounter = 0.0f;
 		}
 
 		if (m_nPattern == 30)

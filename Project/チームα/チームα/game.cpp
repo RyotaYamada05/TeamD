@@ -29,6 +29,9 @@
 #include "charge.h"
 #include "bill.h"
 #include "uistart.h"
+#include "fire.h"
+#include "bill.h"
+#include "uistart.h"
 #include "continue.h"
 #include "uiend.h"
 #include "sound.h"
@@ -43,6 +46,7 @@ CBg *CGame::m_pBg = NULL;							// 背景のポインタ
 CPlayer *CGame::m_apPlayer[MAX_PLAYER] = {};		// プレイヤーのポインタ
 CTime *CGame::m_pTime = NULL;						// タイムのポインタ
 CUi *CGame::m_pUi = NULL;							// uiのポインタ
+
 CUiStart *CGame::m_pUiStart = NULL;
 CLockon *CGame::m_pLockon = NULL;
 CBill *CGame::m_pBill = NULL;
@@ -104,9 +108,7 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 	//ui
 	if (m_pUi == NULL)
 	{
-		//UIライフゲージ(外枠)の生成
-
-
+		//UIライフゲージ(外枠)の生成		
 		m_pUi = CUi::Create(D3DXVECTOR3(330.0f, 30.0f, 0.0f), D3DXVECTOR3(UI_LIFE_SIZE_X / 2, UI_LIFE_SIZE_PLAYERY, 0.0f), CUi::UITTYPE_LIFE);
 		m_pUi = CUi::Create(D3DXVECTOR3(1060.0f, 30.0f, 0.0f), D3DXVECTOR3(UI_LIFE_SIZE_X / 2, UI_LIFE_SIZE_PLAYERY, 0.0f), CUi::UITTYPE_LIFE);
 
@@ -127,6 +129,7 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 		m_pUi = CUi::Create(D3DXVECTOR3(805.0f, 65.0f, 0.0f), D3DXVECTOR3(UI_ENEMY_SIZE_X, UI_ENEMY_SIZE_Y, 0.0f), CUi::UITYPE_ENEMY);
 
 		//標準生成
+
 		
 		m_pUi = CUi::Create(D3DXVECTOR3(UI_LOCKON_POS_LEFT_X, UI_LOCKON_POS_Y, 0.0f), D3DXVECTOR3(UI_LOCKON_SIZE_SMALL_X, UI_LOCKON_SIZE_SMALL_Y, 0.0f), CUi::UITYPE_STANDARD);
 		m_pUi = CUi::Create(D3DXVECTOR3(UI_LOCKON_POS_RIGHT_X, UI_LOCKON_POS_Y, 0.0f), D3DXVECTOR3(UI_LOCKON_SIZE_SMALL_X, UI_LOCKON_SIZE_SMALL_Y, 0.0f), CUi::UITYPE_STANDARD);
@@ -153,6 +156,7 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 	// プレイヤーの生成
 	if (m_apPlayer[0] == NULL)
 	{
+	
 		m_apPlayer[0] = CPlayer::Create(D3DXVECTOR3(0.0f, 50.0f, -500.0f), D3DXVECTOR3(PLAYER_SIZE_X, PLAYER_SIZE_Y, PLAYER_SIZE_Z));
 	}
 	if (m_apPlayer[1] == NULL)
@@ -176,7 +180,6 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 	{
 		m_pMeshField = CMeshField::Create();
 	}
-
 	CMeshShape::Load();
 	//// メッシュスフィア
 	//if (m_pSphere == NULL)
@@ -189,7 +192,6 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 	{
 		m_pBg = CBg::Create();
 	}
-
 
 	//タイム
 	if (m_pTime == NULL)
@@ -226,7 +228,7 @@ void CGame::Uninit(void)
 	{
 		if (m_apCamera[nCount] != NULL)
 		{
-			//カメラクラスの終了処理呼び出し
+			//カメラクラスの終了処理呼び出
 			m_apCamera[nCount]->Uninit();
 
 			//メモリの破棄
@@ -243,6 +245,7 @@ void CGame::Uninit(void)
 	{
 		m_pMeshField->Uninit();
 	}
+
 
 	//CMeshShape::UnLoad();
 	//// メッシュスフィア
@@ -274,9 +277,11 @@ void CGame::Update(void)
 	for (int nCount = 0; nCount < MAX_PLAYER; nCount++)
 	{
 
+
 		if (m_apCamera[nCount] != NULL)
 		{
 			//カメラクラスの更新処理
+		
 		
 			m_apCamera[nCount]->Update();
 		}
@@ -288,11 +293,18 @@ void CGame::Update(void)
 		m_pMeshField->Update();
 	}
 
-	//// メッシュスフィア
-	//if (m_pSphere != NULL)
-	//{
-	//	m_pSphere->Update();
-	//}
+	// メッシュスフィア
+	if (m_pSphere != NULL)
+	{
+		m_pSphere->Update();
+	}
+
+	for (int nCount = 0; nCount < FIRE_NUM; nCount++)
+	{
+		// 炎の生成
+		CFire::Create(D3DXVECTOR3(0.0f, 50.0f, 0.0f),
+			D3DXVECTOR3(FIRE_SIZE_X, FIRE_SIZE_Y, 0.0f), FIRE_LIFE);
+	}
 
 	CManager::GetConection()->Update();
 }
@@ -361,6 +373,7 @@ CUi * CGame::GetUi(void)
 {
 	return m_pUi;
 }
+
 
 //=======================================================================================
 // uistartの情報

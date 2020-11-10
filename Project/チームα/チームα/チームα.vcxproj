@@ -157,6 +157,7 @@
     <ClCompile Include="billboard.cpp" />
     <ClCompile Include="board.cpp" />
     <ClCompile Include="bomb.cpp" />
+    <ClCompile Include="boost.cpp" />
     <ClCompile Include="bullet.cpp" />
     <ClCompile Include="bullet2.cpp" />
     <ClCompile Include="camera.cpp" />
@@ -166,17 +167,20 @@
     <ClCompile Include="effect.cpp" />
     <ClCompile Include="explosion.cpp" />
     <ClCompile Include="fade.cpp" />
+    <ClCompile Include="fire.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="gauge.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="joypad.cpp" />
     <ClCompile Include="keyboard.cpp" />
+    <ClCompile Include="laser.cpp" />
     <ClCompile Include="life.cpp" />
-    <ClCompile Include="light.cpp" />
-    <ClCompile Include="lockon.cpp" />
+    <ClCompile Include="light.cpp" />    <ClCompile Include="lockon.cpp" />
+    <ClCompile Include="locus.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="manager.cpp" />
     <ClCompile Include="meshfield.cpp" />
+    <ClCompile Include="missile.cpp" />
     <ClCompile Include="model.cpp" />
     <ClCompile Include="modelanime.cpp" />
     <ClCompile Include="number.cpp" />
@@ -194,6 +198,7 @@
     <ClCompile Include="shock.cpp" />
     <ClCompile Include="smoke.cpp" />
     <ClCompile Include="sound.cpp" />
+    <ClCompile Include="splash.cpp" />
     <ClCompile Include="tcp_client.cpp" />
     <ClCompile Include="time.cpp" />
     <ClCompile Include="title.cpp" />
@@ -211,6 +216,7 @@
     <ClInclude Include="billboard.h" />
     <ClInclude Include="board.h" />
     <ClInclude Include="bomb.h" />
+    <ClInclude Include="boost.h" />
     <ClInclude Include="bullet.h" />
     <ClInclude Include="bullet2.h" />
     <ClInclude Include="camera.h" />
@@ -220,17 +226,20 @@
     <ClInclude Include="effect.h" />
     <ClInclude Include="explosion.h" />
     <ClInclude Include="fade.h" />
+    <ClInclude Include="fire.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="gauge.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="joypad.h" />
     <ClInclude Include="keyboard.h" />
+    <ClInclude Include="laser.h" />
     <ClInclude Include="life.h" />
-    <ClInclude Include="light.h" />
-    <ClInclude Include="lockon.h" />
+    <ClInclude Include="light.h" />    <ClInclude Include="lockon.h" />
+    <ClInclude Include="locus.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="manager.h" />
     <ClInclude Include="meshfield.h" />
+    <ClInclude Include="missile.h" />
     <ClInclude Include="model.h" />
     <ClInclude Include="modelanime.h" />
     <ClInclude Include="number.h" />
@@ -246,8 +255,9 @@
     <ClInclude Include="shader.h" />
     <ClInclude Include="shape.h" />
     <ClInclude Include="shock.h" />
-    <ClInclude Include="smoke.h" />
     <ClInclude Include="sound.h" />
+    <ClInclude Include="smoke.h" />
+    <ClInclude Include="splash.h" />
     <ClInclude Include="tcp_client.h" />
     <ClInclude Include="time.h" />
     <ClInclude Include="title.h" />

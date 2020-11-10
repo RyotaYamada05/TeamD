@@ -66,6 +66,7 @@ public:
 		UYTYPE_CONTINUE,	// CONTINUE文字
 		UITYPE_MAX
 	}UITYPE;
+
 	CUi();
 	~CUi();
 
@@ -81,7 +82,6 @@ public:
 
 private:
 	static LPDIRECT3DTEXTURE9 m_apTexture[UI_TYPE];
-
 	D3DXVECTOR3	m_pos;		// ポリゴンの位置
 	D3DXVECTOR3 m_move;		// ポリゴンの移動量
 	D3DXVECTOR3 m_size;		// ポリゴンのサイズ

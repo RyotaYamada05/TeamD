@@ -62,6 +62,7 @@ public:
 	void Draw(void);
 
 private:
+
 	
 	static CCamera *m_apCamera[MAX_PLAYER];		// カメラのポインタ	
 	static CLight *m_pLight;					// ライトのポインタ

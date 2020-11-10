@@ -20,6 +20,7 @@
 #include "titlelogo.h"
 #include "sound.h"
 #include "joypad.h"
+
 //=======================================================================================
 //静的メンバ変数宣言
 //=======================================================================================
@@ -144,6 +145,7 @@ void CTitle::Update(void)
 		pFade->SetFade(CManager::MODE_TYPE_TUTORIAL);
 		pSound->Play(CSound::SOUND_LABEL_SE_START);
 	}
+
 
 	//エンターキーを押したとき
 	/*if (pKey->GetTrigger(DIK_RETURN) && mode == CFade::FADE_MODE_NONE)
