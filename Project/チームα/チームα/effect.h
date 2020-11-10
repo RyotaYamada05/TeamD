@@ -20,6 +20,12 @@
 #define EFFECT_SIZE_Y			(70)	// サイズ
 #define MAX_EFFECT_TEXTURE		(1)		// テクスチャ数
 
+#define EFFECT_LASER_SIZE_X		(250)	// サイズ
+#define EFFECT_LASER_SIZE_Y		(250)	// サイズ
+
+#define EFFECT_LIFE				(7)		// エフェクトの体力
+#define EFFECT_LASER_LIFE		(20)	// エフェクトの体力
+
 //=============================================================================
 // 前方宣言
 //=============================================================================
@@ -41,7 +47,8 @@ public:
 	void Draw(void);												// 描画処理
 
 	static CEffect * Create(										// ポリゴン生成
-		D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXVECTOR3 size, D3DXCOLOR col);
+		D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXVECTOR3 size,
+		D3DXCOLOR col, int nLife);
 
 	void SetMove(D3DXVECTOR3 move);									// 移動量設定
 	static HRESULT Load(void);										// テクスチャロード
@@ -56,7 +63,8 @@ private:
 	bool m_bScaleDown;												// 拡大終わりフラグ
 	float m_fScale;													// スケール
 	float m_fScaleNum;												// スケールの値
-	int m_nLife;														// ライフ
+	int m_nLife;													// ライフ
+	D3DXCOLOR m_col;												// カラー
 };
 
 #endif

@@ -25,11 +25,14 @@
 class CCamera;
 class CLight;
 class CMeshField;
+class CMeshShape;
 class CBg;
 class CPlayer;
 class CTime;
 class CUi;
-
+class CUiStart;
+class CLockon;
+class CBill;
 //***************************************************************************************
 // インクルードファイル
 //***************************************************************************************
@@ -43,7 +46,11 @@ public:
 	static CLight *GetLight(void);
 	static CPlayer *GetPlayer(int nCount);
 	static CTime *GetTime(void);
+	static CMeshShape*GetSphere();
 	static CUi *GetUi(void);
+	static CUiStart *GetUiStart(void);
+	static CLockon *GetLockon(void);
+	static CBill *GetBill(void);
 
 	HRESULT Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size);
 	void Uninit(void);
@@ -51,14 +58,18 @@ public:
 	void Draw(void);
 
 private:
-
-	static CCamera *m_apCamera[MAX_PLAYER];		// カメラのポインタ
+	
+	static CCamera *m_apCamera[MAX_PLAYER];		// カメラのポインタ	
 	static CLight *m_pLight;					// ライトのポインタ
 	static CMeshField *m_pMeshField;			// メッシュフィールドのポインタ
+	static CMeshShape * m_pSphere;					// メッシュスフィアのポインタ
 	static CBg *m_pBg;							// 背景のポインタ
 	static CPlayer *m_apPlayer[MAX_PLAYER];		// プレイヤーのポインタ
 	static CTime *m_pTime;						// タイムのポインタ
 	static CUi *m_pUi;							// uiのポインタ
+	static CUiStart *m_pUiStart;
+	static CLockon *m_pLockon;					// ロックオンのポインタ
+	static CBill *m_pBill;						// ビルのポインタ
 	LPD3DXFONT m_pFont;
 };
 #endif

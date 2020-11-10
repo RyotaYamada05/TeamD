@@ -15,7 +15,7 @@
 //静的メンバ変数宣言
 //================================================
 LPDIRECT3DTEXTURE9 CLife::m_apTexture[LIFETYPE_PLAYER_MAX] = {};
-
+bool CLife::m_bStart = true;
 //================================================
 //クリエイト処理
 //================================================
@@ -79,7 +79,7 @@ CLife::CLife()
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);		//カラー
 	m_type = LIFETYPE_NONE;		//タイプ
-
+	m_bEnd= false;
 }
 
 //================================================
@@ -131,10 +131,13 @@ void CLife::Update(void)
 {
 	CGauge::Update();
 
+	//ライフの最初の動き
+	LifeStart();
 	//ライフを減らす
 	Lifereduce();
 	//ライフが半分になると点滅させる
 	LifeFlashing();
+	
 }
 
 //================================================
@@ -155,12 +158,12 @@ void CLife::Decrease(int Reduce, int PlayerNamber, bool Life)
 	m_nPlayerNum = PlayerNamber;
 
 	//２Ｐに弾があたったら１Ｐの場所にＨＩＴの文字を出す
-	if (m_nPlayerNum == 1)
+	if (m_nPlayerNum == 0)
 	{
 		CUi::Create(D3DXVECTOR3(UI_HIT_POS_LEFT_X, 600.0f, 0.0f), D3DXVECTOR3(UI_HIT_SIZE_X, UI_HIT_SIZE_Y, 0.0f), CUi::UITYPE_HIT);
 	}
 	//１Ｐに弾があたったら２Ｐの場所にＨＩＴの文字を出す
-	if (m_nPlayerNum == 0)
+	if (m_nPlayerNum == 1)
 	{
 		CUi::Create(D3DXVECTOR3(UI_HIT_POS_RIGHT_X, 600.0f, 0.0f), D3DXVECTOR3(UI_HIT_SIZE_X, UI_HIT_SIZE_Y, 0.0f), CUi::UITYPE_HIT);
 	}
@@ -216,6 +219,7 @@ void CLife::Lifereduce(void)
 		}
 	}
 
+
 	//サイズの設定
 	SetSize(size);
 	//色の設定
@@ -255,3 +259,33 @@ void CLife::LifeFlashing(void)
 	SetCol(col);
 }
 
+//================================================
+//ゲームスタート時のライフの動き
+//================================================
+void CLife::LifeStart(void)
+{
+	//サイズの取得
+	D3DXVECTOR3 size = GetSize();
+
+	if (size.x < MAX_LIFE)
+	{
+		if (m_bStart == true)
+		{
+			size.x += 2;
+		}
+	}
+	else
+	{
+		m_bStart = false;
+	}
+	//サイズの設定
+	SetSize(size);
+}
+
+//================================================
+//READYの使用してるかしてないかの取得
+//================================================
+bool CLife::GetReadey(void)
+{
+	return m_bStart;
+}

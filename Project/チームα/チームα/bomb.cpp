@@ -13,11 +13,12 @@
 #include "renderer.h"
 #include "effect.h"
 #include "shock.h"
+#include "explosion.h"
 
 //=================================================================================
 // マクロ定義
 //=================================================================================
-#define BOMB_LIFE			(60)			// ボムのライフ
+#define BOMB_LIFE			(170)			// ボムのライフ
 #define BOMB_GRAVITY_POWAR	(0.2f)			// ボムの重力
 
 //=================================================================================
@@ -40,8 +41,8 @@ CBomb * CBomb::Create(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXVECTOR3 size, BULLE
 	{
 		// 初期化処理
 		pBomb->Init(pos, size, user);		// 初期化情報
-		pBomb->SetMove(move);					// 移動量
-		pBomb->SetLife(BOMB_LIFE);				// ライフの情報
+		pBomb->SetMove(move);				// 移動量
+		pBomb->SetLife(BOMB_LIFE);			// ライフの情報
 	}
 
 	return pBomb;
@@ -78,9 +79,10 @@ HRESULT CBomb::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size, BULLET2_USER user)
 	BindTexture(m_apTexture[0]);
 
 	// 初期化処理
-	CBullet2::Init(pos, size, user);		// 初期化情報
-	SetRot(D3DXVECTOR3(0.0f, 0.0f, 0.0f));	// 向き
-
+	CBullet2::Init(pos, size, user, BOMB_SPEED);	// 初期化情報
+	SetRot(D3DXVECTOR3(0.0f, 0.0f, 0.0f));			// 向き
+	SetType(BULLET2_TYPE_BOMB);						// タイプの設定
+	SetHeight(4.0f);
 	return S_OK;
 }
 
@@ -89,6 +91,12 @@ HRESULT CBomb::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size, BULLET2_USER user)
 //=================================================================================
 void CBomb::Uninit(void)
 {
+	// 座標受け取り
+	D3DXVECTOR3 pos = GetPos();
+
+	//CExplosion::Create(pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), 
+	//	D3DXVECTOR3(EXPLOSION_SIZE_X, EXPLOSION_SIZE_Y, EXPLOSION_SIZE_Z));
+
 	// 終了処理
 	CBullet2::Uninit();
 }
@@ -104,29 +112,23 @@ void CBomb::Update(void)
 	// 回転
 	AddRot();
 
+	// 高さの情報を受け取る
+	float fHeight = GetHeight();
+
 	// 座標を受け取る
 	D3DXVECTOR3 pos = GetPos();
 
-	// エフェクト生成
-	//CEffect::Create(pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f),
-	//	D3DXVECTOR3(EFFECT_SIZE_X, EFFECT_SIZE_Y, 0.0f), D3DXCOLOR(0.3f, 0.3f, 1.0f, 1.0f));
-
-	// 移動量を受け取る
-	D3DXVECTOR3 move = GetMove();
-
 	// 座標が地面より上なら
-	if (pos.y > 20.0f)
+	if (pos.y > 15.0f)
 	{
-
 		// 重力を加算
-		SetMove(D3DXVECTOR3(move.x, move.y - BOMB_GRAVITY_POWAR, move.z));
+		SetHeight(fHeight -BOMB_GRAVITY_POWAR);
 	}
 	else
 	{
-		SetMove(D3DXVECTOR3(move.x, 0.0f, move.z));
+		// 移動量加算
+		SetHeight(0.0f);
 	}
-
-
 }
 
 //=================================================================================
@@ -169,7 +171,6 @@ void CBomb::AddRot(void)
 	// 角度を渡す
 	SetRot(rot);
 }
-
 
 //=================================================================================
 // テクスチャロード

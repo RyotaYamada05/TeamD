@@ -31,7 +31,7 @@ public:
 	void SetPolygonSize(const D3DXVECTOR3 nSize) { m_PolygonSize = nSize; }
 	void SetCol(D3DXCOLOR col);
 	void SetAnim(int PatternAnim, float Countea);
-
+	void SetRotation(float rotasion);
 	D3DXVECTOR3 GetPos(void)const { return m_pos; }
 	D3DXVECTOR3 GetSize(void)const { return m_PolygonSize; }
 
@@ -46,6 +46,8 @@ private:
 	D3DXVECTOR3 m_PolygonSize;				// ポリゴンのサイズ
 	D3DXCOLOR   m_col;						// ポリゴンのカラー	
 	D3DXVECTOR2 m_tex;						// テクスチャー設定
+
+	float m_fRotasion;
 };
 
 #endif // !_SCENE2D_H_

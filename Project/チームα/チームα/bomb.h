@@ -19,7 +19,7 @@
 #define BOMB_SIZE_X				(3)		// ボムのサイズ
 #define BOMB_SIZE_Y				(3)		// ボムのサイズ
 #define BOMB_SIZE_Z				(3)		// ボムのサイズ
-#define BOMB_SPEED				(25)	// ボムのスピード
+#define BOMB_SPEED				(30)	// ボムのスピード
 #define BOMB_MOVE_Y				(4.0f)	// ボムのスピード
 #define MAX_BOMB_TEXTURE		(1)		// テクスチャの数
 

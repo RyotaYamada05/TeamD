@@ -77,7 +77,7 @@ HRESULT CBeam::Init(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXVECTOR3 size, BULLET2
 	BindTexture(m_apTexture[0]);
 
 	// 初期化処理
-	CBullet2::Init(pos, size, user);		// 初期化情報
+	CBullet2::Init(pos, size, user, BEAM_SPEED);		// 初期化情報
 	SetRot(D3DXVECTOR3(0.0f, 0.0f, 0.0f));	// 向き
 
 	return S_OK;
@@ -104,7 +104,7 @@ void CBeam::Update(void)
 
 	// エフェクト生成
 	CEffect::Create(pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), 
-		D3DXVECTOR3(EFFECT_SIZE_X, EFFECT_SIZE_Y, 0.0f), D3DXCOLOR(0.3f, 0.3f, 1.0f, 1.0f));
+		D3DXVECTOR3(EFFECT_SIZE_X, EFFECT_SIZE_Y, 0.0f), D3DXCOLOR(0.3f, 0.3f, 1.0f, 1.0f), EFFECT_LIFE);
 }
 
 //=================================================================================

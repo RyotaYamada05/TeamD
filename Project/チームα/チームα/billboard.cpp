@@ -12,7 +12,6 @@
 #include "manager.h"
 #include "renderer.h"
 
-
 //=====================================================
 // コンストラクタ
 //=====================================================
@@ -21,6 +20,7 @@ CBillboard::CBillboard()
 	m_Pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 位置情報
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 移動量
 	m_size = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// サイズ
+	m_sizeBase = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// ベースのサイズ
 	m_Dir = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 方向7
 	m_pVtxBuff = NULL;							// 頂点バッファへのポインタ
 	m_pTexture = NULL;							// ポリゴンのテクスチャ
@@ -60,6 +60,7 @@ HRESULT CBillboard::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 
 	m_Pos = pos;
 	m_size = size;
+	m_sizeBase = size;
 
 	//頂点バッファをロック
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
@@ -129,20 +130,28 @@ void CBillboard::Draw(void)
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 //
 	//計算用のマトリクス
-	D3DXMATRIX mtxRot, mtxTrans;
+	D3DXMATRIX mtxRot, mtxTrans, mtxScale;
 	DWORD ambient;
 
 	//現在アンビエント情報を保存
 	pDevice->GetRenderState(D3DRS_AMBIENT, &ambient);
 
-	pDevice->SetRenderState(D3DRS_AMBIENT, 0xff030303);   // 世の中をちょっと白く照らす	//ライティングをOFFにする
+	pDevice->SetRenderState(D3DRS_AMBIENT, 0xff030303);   // ちょっと白く照らす	//ライティングをOFFにする
 	pDevice->SetRenderState(D3DRS_AMBIENT, ambient);
 
 	//pDevice->SetRenderState(D3DRS_AMBIENT, 0xffffffff);
-	pDevice->LightEnable(0, TRUE);
+	//pDevice->LightEnable(0, TRUE);
 
 	//ワールドマトリクスの初期化
 	D3DXMatrixIdentity(&m_mtxWorld);
+
+	// サイズを反映
+	D3DXMatrixScaling(&mtxScale,
+		m_size.x / m_sizeBase.x,
+		m_size.y / m_sizeBase.y,
+		0.0f);
+
+	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxScale);
 
 	// 回転の逆行列の生成
 	pDevice->GetTransform(D3DTS_VIEW, &mtxRot);
@@ -305,6 +314,11 @@ void CBillboard::SetMove(D3DXVECTOR3 move)
 void CBillboard::SetSize(D3DXVECTOR3 size)
 {
 	m_size = size;
+}
+
+void CBillboard::SetSizeBase(D3DXVECTOR3 sizeBase)
+{
+	m_sizeBase = sizeBase;
 }
 
 //=====================================================

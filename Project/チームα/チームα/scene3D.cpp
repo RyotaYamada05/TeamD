@@ -11,13 +11,13 @@
 //=============================================================================
 //静的メンバ変数宣言
 //=============================================================================
-LPDIRECT3DTEXTURE9 CScene3D::m_pTexture = NULL;
 
 //=============================================================================
 //3Dポリゴンクラスのコンストラクタ
 //=============================================================================
 CScene3D::CScene3D()
 {
+	m_pTexture = NULL;
 	m_pVtxBuff = NULL;
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -54,34 +54,6 @@ CScene3D * CScene3D::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 
 	return pScene3D;
 }
-//=============================================================================
-//3Dポリゴンクラスのテクスチャロード処理
-//=============================================================================
-HRESULT CScene3D::Load(void)
-{
-	//デバイスの取得
-	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
-
-	//テクスチャの読み込み
-	D3DXCreateTextureFromFile(pDevice, "data/Texture/board000.png", &m_pTexture);
-	
-	return S_OK;
-}
-
-//=============================================================================
-//3Dポリゴンクラスのテクスチャ破棄処理
-//=============================================================================
-void CScene3D::UnLoad(void)
-{
-	//テクスチャの破棄
-	if (m_pTexture != NULL)
-	{
-		m_pTexture->Release();
-		m_pTexture = NULL;
-	}
-}
-
-
 
 //=============================================================================
 //3Dポリゴンクラスの初期化処理
@@ -108,10 +80,10 @@ HRESULT CScene3D::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 	//頂点座標設定の設定
-	pVtx[0].pos = D3DXVECTOR3(m_pos.x - (size.x / 2), m_pos.y + (size.y / 2), 0.0f);
-	pVtx[1].pos = D3DXVECTOR3(m_pos.x + (size.x / 2), m_pos.y + (size.y / 2), 0.0f);
-	pVtx[2].pos = D3DXVECTOR3(m_pos.x - (size.x / 2), m_pos.y - (size.y / 2), 0.0f);
-	pVtx[3].pos = D3DXVECTOR3(m_pos.x + (size.x / 2), m_pos.y - (size.y / 2), 0.0f);
+	pVtx[0].pos = D3DXVECTOR3(- (size.x / 2), + (size.y / 2), 0.0f);
+	pVtx[1].pos = D3DXVECTOR3(+ (size.x / 2), + (size.y / 2), 0.0f);
+	pVtx[2].pos = D3DXVECTOR3(- (size.x / 2), - (size.y / 2), 0.0f);
+	pVtx[3].pos = D3DXVECTOR3(+ (size.x / 2), - (size.y / 2), 0.0f);
 
 	//各頂点の法線の設定（※ベクトルの大きさは１にする必要がある）
 	pVtx[0].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
@@ -199,8 +171,6 @@ void CScene3D::Draw(void)
 
 	//テクスチャの設定
 	pDevice->SetTexture(0, NULL);
-
-
 }
 
 void CScene3D::SetPos(D3DXVECTOR3 pos)
@@ -219,12 +189,57 @@ void CScene3D::SetPosision(D3DXVECTOR3 pos)
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 	//頂点座標設定の設定
-	pVtx[0].pos = D3DXVECTOR3(m_pos.x - (m_size.x / 2), m_pos.y + (m_size.y / 2), 0.0f);
-	pVtx[1].pos = D3DXVECTOR3(m_pos.x + (m_size.x / 2), m_pos.y + (m_size.y / 2), 0.0f);
-	pVtx[2].pos = D3DXVECTOR3(m_pos.x - (m_size.x / 2), m_pos.y - (m_size.y / 2), 0.0f);
-	pVtx[3].pos = D3DXVECTOR3(m_pos.x + (m_size.x / 2), m_pos.y - (m_size.y / 2), 0.0f);
+	pVtx[0].pos = D3DXVECTOR3(- (m_size.x / 2), + (m_size.y / 2), 0.0f);
+	pVtx[1].pos = D3DXVECTOR3(+ (m_size.x / 2), + (m_size.y / 2), 0.0f);
+	pVtx[2].pos = D3DXVECTOR3(- (m_size.x / 2), - (m_size.y / 2), 0.0f);
+	pVtx[3].pos = D3DXVECTOR3(+ (m_size.x / 2), - (m_size.y / 2), 0.0f);
 
 	// 頂点バッファをアンロックする
 	m_pVtxBuff->Unlock();
+}
 
+//=============================================================================
+// 色の設定
+//=============================================================================
+void CScene3D::SetColor(D3DXCOLOR col)
+{
+	VERTEX_3D*pVtx = NULL;
+
+	//頂点バッファをロック
+	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+
+	for (int nCount = 0; nCount < 4; nCount++)
+	{
+		//頂点カラーの設定（0～255の数値で設定）
+		pVtx[nCount].col = D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f);
+	}
+
+	//頂点バッファのアンロック
+	m_pVtxBuff->Unlock();
+}
+
+//=============================================================================
+// 色の設定
+//=============================================================================
+void CScene3D::SetRot(D3DXVECTOR3 rot)
+{
+	m_rot = rot;
+}
+
+//=============================================================================
+// テクスチャの設定
+//=============================================================================
+void CScene3D::BindTexture(LPDIRECT3DTEXTURE9 pTexture)
+{
+	m_pTexture = pTexture;
+}
+
+LPDIRECT3DVERTEXBUFFER9 CScene3D::GetVtxBuff(void)
+{
+	return m_pVtxBuff;
+}
+
+D3DXVECTOR3 CScene3D::GetPos(void)
+{
+	return m_pos;
 }

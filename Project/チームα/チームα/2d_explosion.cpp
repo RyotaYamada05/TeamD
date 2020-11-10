@@ -1,6 +1,6 @@
 //=====================================================
 //
-// 2D爆発クラスヘッダー [2d_explosion.h]
+// 2D爆発クラスヘッダー [2d_explosion.cpp]
 // Author : Konishi Yuuto
 //
 //=====================================================
@@ -15,8 +15,8 @@
 //=====================================================
 // マクロ定義
 //=====================================================
-#define EXPLOSION_ANIME_SPEED_2D	(5)
-#define EXPLOSION_ANIME_PATTERN_2D	(15)
+#define EXPLOSION_ANIME_SPEED_2D	(3)
+#define EXPLOSION_ANIME_PATTERN_2D	(25)
 
 //=====================================================
 // static初期化s
@@ -147,7 +147,7 @@ HRESULT C2dExplosion::Load(void)
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
 	//テクスチャの読み込み
-	D3DXCreateTextureFromFile(pDevice, "data/Texture/2dExplosion.png", &m_pTexture);
+	D3DXCreateTextureFromFile(pDevice, "data/Texture/2dExplosion001.png", &m_pTexture);
 	return S_OK;
 }
 

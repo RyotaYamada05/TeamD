@@ -29,13 +29,24 @@
 #include "life.h"
 #include "ui.h"
 #include "charge.h"
-
 #include "2d_explosion.h"
 #include "beam.h"
 #include "effect.h"
 #include "particle.h"
 #include "shock.h"
 #include "bomb.h"
+#include "lockon.h"
+#include "explosion.h"
+#include "smoke.h"
+#include "sand.h"
+#include "bill.h"
+#include "uistart.h"
+#include "titlelogo.h"
+#include "splash.h"
+#include "laser.h"
+#include "missile.h"
+#include "fire.h"
+#include "boost.h"
 
 //=============================================================================
 //静的メンバ変数宣言
@@ -94,7 +105,6 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindow)
 		}
 	}
 
-
 	//入力処理クラスのインスタンス生成
 	m_pJoypad = new CInputJoypad;
 
@@ -106,7 +116,6 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindow)
 			return -1;
 		}
 	}
-
 
 	m_pConection = new CConection;
 	if (m_pConection != NULL)
@@ -203,7 +212,6 @@ void CManager::Update(void)
 		m_pJoypad->Update();
 	}
 
-
 	if (m_pRenderer != NULL)
 	{
 		//レンダラークラスの更新処理呼び出し
@@ -215,7 +223,6 @@ void CManager::Update(void)
 		//フェードクラスの更新処理呼び出し
 		m_pFade->Update();
 	}
-
 }
 
 //=============================================================================
@@ -236,12 +243,10 @@ void CManager::Draw(void)
 void CManager::LoadAll(void)
 {
 	CPlayer::LoadModel();
-	CScene3D::Load();
 	CBoard::Load();
 	CTitle::Load();
 	CResult::Load();
 	CMeshField::Load();
-
 	CBg::Load();	
 	CLife::Load();
 	CUi::Load();
@@ -253,6 +258,18 @@ void CManager::LoadAll(void)
 	CParticle::Load();
 	CShock::Load();
 	CBomb::Load();
+	CLockon::Load();
+	CBill::LoadModel();
+	CUiStart::Load();
+	CTitlelogo::Load();
+	CExplosion::Load();
+	CSmoke::Load();
+	CSand::Load();
+	CSplash::Load();
+	CLaser::Load();
+	CMissile::Load();
+	CFire::Load();
+	CBoost::Load();
 }
 
 //=============================================================================
@@ -260,21 +277,33 @@ void CManager::LoadAll(void)
 //=============================================================================
 void CManager::UnLoadAll(void)
 {
-	CScene3D::UnLoad();
 	CBoard::UnLoad();
 	CPlayer::Unload();
 	CMeshField::UnLoad();
 	CBg::UnLoad();
-
 	CLife::Unload();
 	CUi::Unload();
-	CCharge::Unload();
+
+	CCharge::Unload();	
 	C2dExplosion::UnLoad();
 	CBeam::UnLoad();
 	CEffect::UnLoad();
 	CParticle::UnLoad();
 	CShock::UnLoad();
 	CBomb::UnLoad();
+	CLockon::Unload();
+
+	CBill::Unload();
+	CUiStart::Unload();
+	CTitlelogo::Unload();
+	CExplosion::UnLoad();
+	CSmoke::UnLoad();
+	CSand::UnLoad();
+	CSplash::UnLoad();
+	CLaser::UnLoad();
+	CMissile::UnLoad();
+	CFire::UnLoad();
+	CBoost::UnLoad();
 }
 
 //=============================================================================
@@ -341,8 +370,6 @@ void CManager::SetMode(MODE_TYPE mode)
 		{
 			m_pResult = CResult::Create();
 		}
-		break;
-
 
 	default:
 		break;

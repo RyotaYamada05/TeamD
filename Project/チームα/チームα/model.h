@@ -31,6 +31,7 @@ public:
 		MODEL_TYPE_PLAYER1,		// プレイヤー
 		MODEL_TYPE_PLAYER2,		// プレイヤー
 		MODEL_TYPE_BEAM,		// ビーム
+		MODEL_TYPE_OBJECT,		// 建物
 		MODEL_TYPE_MAX
 	}MODEL_TYPE;
 
@@ -50,6 +51,7 @@ public:
 	void BindTexture(LPDIRECT3DTEXTURE9 pTexture);
 
 	LPD3DXMESH GetMesh(void)const;
+	LPD3DXBUFFER GetBuffMat(void)const;	//
 
 	void SetPos(const D3DXVECTOR3 pos);
 	D3DXVECTOR3 GetPos(void)const;
@@ -59,8 +61,9 @@ public:
 	void SetType(MODEL_TYPE Mtype);
 	void SetSize(D3DXVECTOR3 size);
 	D3DXVECTOR3 GetSize(void);
-
 	LPD3DXBUFFER GetBuffMat(void);
+	MODEL_TYPE GetType(void);
+	D3DXMATRIX GetMtxWorld(void);
 private:
 	//=========================================================================
 	//メンバ変数宣言

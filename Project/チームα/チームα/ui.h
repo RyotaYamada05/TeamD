@@ -37,15 +37,14 @@
 #define UI_RESULT_POS_LEFT_X	(320.0f)	// 勝敗文字出すX軸（左側）
 #define UI_RESULT_POS_RIGHT_X	(960.0f)	// 勝敗文字出すX軸（右側）
 #define UI_RESULT_POS_Y			(360.0f)	// 勝敗文字出す場所のY軸
-//LOCKON
-#define UI_LOCKON_SIZE_X		(70.0f)		// ロックオンのXサイズ
-#define UI_LOCKON_SIZE_Y		(70.0f)		// ロックオンのYサイズ
+//標準
+#define UI_LOCKON_SIZE_SMALL_X	(40.0f)		// ロックオンのXサイズ
+#define UI_LOCKON_SIZE_SMALL_Y	(40.0f)		// ロックオンのYサイズ
 #define UI_LOCKON_POS_LEFT_X	(320.0f)	// ロックオンの左側のX軸
 #define UI_LOCKON_POS_RIGHT_X	(960.0f)	// ロックオンの右側のX軸
 #define UI_LOCKON_POS_Y			(360.0f)	// ロックオンのY軸
-
 //種類
-#define UI_TYPE					(11)		// UIの種類の最大数
+#define UI_TYPE					(12)		// UIの種類の最大数
 
 //=============================================================================
 //クラス宣言
@@ -64,7 +63,7 @@ public:
 		UITYPE_WIN,			// WIN文字
 		UITYPE_LOSE,		// LOSE文字
 		UITYPE_STANDARD,	// 標準表示
-		UITYPE_LOCKON,		// ロックオン表示
+		UYTYPE_READY,		// READY文字
 		UITYPE_MAX
 	}UITYPE;
 	CUi();
@@ -79,20 +78,19 @@ public:
 	void Update(void);
 	void Draw(void);
 	void UiHit(void);
-	void UiLockon(void);
 
 private:
 	static LPDIRECT3DTEXTURE9 m_apTexture[UI_TYPE];
 
-	D3DXVECTOR3	m_pos;	// ポリゴンの位置
-	D3DXVECTOR3 m_move;	// ポリゴンの移動量
-	D3DXVECTOR3 m_size;	// ポリゴンのサイズ
-	D3DXCOLOR   m_col;	// カラー
-	UITYPE		m_type;	// ポリゴンのタイプ
-	int m_nCounter;		// カウンター
-	int m_nPattern;		// 使用しているかどうか
-	int m_nLockCounter; // ロックオンカウンター
-	int m_nLockPattern; // ロックオンのパターン
+	D3DXVECTOR3	m_pos;		// ポリゴンの位置
+	D3DXVECTOR3 m_move;		// ポリゴンの移動量
+	D3DXVECTOR3 m_size;		// ポリゴンのサイズ
+	D3DXCOLOR   m_col;		// カラー
+	UITYPE		m_type;		// ポリゴンのタイプ
+	int m_nCounter;			// カウンター
+	int m_nPattern;			// 使用しているかどうか
+	static int m_nUi;
+	
 };
 
 #endif // !_UI_H_

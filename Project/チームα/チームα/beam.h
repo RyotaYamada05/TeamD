@@ -19,7 +19,7 @@
 #define BEAM_SIZE_X				(1)		// ビームのサイズ
 #define BEAM_SIZE_Y				(1)		// ビームのサイズ
 #define BEAM_SIZE_Z				(1)		// ビームのサイズ
-#define BEAM_SPEED				(70)	// ビームのスピード
+#define BEAM_SPEED				(100)	// ビームのスピード
 
 #define MAX_BEAM_TEXTURE		(1)		// テクスチャの数
 
