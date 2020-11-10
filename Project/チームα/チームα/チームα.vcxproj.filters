@@ -151,6 +151,10 @@
     <ClCompile Include="sound.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="tutorial.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+  </ItemGroup>
     <ClCompile Include="modelanime.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>  </ItemGroup>
@@ -308,6 +312,10 @@
     <ClInclude Include="modelanime.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>  </ItemGroup>
+    <ClInclude Include="tutorial.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+  </ItemGroup>
   <ItemGroup>
     <Filter Include="ヘッダー ファイル">
       <UniqueIdentifier>{5f7c35a9-d63c-4672-991f-e3c13372f9a3}</UniqueIdentifier>

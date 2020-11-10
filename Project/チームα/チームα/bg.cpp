@@ -51,7 +51,7 @@ HRESULT CBg::Load(void)
 		&m_apTexture[0]);
 
 	// XÉtÉ@ÉCÉãÇÃì«Ç›çûÇ›
-	D3DXLoadMeshFromX("data/model/dome.x",
+	D3DXLoadMeshFromX("data/model/dome2.x",
 		D3DXMESH_SYSTEMMEM,
 		pDevice,
 		NULL,

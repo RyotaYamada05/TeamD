@@ -337,8 +337,8 @@ void CCamera::NomalUpdate(D3DXVECTOR3 PlayerPos[])
 		m_posVDest.y = m_posR.y + m_fDistance * cosf(m_fƒÆ) + PlayerPos[m_nCameraNum].y - PlayerPos[nCameraSecond].y;
 		m_posVDest.z = m_posR.z + m_fDistance * sinf(m_fƒÆ) * sinf(m_fƒÓ) + PlayerPos[m_nCameraNum].z - PlayerPos[nCameraSecond].z;
 		
-		if (PlayerPos[nCameraSecond].x <= PlayerPos[m_nCameraNum].x + 10 && PlayerPos[m_nCameraNum].x - 10 <= PlayerPos[nCameraSecond].x  &&
-			PlayerPos[nCameraSecond].z <= PlayerPos[m_nCameraNum].z + 10 && PlayerPos[m_nCameraNum].z - 10 <= PlayerPos[nCameraSecond].z)
+		if (PlayerPos[nCameraSecond].x <= PlayerPos[m_nCameraNum].x + 50 && PlayerPos[m_nCameraNum].x - 50 <= PlayerPos[nCameraSecond].x  &&
+			PlayerPos[nCameraSecond].z <= PlayerPos[m_nCameraNum].z + 50 && PlayerPos[m_nCameraNum].z - 50<= PlayerPos[nCameraSecond].z)
 		{
 			m_bTarget = false;
 		}

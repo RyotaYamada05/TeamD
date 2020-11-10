@@ -31,7 +31,7 @@
 #include "uistart.h"
 #include "continue.h"
 #include "uiend.h"
-
+#include "sound.h"
 //=======================================================================================
 // static初期化
 //=======================================================================================
@@ -139,8 +139,8 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 		m_pUiStart = CUiStart::Create(D3DXVECTOR3(UI_READY_POS_LEFT_X, UI_READY_POS_Y, 0.0f), D3DXVECTOR3(UI_READY_SIZE_X, UI_READY_SIZE_Y, 0.0f), CUiStart::UISTARTTYPE_READY);
 		m_pUiStart = CUiStart::Create(D3DXVECTOR3(UI_READY_POS_RIGHT_X, UI_READY_POS_Y, 0.0f), D3DXVECTOR3(UI_READY_SIZE_X, UI_READY_SIZE_Y, 0.0f), CUiStart::UISTARTTYPE_READY);
 		//round文字
-		m_pUiStart = CUiStart::Create(D3DXVECTOR3(UI_ROUND_POS_LEFT_X, UI_ROUND_POS_Y, 0.0f), D3DXVECTOR3(UI_ROUND_SIZE_X, UI_ROUND_SIZE_Y, 0.0f), CUiStart::UISTARTTYPE_ROUND);
-		m_pUiStart = CUiStart::Create(D3DXVECTOR3(UI_ROUND_POS_RIGHT_X, UI_ROUND_POS_Y, 0.0f), D3DXVECTOR3(UI_ROUND_SIZE_X, UI_ROUND_SIZE_Y, 0.0f), CUiStart::UISTARTTYPE_ROUND);
+		m_pUiStart = CUiStart::Create(D3DXVECTOR3(UI_ROUND_POS_LEFT_X, UI_ROUND_POS_Y, 0.0f), D3DXVECTOR3(UI_ROUND_SIZE_X, UI_ROUND_SIZE_Y, 0.0f), CUiStart::UISTARTTYPE_ROUND_1);
+		m_pUiStart = CUiStart::Create(D3DXVECTOR3(UI_ROUND_POS_RIGHT_X, UI_ROUND_POS_Y, 0.0f), D3DXVECTOR3(UI_ROUND_SIZE_X, UI_ROUND_SIZE_Y, 0.0f), CUiStart::UISTARTTYPE_ROUND_1);
 	}
 
 	//最後に出すUI
@@ -178,11 +178,11 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 	}
 
 	CMeshShape::Load();
-	// メッシュスフィア
-	if (m_pSphere == NULL)
-	{
-		m_pSphere = CMeshShape::Create();
-	}
+	//// メッシュスフィア
+	//if (m_pSphere == NULL)
+	//{
+	//	m_pSphere = CMeshShape::Create();
+	//}
 
 	// 背景
 	if (m_pBg == NULL)
@@ -202,6 +202,10 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 	{
 		CContinue::Create(D3DXVECTOR3(CONTINUE_POS_X, CONTINUE_POS_Y, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 	}*/
+
+	//BGM
+	CSound *pSound = CManager::GetSound();
+	pSound->Play(CSound::SOUND_LABEL_BGM_GAME);
 
 	//デバイス情報の取得
 	LPDIRECT3DDEVICE9 pD3DDevice = CManager::GetRenderer()->GetDevice();
@@ -240,18 +244,21 @@ void CGame::Uninit(void)
 		m_pMeshField->Uninit();
 	}
 
-	CMeshShape::UnLoad();
-	// メッシュスフィア
-	if (m_pSphere != NULL)
-	{
-		m_pSphere->Uninit();
-	}
+	//CMeshShape::UnLoad();
+	//// メッシュスフィア
+	//if (m_pSphere != NULL)
+	//{
+	//	m_pSphere->Uninit();
+	//}
 
 	// 背景
 	if (m_pBg != NULL)
 	{
 		m_pBg->Uninit();
 	}
+
+	CSound *pSound = CManager::GetSound();
+	pSound->Stop(CSound::SOUND_LABEL_BGM_GAME);
 
 	CManager::GetConection()->Uninit();
 
@@ -281,11 +288,11 @@ void CGame::Update(void)
 		m_pMeshField->Update();
 	}
 
-	// メッシュスフィア
-	if (m_pSphere != NULL)
-	{
-		m_pSphere->Update();
-	}
+	//// メッシュスフィア
+	//if (m_pSphere != NULL)
+	//{
+	//	m_pSphere->Update();
+	//}
 
 	CManager::GetConection()->Update();
 }
@@ -301,11 +308,11 @@ void CGame::Draw(void)
 		m_pMeshField->Draw();
 	}
 
-	// メッシュスフィア
-	if (m_pSphere != NULL)
-	{
-		m_pSphere->Draw();
-	}
+	//// メッシュスフィア
+	//if (m_pSphere != NULL)
+	//{
+	//	m_pSphere->Draw();
+	//}
 
 	// 背景
 	if (m_pBg != NULL)

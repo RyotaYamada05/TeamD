@@ -42,14 +42,25 @@ HRESULT CUiStart::Load(void)
 	pDevice = CManager::GetRenderer()->GetDevice();
 
 	//テクスチャの読み込み
+	//ready
 	D3DXCreateTextureFromFile(pDevice,
 		"data/Texture/READY.png", //ファイルの読み込み
 		&m_apTexture[UISTARTTYPE_READY]);
 
-	//テクスチャの読み込み
+	//round1
 	D3DXCreateTextureFromFile(pDevice,
 		"data/Texture/ROUND1.png", //ファイルの読み込み
-		&m_apTexture[UISTARTTYPE_ROUND]);
+		&m_apTexture[UISTARTTYPE_ROUND_1]);
+
+	//round2
+	D3DXCreateTextureFromFile(pDevice,
+		"data/Texture/ROUND1.png", //ファイルの読み込み
+		&m_apTexture[UISTARTTYPE_ROUND_2]);
+
+	//round3
+	D3DXCreateTextureFromFile(pDevice,
+		"data/Texture/ROUND1.png", //ファイルの読み込み
+		&m_apTexture[UISTARTTYPE_ROUND_3]);
 
 
 	return S_OK;

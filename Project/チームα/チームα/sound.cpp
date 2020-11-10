@@ -11,13 +11,13 @@
 CSound::PARAM CSound::m_aParam[SOUND_LABEL_MAX] =
 {
 	//BGM
-	{ "data/BGM/.wav", -1 },			// BGM0
-	//{ "00_data/SE/bgm001.wav", -1 },		// BGM1
-	//{ "00_data/SE/result.wav", -1 },		// BGM2
-	//										//SE
-	//{ "00_data/SE/bullet.wav", 0 },		// 弾発射音
-	//{ "00_data/SE/explosion001.wav", 0 },// ヒット音
-	//{ "00_data/SE/explosion.wav", 0 },	// 爆発音
+	{ "data/BGM/title001.wav", -1 },			// タイトルBGM
+	{ "data/BGM/game001.wav", -1 },				// ゲームBGM
+	//{ "data/BGM/game001.wav", -1 },				// BGM2
+	//												//SE
+	{ "data/SE/PressEntre.wav", 0 },				// 弾発射音
+	{ "data/SE/walk.wav", 0 },			// ヒット音
+	//{ "data/SE/PressEntre.wav", 0 },			// 爆発音
 };
 //================================================
 //コンストラクタ

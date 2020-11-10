@@ -45,6 +45,7 @@ public:
 	void Draw(void);
 	void SetFade(CManager::MODE_TYPE mode);
 
+	FADE_MODE GetFade(void);
 private:
 	//=========================================================================
 	//ƒƒ“ƒo•Ï”éŒ¾
