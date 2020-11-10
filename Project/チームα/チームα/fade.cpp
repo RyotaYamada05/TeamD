@@ -153,3 +153,8 @@ void CFade::SetFade(CManager::MODE_TYPE mode)
 	m_modeNext = mode;
 	m_colorFade = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);	//çïÇ¢âÊñ ÅiìßâﬂÅj
 }
+
+CFade::FADE_MODE CFade::GetFade(void)
+{
+	return m_FadeMode;
+}

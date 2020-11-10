@@ -20,6 +20,7 @@ class CInputKeyboard;
 class CConection;
 class CFade;
 class CTitle;
+class CTutorial;
 class CGame;
 class CResult;
 class CInputJoypad;
@@ -37,6 +38,7 @@ public:
 	{
 		MODE_TYPE_NONE = 0, 
 		MODE_TYPE_TITLE,	//タイトルモード
+		MODE_TYPE_TUTORIAL,		//チュートリアル
 		MODE_TYPE_GAME,		//ゲームモード
 		MODE_TYPE_RESULT,	//リザルトモード
 		MODE_TYPE_MAX,
@@ -75,6 +77,7 @@ private:
 	static CConection *m_pConection;
 	static CFade *m_pFade;
 	static CTitle *m_pTitle;
+	static CTutorial *m_pTutorial;
 	static CGame *m_pGame;
 	static CResult *m_pResult;
 	static CInputJoypad *m_pJoypad;

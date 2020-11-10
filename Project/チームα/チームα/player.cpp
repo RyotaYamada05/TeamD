@@ -25,7 +25,7 @@
 #include "2d_explosion.h"
 #include "smoke.h"
 #include "sand.h"
-
+#include "sound.h"
 //=============================================================================
 // マクロ定義
 //=============================================================================
@@ -440,10 +440,12 @@ void CPlayer::Walk(void)
 	// ジョイパッドの取得
 	DIJOYSTATE js = CInputJoypad::GetStick(m_nPlayerNum);
 
+	CSound *pSound = CManager::GetSound();
+	
+
 	if (js.lX != 0.0f || js.lY != 0)
 	{
 		m_fAngle = CGame::GetCamera(m_nPlayerNum)->Getφ();
-
 		if (js.lX < -50.0f)
 		{
 			if (!CGame::GetCamera(m_nPlayerNum)->GetTargetBool())

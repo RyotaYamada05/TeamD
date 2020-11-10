@@ -197,6 +197,7 @@
     <ClCompile Include="time.cpp" />
     <ClCompile Include="title.cpp" />
     <ClCompile Include="titlelogo.cpp" />
+    <ClCompile Include="tutorial.cpp" />
     <ClCompile Include="ui.cpp" />
     <ClCompile Include="uiend.cpp" />
     <ClCompile Include="uistart.cpp" />
@@ -249,6 +250,7 @@
     <ClInclude Include="time.h" />
     <ClInclude Include="title.h" />
     <ClInclude Include="titlelogo.h" />
+    <ClInclude Include="tutorial.h" />
     <ClInclude Include="ui.h" />
     <ClInclude Include="uiend.h" />
     <ClInclude Include="uistart.h" />

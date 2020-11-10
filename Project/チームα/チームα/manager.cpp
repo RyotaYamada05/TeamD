@@ -45,6 +45,7 @@
 #include "titlelogo.h"
 #include "uiend.h"
 #include "sound.h"
+#include "tutorial.h"
 //=============================================================================
 //静的メンバ変数宣言
 //=============================================================================
@@ -54,6 +55,7 @@ CInputKeyboard *CManager::m_pInput = NULL	;//入力処理クラスのポインタ変数
 CConection *CManager::m_pConection = NULL;
 CFade *CManager::m_pFade = NULL;
 CTitle *CManager::m_pTitle = NULL;
+CTutorial *CManager::m_pTutorial = NULL;
 CGame *CManager::m_pGame = NULL;
 CResult *CManager::m_pResult = NULL;
 CInputJoypad *CManager::m_pJoypad = NULL;
@@ -133,7 +135,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindow)
 
 
 	//タイトルクラスのクリエイト
-	m_pTitle = CTitle::Create();
+	//m_pTitle = CTitle::Create();
 
 	//フェードクラスのクリエイト
 	m_pFade = CFade::Create();
@@ -275,6 +277,7 @@ void CManager::LoadAll(void)
 	CSmoke::Load();
 	CSand::Load();
 	CUiEnd::Load();
+	CTutorial::Load();
 }
 
 //=============================================================================
@@ -306,6 +309,7 @@ void CManager::UnLoadAll(void)
 	CSmoke::UnLoad();
 	CSand::UnLoad();
 	CUiEnd::Unload();
+	
 }
 
 //=============================================================================
@@ -322,6 +326,15 @@ void CManager::SetMode(MODE_TYPE mode)
 			m_pTitle->Uninit();
 
 			m_pTitle = NULL;
+		}
+		break;
+
+	case MODE_TYPE_TUTORIAL:
+		if (m_pTutorial != NULL)
+		{
+			m_pTutorial->Uninit();
+
+			m_pTutorial = NULL;
 		}
 		break;
 
@@ -357,6 +370,14 @@ void CManager::SetMode(MODE_TYPE mode)
 			m_pTitle = CTitle::Create();
 		}
 		
+		break;
+
+	case MODE_TYPE_TUTORIAL:
+		if (m_pTutorial == NULL)
+		{
+			m_pTutorial = CTutorial::Create();
+		}
+
 		break;
 
 	case MODE_TYPE_GAME:

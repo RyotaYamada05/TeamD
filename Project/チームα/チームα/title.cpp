@@ -19,7 +19,7 @@
 #include "fade.h"
 #include "titlelogo.h"
 #include "sound.h"
-
+#include "joypad.h"
 //=======================================================================================
 //静的メンバ変数宣言
 //=======================================================================================
@@ -95,6 +95,9 @@ HRESULT CTitle::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 		m_apTitlelogo[2] = CTitlelogo::Create(D3DXVECTOR3(TITLE_POS_X, TITLE_POS_Y, 0.0f), D3DXVECTOR3(TITLE_SIZE_X, TITLE_SIZE_Y, 0.0f), CTitlelogo::LOGOTIPE_TITLE);
 	}
 
+	CSound *pSound = CManager::GetSound();
+	pSound->Play(CSound::SOUND_LABEL_BGM_TITLE);
+
 	return S_OK;
 }
 
@@ -116,7 +119,10 @@ void CTitle::Uninit(void)
 		m_pScene->Uninit();
 	}
 
-	
+	//BGMを止める処理
+	CSound *pSound = CManager::GetSound();
+	pSound->Stop(CSound::SOUND_LABEL_BGM_TITLE);
+
 	//オブジェクトの破棄
 	Release();
 }
@@ -127,13 +133,24 @@ void CTitle::Uninit(void)
 void CTitle::Update(void)
 {
 	CInputKeyboard* pKey = CManager::GetKeyboard();
-
-
-	if (pKey->GetTrigger(DIK_RETURN))
+	CFade::FADE_MODE mode = CManager::GetFade()->GetFade();
+	CSound *pSound = CManager::GetSound();
+	
+	// コントローラのstartを押したときか、エンターキーを押したとき
+	if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_START, 0) && mode == CFade::FADE_MODE_NONE 
+		|| pKey->GetTrigger(DIK_RETURN) && mode == CFade::FADE_MODE_NONE)
 	{
 		CFade *pFade = CManager::GetFade();
-		pFade->SetFade(CManager::MODE_TYPE_GAME);
+		pFade->SetFade(CManager::MODE_TYPE_TUTORIAL);
+		pSound->Play(CSound::SOUND_LABEL_SE_START);
 	}
+
+	//エンターキーを押したとき
+	/*if (pKey->GetTrigger(DIK_RETURN) && mode == CFade::FADE_MODE_NONE)
+	{
+		CFade *pFade = CManager::GetFade();
+		pFade->SetFade(CManager::MODE_TYPE_TUTORIAL);
+	}*/
 }
 
 //=======================================================================================
