@@ -19,7 +19,6 @@
 #define LIFE_NUM			(2)			// 表示するライフの数
 #define MAX_PARTS			(10)		// パーツの数
 #define MOTION_KEYSET_MAX	(32)		// キーセット最大数
-
 #define PLAYER_SIZE_X		(1)			// サイズ
 #define PLAYER_SIZE_Y		(1)			// サイズ
 #define PLAYER_SIZE_Z		(1)			// サイズ
@@ -56,7 +55,8 @@ public:
 	void Fall(void);												// 急降下
 	void Dush(void);												// ダッシュ
 	void beam(void);												// ビーム
-	D3DXVECTOR3 GetPos(void);
+	D3DXVECTOR3 GetPos(void);										// 位置取得
+	D3DXVECTOR3 GetRot(void);										// 角度更新
 	void bomb(void);												// ボム
 	CLife *GetLife(int nNumber);									// ライフの情報
 	CCharge *GetCgarge(void);										// チャージのポインタ

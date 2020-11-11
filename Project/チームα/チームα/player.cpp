@@ -26,18 +26,19 @@
 //=============================================================================
 // マクロ定義
 //=============================================================================
-#define PLAYER_SPEED			(10.0f)				// プレイヤーの移動量
-#define PLAYER_DUSH				(15.0f)				// プレイヤーのダッシュ
-#define PLAYER_DUSH_INTER		(80)				// ダッシュができる長さ
-#define DUSH_NONE_TIME			(100)				// ダッシュできない時間
-#define PLAYER_JUMP				(5.0f)				// ジャンプの処理
-#define GRAVITY_POWAR			(0.05f)				// 重力の強さ
-#define PLAYER_FALL				(-8.0f)				// 急降下の処理
-#define GROUND_RIMIT			(160.0f)			// 地面の制限
-#define PLAYE_ROT_Y_FRONT		(D3DXToRadian(90.0f))	//プレイヤーの縦軸前
-#define PLAYE_ROT_Y_LEFT		(D3DXToRadian(180.0f))	//プレイヤーの縦軸左
-#define PLAYE_ROT_Y_RIGHT		(D3DXToRadian(0.0f))	//プレイヤーの縦軸右
-#define PLAYE_ROT_Y_BUCK		(D3DXToRadian(-90.0f))	//プレイヤーの縦軸後
+#define PLAYER_SPEED			(10.0f)					// プレイヤーの移動量
+#define PLAYER_DUSH				(15.0f)					// プレイヤーのダッシュ
+#define PLAYER_DUSH_INTER		(80)					// ダッシュができる長さ
+#define DUSH_NONE_TIME			(100)					// ダッシュできない時間
+#define PLAYER_JUMP				(5.0f)					// ジャンプの処理
+#define GRAVITY_POWAR			(0.05f)					// 重力の強さ
+#define PLAYER_FALL				(-8.0f)					// 急降下の処理
+#define GROUND_RIMIT			(160.0f)				// 地面の制限
+#define PLAYE_ROT_Y_FRONT		(D3DXToRadian(180.0f))	//プレイヤーの縦軸前
+#define PLAYE_ROT_Y_LEFT		(D3DXToRadian(270.0f))	//プレイヤーの縦軸左
+#define PLAYE_ROT_Y_RIGHT		(D3DXToRadian(90.0f))	//プレイヤーの縦軸右
+#define PLAYE_ROT_Y_BUCK		(D3DXToRadian(0.0f))	//プレイヤーの縦軸後
+#define STICK_SENSITIVITY		(50.0f)					//スティック感度
 
 //=============================================================================
 // static初期化
@@ -47,9 +48,9 @@ LPD3DXBUFFER CPlayer::m_pBuffMat = NULL;	// マテリアル情報へのポインタ
 DWORD CPlayer::m_nNumMat = 0;				// マテリアル情報の数
 int CPlayer::m_nPlayerAll = 0;				// プレイヤーの総数
 
-											//=============================================================================
-											// クリエイト
-											//=============================================================================
+//=============================================================================
+// クリエイト
+//=============================================================================
 CPlayer * CPlayer::Create(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 {
 	// 初期化処理
@@ -184,6 +185,7 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 				D3DXVECTOR3(MAX_CHARGE, CHARGE_SIZE_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255));
 		}
 
+		//ROTの初期値設定（敵の方向）
 		m_rot = D3DXVECTOR3(0.0f, D3DXToRadian(0.0f), 0.0f);
 
 		// モデルタイプ設定
@@ -215,6 +217,7 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 			m_pCharge = CCharge::Create(D3DXVECTOR3(CHARGE_POS_RIGHT_X, CHARGE_POS_Y, 0.0f),
 				D3DXVECTOR3(MAX_CHARGE, CHARGE_SIZE_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255));
 		}
+		//ROTの初期値設定（敵の方向）
 		m_rot = D3DXVECTOR3(0.0f, D3DXToRadian(180.0f), 0.0f);
 
 		// モデルタイプ設定
@@ -279,27 +282,19 @@ void CPlayer::Update(void)
 	//位置へ移動量を加算
 	m_pos += m_move;
 
+	//ターゲットON
+	if (CGame::GetCamera(m_nPlayerNum)->GetTargetBool())
+	{
+		//角度設定
+		m_rot.y = (CGame::GetCamera(m_nPlayerNum)->Getφ() + D3DXToRadian(180.0f));
+	}
+	else //ターゲットOFF
+	{
+
+	}
+
 	// 地面の制限
 	GroundLimit();
-
-	switch (m_nPlayerNum)
-	{
-	case 0:
-		if (CGame::GetCamera(m_nPlayerNum)->GetTargetBool())
-		{
-			m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ() + PLAYE_ROT_Y_FRONT);
-		}
-
-		break;
-
-	case 1:
-		if (CGame::GetCamera(m_nPlayerNum)->GetTargetBool())
-		{
-			m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ() + PLAYE_ROT_Y_FRONT);
-		}
-
-		break;
-	}
 
 	// 座標情報を与える
 	CModel::SetPos(m_pos);
@@ -354,59 +349,41 @@ void CPlayer::Walk(void)
 	// ジョイパッドの取得
 	DIJOYSTATE js = CInputJoypad::GetStick(m_nPlayerNum);
 
-	if (js.lX != 0.0f || js.lY != 0)
+	//入力が存在する
+	if (js.lX != 0.0f || js.lY != 0.0f)
 	{
+		//カメラ角度取得
 		m_fAngle = CGame::GetCamera(m_nPlayerNum)->Getφ();
 
-		if (js.lX < -50.0f)
+		//スティックXの入力が感度超えている
+		if (js.lX < -STICK_SENSITIVITY)
 		{
-			if (!CGame::GetCamera(m_nPlayerNum)->GetTargetBool())
-			{
-				m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ() - PLAYE_ROT_Y_LEFT);
-			}
-
 			// ジョイパッド操作
-
-			m_pos.x += sinf(m_fAngle)* PLAYER_SPEED;
-			m_pos.z -= cosf(m_fAngle)* PLAYER_SPEED;
+			m_pos.x += cosf(m_fAngle)* PLAYER_SPEED;
+			m_pos.z -= sinf(m_fAngle)* PLAYER_SPEED;
 		}
-		else if (js.lX > 50.0f)
+		else if (js.lX > STICK_SENSITIVITY)
 		{
-			if (!CGame::GetCamera(m_nPlayerNum)->GetTargetBool())
-			{
-				m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ() - PLAYE_ROT_Y_RIGHT);
-			}
-
 			// ジョイパッド操作
-			m_pos.x -= sinf(m_fAngle)* PLAYER_SPEED;
-			m_pos.z += cosf(m_fAngle)* PLAYER_SPEED;
+			m_pos.x -= cosf(m_fAngle)* PLAYER_SPEED;
+			m_pos.z += sinf(m_fAngle)* PLAYER_SPEED;
 		}
 		else
 		{
 
 		}
 
-		if (js.lY < -50.0f)
+		//スティックYの入力が感度を超えている
+		if (js.lY < -STICK_SENSITIVITY)
 		{
-			if (!CGame::GetCamera(m_nPlayerNum)->GetTargetBool())
-			{
-				m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ() + PLAYE_ROT_Y_FRONT);
-			}
-
-			// ジョイパッド操作
-			m_pos.x -= cosf(m_fAngle)* PLAYER_SPEED;
-			m_pos.z -= sinf(m_fAngle)* PLAYER_SPEED;
+			m_pos.x -= sinf(m_fAngle)* PLAYER_SPEED;
+			m_pos.z -= cosf(m_fAngle)* PLAYER_SPEED;
 		}
-		else if (js.lY > 50.0f)
+		else if (js.lY > STICK_SENSITIVITY)
 		{
-			if (!CGame::GetCamera(m_nPlayerNum)->GetTargetBool())
-			{
-				m_rot.y = -(CGame::GetCamera(m_nPlayerNum)->Getφ() + PLAYE_ROT_Y_BUCK);
-			}
 			// ジョイパッド操作
-
-			m_pos.x += cosf(m_fAngle)* PLAYER_SPEED;
-			m_pos.z += sinf(m_fAngle)* PLAYER_SPEED;
+			m_pos.x += sinf(m_fAngle)* PLAYER_SPEED;
+			m_pos.z += cosf(m_fAngle)* PLAYER_SPEED;
 		}
 		else
 		{
@@ -467,7 +444,6 @@ void CPlayer::GroundLimit(void)
 
 	if (m_pos.y <= GROUND_RIMIT)
 	{
-
 		m_move.y = 0.0f;
 		m_pos.y = GROUND_RIMIT;
 		m_bJump = false;
@@ -504,21 +480,24 @@ void CPlayer::Dush(void)
 	// ジャンプが使えるとき
 	if (m_bDushInter == false)
 	{
-		// Xボタンの時
+		//カメラ角度取得
+		m_fAngle = CGame::GetCamera(m_nPlayerNum)->Getφ();
 
+		// Xボタンの時
 		if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_X, m_nPlayerNum))
 		{
 			// ジョイパッドの取得
 			DIJOYSTATE js = CInputJoypad::GetStick(m_nPlayerNum);
 
-			if (js.lX != 0.0f || js.lY != 0)
+			//入力が存在する
+			if (js.lX != 0.0f || js.lY != 0.0f)
 			{
-				m_fAngle = CGame::GetCamera(m_nPlayerNum)->Getφ();
-
+				//移動量初期化
 				m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-				// ジョイパッド操作				
-				m_move.x += sinf(m_fAngle)* PLAYER_DUSH;
-				m_move.z -= cosf(m_fAngle)* PLAYER_DUSH;
+			
+				//ダッシュ時移動量設定
+				m_move.x += cosf(m_fAngle)* PLAYER_DUSH;
+				m_move.z -= sinf(m_fAngle)* PLAYER_DUSH;
 
 				m_bDush = true;
 
@@ -526,20 +505,19 @@ void CPlayer::Dush(void)
 		}
 
 		// Bボタンの時
-
-		if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_B, m_nPlayerNum))
+		else if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_B, m_nPlayerNum))
 		{
 			// ジョイパッドの取得
 			DIJOYSTATE js = CInputJoypad::GetStick(m_nPlayerNum);
 
 			if (js.lX != 0.0f || js.lY != 0)
 			{
-				m_fAngle = CGame::GetCamera(m_nPlayerNum)->Getφ();
-
+				//移動量初期化
 				m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
-				m_move.x -= sinf(m_fAngle)* PLAYER_DUSH;
-				m_move.z += cosf(m_fAngle)* PLAYER_DUSH;
+				//ダッシュ時移動量設定
+				m_move.x -= cosf(m_fAngle)* PLAYER_DUSH;
+				m_move.z += sinf(m_fAngle)* PLAYER_DUSH;
 
 				m_bDush = true;
 			}
@@ -692,6 +670,11 @@ CLife * CPlayer::GetLife(int nNumber)
 D3DXVECTOR3 CPlayer::GetPos(void)
 {
 	return m_pos;
+}
+
+D3DXVECTOR3 CPlayer::GetRot(void)
+{
+	return m_rot;
 }
 
 CCharge * CPlayer::GetCgarge(void)
