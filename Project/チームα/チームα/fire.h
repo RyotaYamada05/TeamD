@@ -19,7 +19,7 @@
 #define FIRE_SIZE_X			(40)	// 横サイズ
 #define FIRE_SIZE_Y			(40)	// 縦サイズ
 #define MAX_FIRE_TEXTURE	(1)		// テクスチャ数
-#define FIRE_LIFE			(14)	// スパークの体力
+#define FIRE_LIFE			(1)	// スパークの体力
 #define FIRE_NUM			(30)	// スパークの数
 #define FIRE_SPPED			(1)		// スピード
 #define FIRE_DISTANCE		(10)	// 発生距離

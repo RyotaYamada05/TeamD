@@ -18,12 +18,7 @@
 //=============================================================================
 #define LIFE_NUM			(2)			// 表示するライフの数
 #define MAX_PARTS			(10)		// パーツの数
-#define MOTION_KEYSET_MAX	(32)		// キーセット最大数
-#define PLAYER1_POS_X		(0.0f)		// 座標
-#define PLAYER1_POS_Y		(171.0f)	// 座標
-#define PLAYER1_POS_Z		(0)			// 座標
-
-#define PLAYER2_POS_X		(0.0f)		// 座標
+#define MOTION_KEYSET_MAX	(32)		// キーセット最大数#define PLAYER2_POS_X		(0.0f)		// 座標
 #define PLAYER2_POS_Y		(171.0f)	// 座標
 #define PLAYER2_POS_Z		(500)		// 座標
 
@@ -141,6 +136,7 @@ public:
 	void Fall(void);												// 急降下
 	void Dush(void);												// ダッシュ
 	void beam(void);												// ビーム
+	D3DXVECTOR3 GetRot(void);										// 角度情報
 	void bomb(void);												// ボム
 	void Laser(void);												// レーザー
 	void BlockUp(void);												// ブロックの上に乗ったとき
@@ -149,8 +145,6 @@ public:
 	D3DXVECTOR3 GetOldPos(void);									// 古い座標情報
 	void SetMove(D3DXVECTOR3 move);										// 移動量の設定
 	D3DXVECTOR3 GetMove(void);
-	D3DXVECTOR3 GetRot(void);
-
 	CLife *GetLife(int nNumber);									// ライフの情報
 	CCharge *GetCgarge(void);										// チャージのポインタ
 	HRESULT ReadFile(void);

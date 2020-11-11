@@ -47,9 +47,9 @@ HRESULT CMeshShape::Init(void)
 	//多角形メッシュの生成
 	//D3DXCreatePolygon(pDevice,100,6,&m_pMesh,&m_pBuffMat);
 	//球メッシュの生成
-	D3DXCreateSphere(pDevice,50, 32, 32,&m_pMesh, &m_pBuffMat);
+	//D3DXCreateSphere(pDevice,50, 32, 32,&m_pMesh, &m_pBuffMat);
 	//四角メッシュの生成
-	//D3DXCreateBox(pDevice, 100, 100, 32, &m_pMesh, &m_pBuffMat);
+	D3DXCreateBox(pDevice, 100, 100, 100, &m_pMesh, &m_pBuffMat);
 	//円柱メッシュの生成
 	//D3DXCreateCylinder(pDevice, 50, 50, 50, 32, 32, &m_pMesh, &m_pBuffMat);
 	//トーラスメッシュの生成
@@ -63,7 +63,7 @@ HRESULT CMeshShape::Init(void)
 	//モデル情報を設定
 	CModel::BindModel(model);
 
-	m_pos = D3DXVECTOR3(0.0f, 200.0f, 50.0f);					// 位置
+	m_pos = D3DXVECTOR3(0.0f, 200.0f, 100.0f);					// 位置
 	CModel::SetPos(m_pos);
 	CModel::SetRot(m_move);
 
@@ -111,12 +111,12 @@ void CMeshShape::Draw(void)
 	// アルファテストの比較方法の設定(GREATERは基準値より大きい場合)
 	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
 
-	//pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
+	pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 
-	// 描画処理
+	//描画処理
 	CModel::Draw();
 
-	//pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+	pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 
 	// アルファテストを無効化
 	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
