@@ -21,7 +21,7 @@ public:
 	typedef struct
 	{
 		LPD3DXMESH pMesh;			//メッシュ情報へのポインタ
-		LPD3DXBUFFER pBuffer;		//頂点バッファへのポインタ
+		LPD3DXBUFFER pBuffMat;		//マテリアル情報へのポインタ
 		DWORD dwNumMat;				//マテリアル情報の数
 	}MODEL;
 

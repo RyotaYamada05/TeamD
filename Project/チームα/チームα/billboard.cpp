@@ -102,8 +102,15 @@ HRESULT CBillboard::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 //=====================================================
 void CBillboard::Uninit(void)
 {
-	// 終了処理
-	CScene3D::Uninit();
+	//頂点バッファの破棄
+	if (m_pVtxBuff != NULL)
+	{
+		m_pVtxBuff->Release();
+		m_pVtxBuff = NULL;
+	}
+
+	//オブジェクト破棄
+	Release();
 }
 
 //=====================================================

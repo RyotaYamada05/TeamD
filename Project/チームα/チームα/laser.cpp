@@ -77,7 +77,7 @@ HRESULT CLaser::Init(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXVECTOR3 size, BULLET
 	MODEL model;
 
 	model.dwNumMat = m_nNumMat;
-	model.pBuffer = m_pBuffMat;
+	model.pBuffMat = m_pBuffMat;
 	model.pMesh = m_pMesh;
 
 	//ƒ‚ƒfƒ‹î•ñ‚ğİ’è

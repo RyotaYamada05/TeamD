@@ -57,26 +57,31 @@ HRESULT CScene2d::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 
 	// 頂点データをロックする
 	m_pVetxBuff->Lock(0, 0, (void**)&pVtx, 0);
+
 	// テクスチャ座標の設定
 	pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
 	pVtx[1].tex = D3DXVECTOR2(1.0f, 0.0f);
 	pVtx[2].tex = D3DXVECTOR2(0.0f, 1.0f);
 	pVtx[3].tex = D3DXVECTOR2(1.0f, 1.0f);
+
 	// 頂点座標の設定
 	pVtx[0].pos = D3DXVECTOR3(m_pos.x - m_PolygonSize.x, m_pos.y - m_PolygonSize.y, 0.0f);
 	pVtx[1].pos = D3DXVECTOR3(m_pos.x + m_PolygonSize.x, m_pos.y - m_PolygonSize.y, 0.0f);
 	pVtx[2].pos = D3DXVECTOR3(m_pos.x - m_PolygonSize.x, m_pos.y + m_PolygonSize.y, 0.0f);
 	pVtx[3].pos = D3DXVECTOR3(m_pos.x + m_PolygonSize.x, m_pos.y + m_PolygonSize.y, 0.0f);
+
 	// rhwの設定
 	pVtx[0].rhw = 1.0f;
 	pVtx[1].rhw = 1.0f;
 	pVtx[2].rhw = 1.0f;
 	pVtx[3].rhw = 1.0f;
+
 	// 頂点カラーの設定
 	pVtx[0].col = D3DCOLOR_RGBA(255, 255, 255, 255);
 	pVtx[1].col = D3DCOLOR_RGBA(255, 255, 255, 255);
 	pVtx[2].col = D3DCOLOR_RGBA(255, 255, 255, 255);
 	pVtx[3].col = D3DCOLOR_RGBA(255, 255, 255, 255);
+
 	// 頂点データをアンロックする
 	m_pVetxBuff->Unlock();
 

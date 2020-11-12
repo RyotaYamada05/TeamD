@@ -57,7 +57,7 @@ HRESULT CMeshShape::Init(void)
 
 	MODEL model;
 	model.dwNumMat = 1;
-	model.pBuffer = m_pBuffMat;
+	model.pBuffMat = m_pBuffMat;
 	model.pMesh = m_pMesh;
 
 	//ƒ‚ƒfƒ‹î•ñ‚ğİ’è

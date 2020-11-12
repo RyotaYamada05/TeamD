@@ -26,6 +26,7 @@
 #define FOLLOW_TIME_BOMB	(50)		// ボムの追従タイム
 
 //=============================================================================
+
 // コンストラクタ
 //=============================================================================
 CBullet2::CBullet2()
@@ -227,6 +228,7 @@ bool CBullet2::Collision(void)
 	//位置の取得
 	D3DXVECTOR3 targetPos = pPlayer->GetPos();
 
+
 	// 当たり判定
 	if (targetPos.x >= m_pos.x - PLAYER_COLLISION_X / 2 &&
 		targetPos.x <= m_pos.x + PLAYER_COLLISION_X / 2 &&
@@ -238,6 +240,7 @@ bool CBullet2::Collision(void)
 		for (int nCount = 0; nCount < LIFE_NUM; nCount++)
 		{
 			//　プレイヤーのライフを減らす
+
 			m_pTargetPL->GetLife(nCount)->Decrease(50, m_user, true);
 
 			// 爆発生成
@@ -308,6 +311,7 @@ bool CBullet2::Collision(void)
 //=============================================================================
 D3DXVECTOR3 CBullet2::VectorMath(D3DXVECTOR3 TargetPos, float fSpeed)
 {
+
 	//2点間のベクトルを求める（終点[目標地点] - 始点[自身の位置]）
 	D3DXVECTOR3 Vector = TargetPos - m_pos;
 

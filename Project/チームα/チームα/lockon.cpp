@@ -14,7 +14,7 @@
 #include "camera.h"
 #include "game.h"
 #include "player.h"
-
+#include "life.h"
 #include "keyboard.h"
 
 //================================================
@@ -170,7 +170,6 @@ void CLockon::Update(void)
 			col.a = 0.0f;
 		}
 	}
-
 	//êFÇÃê›íË
 	SetCol(col);
 }

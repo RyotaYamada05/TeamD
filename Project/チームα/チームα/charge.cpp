@@ -10,7 +10,7 @@
 #include "manager.h"
 #include "renderer.h"
 #include "keyboard.h"
-
+#include "life.h"
 //================================================
 //静的メンバ変数宣言
 //================================================
@@ -122,14 +122,17 @@ void CCharge::Update(void)
 
 	// キーボード更新
 	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
-	
-	//ゲージが減る処理
-	GaugeRedce();
-	//ゲージを元に戻す処理
-	GaugeReturn();
-	//ゲージが最大の時の処理
-	GaugeMax();
-	
+
+	//Readyが消えたら動き出す
+	if (CLife::GetReadey() == false)
+	{
+		//ゲージが減る処理
+		GaugeRedce();
+		//ゲージを元に戻す処理
+		GaugeReturn();
+		//ゲージが最大の時の処理
+		GaugeMax();
+	}
 }
 
 //================================================
@@ -229,7 +232,6 @@ void CCharge::GaugeMax(void)
 		{
 			col = D3DCOLOR_RGBA(87, 210, 128, 255);
 		}
-
 
 		//カウンターが一定数に行けば表示を消す
 		if (m_nMaxCounter == 100)

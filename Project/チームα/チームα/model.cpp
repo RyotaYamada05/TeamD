@@ -174,7 +174,7 @@ void CModel::Draw(void)
 void CModel::BindModel(MODEL model)
 {
 	m_pMesh = model.pMesh;
-	m_pBuffMat = model.pBuffer;
+	m_pBuffMat = model.pBuffMat;
 	m_nNumMat = model.dwNumMat;
 }
 

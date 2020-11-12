@@ -32,11 +32,11 @@ public:
 	void Draw(void);
 	void BindTexture(LPDIRECT3DTEXTURE9 pTextuer) { m_pTextuer = pTextuer; }
 	void SetPos(const D3DXVECTOR3 pos) { m_pos = pos; }
-	void SetSize(const D3DXVECTOR3 nSize) { m_size = nSize; }
+	void SetSize( D3DXVECTOR3 nSize) { m_size = nSize; }
 	void SetCol(D3DXCOLOR col);
 
 	D3DXVECTOR3 GetPos(void)const { return m_pos; }
-	D3DXVECTOR3 GetSize(void)const { return m_size; }
+	D3DXVECTOR3 GetSize(void) { return m_size; }
 	D3DXCOLOR   GetCol(void) { return m_col; }
 
 private:

@@ -29,7 +29,6 @@ public:
 	virtual void Uninit(void);
 	virtual void Update(void) = 0;
 
-
 	static LPDIRECTINPUT8 GetInput(void) { return m_pInput; }
 
 protected:
