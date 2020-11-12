@@ -91,12 +91,15 @@ HRESULT CUi::Load(void)
 		&m_apTexture[UITYPE_STANDARD]);
 
 
-	//CONTINUE
+	//WINMARKFRAME
 	D3DXCreateTextureFromFile(pDevice,
+		"Data/TEXTURE/WinMarkFrame.png", //ファイルの読み込み
+		&m_apTexture[UYTYPE_WINMARKFRAME]);
 
-		"Data/TEXTURE/continue.png", //ファイルの読み込み
-		&m_apTexture[UYTYPE_CONTINUE]);
-
+	//WINMARK
+	D3DXCreateTextureFromFile(pDevice,
+		"Data/TEXTURE/WinMark.png", //ファイルの読み込み
+		&m_apTexture[UYTYPE_WINMARK]);
 
 	return S_OK;
 }
@@ -211,6 +214,15 @@ void CUi::Update(void)
 				break;
 			}
 		}
+	}
+
+	if (pKeyboard->GetTrigger(DIK_M))
+	{
+		Create(D3DXVECTOR3(UI_WINMARK_POS_LEFT1_X, UI_WINMARK_POS_Y, 0.0f), D3DXVECTOR3(UI_WINMARK_SIZE_X, UI_WINMARK_SIZE_Y, 0.0f), CUi::UYTYPE_WINMARK);
+		Create(D3DXVECTOR3(UI_WINMARK_POS_LEFT2_X, UI_WINMARK_POS_Y, 0.0f), D3DXVECTOR3(UI_WINMARK_SIZE_X, UI_WINMARK_SIZE_Y, 0.0f), CUi::UYTYPE_WINMARK);
+		Create(D3DXVECTOR3(UI_WINMARK_POS_RIGHT1_X, UI_WINMARK_POS_Y, 0.0f), D3DXVECTOR3(UI_WINMARK_SIZE_X, UI_WINMARK_SIZE_Y, 0.0f), CUi::UYTYPE_WINMARK);
+		Create(D3DXVECTOR3(UI_WINMARK_POS_RIGHT2_X, UI_WINMARK_POS_Y, 0.0f), D3DXVECTOR3(UI_WINMARK_SIZE_X, UI_WINMARK_SIZE_Y, 0.0f), CUi::UYTYPE_WINMARK);
+
 	}
 }
 

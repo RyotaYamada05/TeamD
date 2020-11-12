@@ -240,15 +240,17 @@ bool CBullet2::Collision(void)
 		for (int nCount = 0; nCount < LIFE_NUM; nCount++)
 		{
 			//　プレイヤーのライフを減らす
+			if (m_pTargetPL != NULL)
+			{
+				m_pTargetPL->GetLife(nCount)->Decrease(50, m_user, true);
 
-			m_pTargetPL->GetLife(nCount)->Decrease(50, m_user, true);
+				// 爆発生成
+				C2dExplosion::Create(m_pos,
+					D3DXVECTOR3(EXPLOSION_SIZE_X_2D, EXPLOSION_SIZE_Y_2D, EXPLOSION_SIZE_Z_2D));
 
-			// 爆発生成
-			C2dExplosion::Create(m_pos,
-				D3DXVECTOR3(EXPLOSION_SIZE_X_2D, EXPLOSION_SIZE_Y_2D, EXPLOSION_SIZE_Z_2D));
-
-			CExplosion::Create(D3DXVECTOR3(m_pos.x, 0.0f, m_pos.z), D3DXVECTOR3(0.0f, 0.0f, 0.0f),
-				D3DXVECTOR3(EXPLOSION_SIZE_X, EXPLOSION_SIZE_Y, EXPLOSION_SIZE_Z));
+				CExplosion::Create(D3DXVECTOR3(m_pos.x, 0.0f, m_pos.z), D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+					D3DXVECTOR3(EXPLOSION_SIZE_X, EXPLOSION_SIZE_Y, EXPLOSION_SIZE_Z));
+			}
 		}
 
 		m_nLife = 0;

@@ -10,7 +10,7 @@
 #include "manager.h"
 #include "renderer.h"
 #include "ui.h"
-
+#include "sound.h"
 //================================================
 //静的メンバ変数宣言
 //================================================
@@ -181,6 +181,8 @@ void CLife::Decrease(int Reduce, int PlayerNamber, bool Life)
 //================================================
 void CLife::Lifereduce(void)
 {
+	CSound *pSound = CManager::GetSound();
+
 	//サイズの取得
 	D3DXVECTOR3 size = GetSize();
 	//色の取得
@@ -191,6 +193,8 @@ void CLife::Lifereduce(void)
 	{
 		if (m_bLife == true)
 		{
+			pSound->Play(CSound::SOUND_LABEL_SE_BOMB);
+
 			m_nCounterLife++;
 
 			size.x--;
@@ -223,7 +227,12 @@ void CLife::Lifereduce(void)
 					col = D3DCOLOR_RGBA(255, 255, 255, 255);
 				}
 			}
+
 		}
+	}
+	else
+	{
+		m_bStart = true;
 	}
 
 

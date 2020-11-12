@@ -16,9 +16,13 @@
 //=============================================================================
 // マクロ定義
 //=============================================================================
+
 #define BILL_SIZE_X				(12)			// サイズ
 #define BILL_SIZE_Y				(12)			// サイズ
 #define BILL_SIZE_Z				(12)			// サイズ
+#define BILL_POS_X_1	(3000.0f)		// X座標(奥)
+#define BILL_POS_X_2	(2000.0f)		// X座標(手前)
+#define BILL_POS_Z		(4000.0f)		// Z座標
 
 #define BILL_COLLISION_SIZE_X	(780)			// サイズ
 #define BILL_COLLISION_SIZE_Y	(480)			// サイズ

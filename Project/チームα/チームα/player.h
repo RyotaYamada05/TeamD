@@ -33,7 +33,10 @@
 #define PLAYER_COLLISION_Z	(200)		// 当たり判定
 
 #define PLAYER_RADIUS		(150)		// 半径
+#define PLAYER_BOMB			(50)		// ボム撃つのに必要なゲージ数
+#define PLAYER_LASER		(50)		// レーザー撃つのに必要なゲージ数
 
+#define MAP_LIMIT			(6750)		// 行ける上限数
 //=============================================================================
 // 前方宣言
 //=============================================================================
@@ -141,6 +144,7 @@ public:
 	void beam(void);												// ビーム
 	D3DXVECTOR3 GetRot(void);										// 角度情報
 	void bomb(void);												// ボム
+	void MapLimit(void);
 	void Laser(void);												// レーザー
 	void BlockUp(void);												// ブロックの上に乗ったとき
 	void SetPos(D3DXVECTOR3 pos);
@@ -150,7 +154,6 @@ public:
 	D3DXVECTOR3 GetOldPos(void);									// 古い座標情報
 	void SetMove(D3DXVECTOR3 move);										// 移動量の設定
 	D3DXVECTOR3 GetMove(void);
-
 	CLife *GetLife(int nNumber);									// ライフの情報
 	CCharge *GetCgarge(void);										// チャージのポインタ
 	HRESULT ReadFile(void);

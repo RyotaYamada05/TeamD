@@ -122,7 +122,7 @@ void CTitle::Uninit(void)
 
 	//BGMを止める処理
 	CSound *pSound = CManager::GetSound();
-	pSound->Stop(CSound::SOUND_LABEL_BGM_TITLE);
+	//pSound->Stop(CSound::SOUND_LABEL_BGM_TITLE);
 
 	//オブジェクトの破棄
 	Release();

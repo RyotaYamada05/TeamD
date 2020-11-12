@@ -40,6 +40,7 @@
 #define PLAYER_DUSH				(30.0f)				// プレイヤーのダッシュ
 #define PLAYER_DUSH_INTER		(80)				// ダッシュができる長さ
 #define DUSH_NONE_TIME			(100)				// ダッシュできない時間
+
 #define PLAYER_JUMP				(9.0f)				// ジャンプの処理
 #define GRAVITY_POWAR			(0.1f)				// 重力の強さ
 #define PLAYER_FALL				(-12.0f)				// 急降下の処理
@@ -57,6 +58,7 @@
 //=============================================================================
 // グローバル変数宣言
 //=============================================================================
+
 MODELFILLE g_modelfile[MAX_MODEL_PARTS];	//モデルパーツ情報
 
 //=============================================================================
@@ -102,6 +104,7 @@ CPlayer::CPlayer()
 	m_state = PLAYER_STATE_NONE;
 	m_nStateCounter = 0;
 	m_bEnd = false;
+
 	m_bFall = false;	
 	memset(m_apModelAnime, 0, sizeof(m_apModelAnime));
 	m_nNumKey = 0;
@@ -167,6 +170,7 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 			//1P側に体力ゲージを生成
 			m_pLife[0] = CLife::Create(D3DXVECTOR3(LIFE_POS_LEFT_X, LIFE_POS_UP_Y, 0.0f),
 
+
 				D3DXVECTOR3(0.1f, LIFE_SIZE_PLAYER_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255),
 				CLife::LIFETYPE_FAST_PLAYER);
 		}
@@ -176,6 +180,7 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 		{
 			//2P側に体力ゲージを生成
 			m_pLife[1] = CLife::Create(D3DXVECTOR3(LIFE_POS_RIGHT_X, LIFE_POS_DOWN_Y, 0.0f),
+
 				D3DXVECTOR3(0.0f, LIFE_SIZE_ENEMY_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255),
 				CLife::LIFETYPE_SECOND_PLAYER);
 		}
@@ -188,6 +193,7 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 				D3DXVECTOR3(MAX_CHARGE, CHARGE_SIZE_Y, 0.0f), D3DCOLOR_RGBA(87, 210, 128, 255));
 		}
 
+		
 		//ROTの初期値設定（敵の方向）
 		m_rot = D3DXVECTOR3(0.0f, D3DXToRadian(180.0f), 0.0f);
 		break;
@@ -198,6 +204,7 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 		if (m_pLife[0] == NULL)
 		{
 			m_pLife[0] = CLife::Create(D3DXVECTOR3(LIFE_POS_RIGHT_X, LIFE_POS_UP_Y, 0.0f),
+			
 				D3DXVECTOR3(0.0f, LIFE_SIZE_PLAYER_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255),
 				CLife::LIFETYPE_FAST_PLAYER);
 
@@ -206,6 +213,7 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 		//１Ｐのライフゲージ		
 		if (m_pLife[1] == NULL)
 		{
+		
 			m_pLife[1] = CLife::Create(D3DXVECTOR3(LIFE_POS_LEFT_X, LIFE_POS_DOWN_Y, 0.0f),
 				D3DXVECTOR3(0.0f, LIFE_SIZE_ENEMY_Y, 0.0f), D3DCOLOR_RGBA(255, 255, 255, 255),
 				CLife::LIFETYPE_SECOND_PLAYER);
@@ -217,6 +225,7 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 			m_pCharge = CCharge::Create(D3DXVECTOR3(CHARGE_POS_RIGHT_X, CHARGE_POS_Y, 0.0f),
 				D3DXVECTOR3(MAX_CHARGE, CHARGE_SIZE_Y, 0.0f), D3DCOLOR_RGBA(87, 210, 128, 255));
 		}
+		
 
 		//ROTの初期値設定（敵の方向）
 		m_rot = D3DXVECTOR3(0.0f, D3DXToRadian(0.0f), 0.0f);
@@ -234,8 +243,10 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 	}
 
 	//モデルパーツ数分繰り返す
+	
 	for (int nCntModel = 0; nCntModel < MAX_MODEL_PARTS; nCntModel++)
 	{
+		
 		if (m_apModelAnime[nCntModel] == NULL)
 		{
 			//モデルの生成
@@ -259,6 +270,7 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 		}
 	}
 
+
 	//アニメーションの設定
 	SetMotion(MOTION_IDOL);
 
@@ -273,7 +285,7 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 //=============================================================================
 void CPlayer::Uninit(void)
 {
-
+	
 
 	for (int nCntModelNum = 0; nCntModelNum < MAX_MODEL_PARTS; nCntModelNum++)
 	{
@@ -311,6 +323,7 @@ void CPlayer::Update(void)
 	if (m_pLife[0] != NULL)	{
 
 		D3DXVECTOR3 size = m_pLife[0]->GetSize();
+
 		// 終了処理
 		if (size.x <= 0 && CLife::GetReadey() == false)
 		{
@@ -378,12 +391,12 @@ void CPlayer::Update(void)
 	}
 	// 地面の制限
 	GroundLimit();
+//範囲外に行かないようにする処理
+	MapLimit();
 	//// 軌跡の生成
 	//CLocus::Create(pos, m_OldPos,
 	//	D3DXVECTOR3(m_rot.x, m_rot.y, m_rot.z), D3DXVECTOR3(LOCUS_SIZE_X, LOCUS_SIZE_Y, LOCUS_SIZE_Z),
 	//	LOCUS_LIFE);
-
-
 	//アニメーションの更新処理
 	UpdateMotion();
 }
@@ -401,6 +414,7 @@ void CPlayer::UpdateMotion(void)
 	//現在キーが最大キー数未満の場合
 	if (m_nKey < m_Motion[m_MotionState].nNumKey)
 	{
+		
 		for (int nCntModel = 0; nCntModel < MAX_MODEL_PARTS; nCntModel++)
 		{
 			m_apKeyInfo = &m_Motion[m_MotionState].aKeyInfo[m_nKey];
@@ -420,6 +434,7 @@ void CPlayer::UpdateMotion(void)
 			pKeyNext[nCntModel] = &m_apKeyInfo->aKey[nCntModel];
 		}
 
+		
 		for (int nCntModel = 0; nCntModel < MAX_MODEL_PARTS; nCntModel++)
 		{
 			if (m_apModelAnime[nCntModel] != NULL)
@@ -428,11 +443,14 @@ void CPlayer::UpdateMotion(void)
 				D3DXVECTOR3 startRot = m_apModelAnime[nCntModel]->GetRotAnime();
 
 				//1フレーム当たりの更新値 = (終点位置-開始位置) / フレーム数
+				
 				diffPos.x = (pKey[nCntModel]->fPosX - startPos.x) / (float)m_Motion[m_MotionState].aKeyInfo[m_nKey].nFrame;
 				diffPos.y = (pKey[nCntModel]->fPosY - startPos.y) / (float)m_Motion[m_MotionState].aKeyInfo[m_nKey].nFrame;
 				diffPos.z = (pKey[nCntModel]->fPosZ - startPos.z) / (float)m_Motion[m_MotionState].aKeyInfo[m_nKey].nFrame;
 
 				//1フレーム当たりの更新値 = (終点向き-開始向き) / フレーム数
+				
+	
 				diffRot.x = (pKey[nCntModel]->fRotX - startRot.x) / (float)m_Motion[m_MotionState].aKeyInfo[m_nKey].nFrame;
 				diffRot.y = (pKey[nCntModel]->fRotY - startRot.y) / (float)m_Motion[m_MotionState].aKeyInfo[m_nKey].nFrame;
 				diffRot.z = (pKey[nCntModel]->fRotZ - startRot.z) / (float)m_Motion[m_MotionState].aKeyInfo[m_nKey].nFrame;
@@ -440,6 +458,7 @@ void CPlayer::UpdateMotion(void)
 				setPos.x = diffPos.x * m_nCountMotion + startPos.x;
 				setPos.y = diffPos.y * m_nCountMotion + startPos.y;
 				setPos.z = diffPos.z * m_nCountMotion + startPos.z;
+					
 
 				setRot.x = diffRot.x * m_nCountMotion + startRot.x;
 				setRot.y = diffRot.y * m_nCountMotion + startRot.y;
@@ -453,6 +472,7 @@ void CPlayer::UpdateMotion(void)
 
 				//向きに更新用の向きを加算
 				rot += setRot;
+			
 
 				//位置の設定
 				m_apModelAnime[nCntModel]->SetPosAnime(setPos);
@@ -461,6 +481,7 @@ void CPlayer::UpdateMotion(void)
 				m_apModelAnime[nCntModel]->SetRotAnime(setRot);
 			}
 		}
+
 
 		//モーションカウンターの加算
 		m_nCountMotion++;
@@ -512,6 +533,7 @@ void CPlayer::Draw(void)
 	//ワールドマトリックスの設定
 	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
 
+	
 	for (int nCntModelNum = 0; nCntModelNum < MAX_MODEL_PARTS; nCntModelNum++)
 	{
 		if (m_apModelAnime[nCntModelNum] != NULL)
@@ -531,6 +553,7 @@ void CPlayer::SetMotion(MOTION_STATE motion)
 	m_nKey = 0;
 	D3DXVECTOR3 pos, rot;
 
+	
 	for (int nCntModel = 0; nCntModel < MAX_MODEL_PARTS; nCntModel++)
 	{
 		if (m_apModelAnime[nCntModel] != NULL)
@@ -559,6 +582,8 @@ void CPlayer::SetMotion(MOTION_STATE motion)
 //=============================================================================
 void CPlayer::PlayerState(void)
 {
+	CSound *pSound = CManager::GetSound();
+
 	switch (m_state)
 	{
 	case PLAYER_STATE_NORMAL:
@@ -620,10 +645,15 @@ void CPlayer::PlayerState(void)
 			// 爆発の生成
 			C2dExplosion::Create(TargetPos,
 				D3DXVECTOR3(EXPLOSION_SIZE_X_2D, EXPLOSION_SIZE_Y_2D, EXPLOSION_SIZE_Z_2D));
+			//爆発音
+			pSound->Play(CSound::SOUND_LABEL_SE_EXPLOSION_DEAH);
+
 		}
 
 		if (m_nStateCounter >= STATE_EXPLOSION_END)
 		{
+			//爆発音を止める
+			pSound->Stop(CSound::SOUND_LABEL_SE_EXPLOSION_DEAH);
 			// 終わりのフラグ
 			m_bEnd = true;
 
@@ -799,6 +829,7 @@ void CPlayer::Walk(void)
 //=============================================================================
 void CPlayer::Jump(void)
 {
+	CSound *pSound = CManager::GetSound();
 	// キーボード更新
 	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
 
@@ -811,6 +842,8 @@ void CPlayer::Jump(void)
 		m_move.y = PLAYER_JUMP;
 		m_bJump = true;
 		SetMotion(MOTION_JUMP);
+		pSound->Play(CSound::SOUND_LABEL_SE_JUMP);
+
 	}
 }
 
@@ -819,6 +852,8 @@ void CPlayer::Jump(void)
 //=============================================================================
 void CPlayer::GroundLimit(void)
 {
+	CSound *pSound = CManager::GetSound();
+
 	// 着地の処理
 	if (m_pos.y <= GROUND_RIMIT)
 	{
@@ -834,6 +869,10 @@ void CPlayer::GroundLimit(void)
 			// 煙の生成
 			CSmoke::Create(D3DXVECTOR3(m_pos.x, 0.0f, m_pos.z), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 
 				D3DXVECTOR3(SMOKE_SIZE_X, SMOKE_SIZE_Y, SMOKE_SIZE_Z));
+
+			//着地音
+			pSound->Play(CSound::SOUND_LABEL_SE_SAND);
+
 		}
 	}
 }
@@ -864,6 +903,7 @@ void CPlayer::Dush(void)
 {
 	// キーボード更新
 	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
+	CSound *pSound = CManager::GetSound();
 
 	// ジャンプが使えるとき
 	if (m_bDushInter == false)
@@ -888,6 +928,9 @@ void CPlayer::Dush(void)
 				m_move.z -= sinf(m_fAngle)* PLAYER_DUSH;
 
 				m_bDush = true;
+
+				//ターボ音
+				pSound->Play(CSound::SOUND_LABEL_SE_TURBO);
 
 				// 地上にいたら
 				if (m_bJump == false)
@@ -941,8 +984,8 @@ void CPlayer::Dush(void)
 
 				m_bDush = true;
 
-
-				// 地上にいたら
+				//ターボ音
+				pSound->Play(CSound::SOUND_LABEL_SE_TURBO);				// 地上にいたら
 				if (m_bJump == false)
 				{
 					// 砂の生成
@@ -1040,33 +1083,37 @@ void CPlayer::beam(void)
 {
 	// キーボード更新
 	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
+	CSound *pSound = CManager::GetSound();
 
 	// Lキーを押したとき・コントローラのR1を押したとき
 	if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_R_TRIGGER, m_nPlayerNum) && m_bJump == false
-		|| pKeyboard->GetTrigger(DIK_L) && m_bJump == false)
+		
+		|| pKeyboard->GetTrigger(DIK_L) && m_bJump == false )
 	{
 		switch (m_nPlayerNum)
 		{
 		case 0:
-			//バレットの生成
-			CBeam::Create(m_pos, D3DXVECTOR3(0.0f, 0.0f, -BEAM_SPEED), D3DXVECTOR3(BEAM_SIZE_X, BEAM_SIZE_Y, BEAM_SIZE_Z), CBullet2::BULLET2_USER_PL1);
-			//弾うったらゲージを減らす
-			if (m_pCharge != NULL)
+			
+			if (CCharge::GetCharge(0) > PLAYER_LASER)
 			{
-				m_pCharge->Reduce(50, true);
+				//バレットの生成
+				CBeam::Create(m_pos, D3DXVECTOR3(0.0f, 0.0f, -BEAM_SPEED), D3DXVECTOR3(BEAM_SIZE_X, BEAM_SIZE_Y, BEAM_SIZE_Z), CBullet2::BULLET2_USER_PL1);
+				//弾うったらゲージを減らす
+				m_pCharge->Reduce(50, true, 0);
+				pSound->Play(CSound::SOUND_LABEL_SE_BULLET);
 			}
-		
 			break;
 
 		case 1:
-			//バレットの生成
-			CBeam::Create(m_pos, D3DXVECTOR3(0.0f, 0.0f, BEAM_SPEED), D3DXVECTOR3(BEAM_SIZE_X, BEAM_SIZE_Y, BEAM_SIZE_Z), CBullet2::BULLET2_USER_PL2);
-			//弾うったらゲージを減らす
-			if (m_pCharge != NULL)
-			{
-				m_pCharge->Reduce(50, true);
-			}
 			
+			if (CCharge::GetCharge(1) > PLAYER_LASER)
+			{
+				//バレットの生成
+				CBeam::Create(m_pos, D3DXVECTOR3(0.0f, 0.0f, BEAM_SPEED), D3DXVECTOR3(BEAM_SIZE_X, BEAM_SIZE_Y, BEAM_SIZE_Z), CBullet2::BULLET2_USER_PL2);
+				//弾うったらゲージを減らす
+				m_pCharge->Reduce(50, true, 1);
+				pSound->Play(CSound::SOUND_LABEL_SE_BULLET);
+			}
 			break;
 		}
 	}
@@ -1079,6 +1126,8 @@ void CPlayer::bomb(void)
 {
 	// キーボード更新
 	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
+	CSound *pSound = CManager::GetSound();
+	
 
 	// Lキーを押したとき・コントローラのR1を押したとき
 	if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_R2_TRIGGER, m_nPlayerNum) && m_bJump == false
@@ -1087,31 +1136,39 @@ void CPlayer::bomb(void)
 		switch (m_nPlayerNum)
 		{
 		case 0:
-			//バレットの生成
-			CBomb::Create(D3DXVECTOR3(m_pos.x, m_pos.y + 50.0f, m_pos.z),
-				D3DXVECTOR3(0.0f, BOMB_MOVE_Y, 0.0f),
-				D3DXVECTOR3(BOMB_SIZE_X, BOMB_SIZE_Y, BOMB_SIZE_Z), CBullet2::BULLET2_USER_PL1);
-			//弾うったらゲージを減らす
-			if (m_pCharge != NULL)
+			
+			
+			if (CCharge::GetCharge(0) >  PLAYER_BOMB)
 			{
-				m_pCharge->Reduce(50, true);
-			}			
-			break;
+				//バレットの生成
+				CBomb::Create(D3DXVECTOR3(m_pos.x, m_pos.y + 50.0f, m_pos.z),
+					D3DXVECTOR3(0.0f, BOMB_MOVE_Y, 0.0f),
+					D3DXVECTOR3(BOMB_SIZE_X, BOMB_SIZE_Y, BOMB_SIZE_Z), CBullet2::BULLET2_USER_PL1);
+
+				//発射音
+				pSound->Play(CSound::SOUND_LABEL_SE_BULLET2);
+				//弾うったらゲージを減らす
+				m_pCharge->Reduce(PLAYER_BOMB, true,0);
+			}			break;
 
 		case 1:
-			//バレットの生成
-			CBomb::Create(D3DXVECTOR3(m_pos.x, m_pos.y + 50.0f, m_pos.z),
-				D3DXVECTOR3(0.0f, BOMB_MOVE_Y, BOMB_SPEED),
-				D3DXVECTOR3(BOMB_SIZE_X, BOMB_SIZE_Y, BOMB_SIZE_Z), CBullet2::BULLET2_USER_PL2);
-			//弾うったらゲージを減らす
-
-			if (m_pCharge != NULL)
+		
+			if (CCharge::GetCharge(1) > PLAYER_BOMB)
 			{
-				m_pCharge->Reduce(50, true);
-			}
-			break;
+				//バレットの生成
+				CBomb::Create(D3DXVECTOR3(m_pos.x, m_pos.y + 50.0f, m_pos.z),
+					D3DXVECTOR3(0.0f, BOMB_MOVE_Y, BOMB_SPEED),
+					D3DXVECTOR3(BOMB_SIZE_X, BOMB_SIZE_Y, BOMB_SIZE_Z), CBullet2::BULLET2_USER_PL2);
+
+				//発射音
+				pSound->Play(CSound::SOUND_LABEL_SE_BULLET2);
+
+				//弾うったらゲージを減らす
+				m_pCharge->Reduce(PLAYER_BOMB, true,1);
+			}			break;
 		}
 	}
+
 }
 
 //=============================================================================
@@ -1133,33 +1190,63 @@ void CPlayer::Laser(void)
 			CLaser::Create(/*D3DXVECTOR3(m_pos.x + sinf(m_rot.z)+200.0f, m_pos.y, m_pos.z + cosf(m_rot.z)+200.0f)*/m_pos,
 				D3DXVECTOR3(0.0f, 0.0f, -LASER_SPEED),
 				D3DXVECTOR3(0.0f, m_rot.y, 0.0f),
-				D3DXVECTOR3(LASER_SIZE_X, LASER_SIZE_Y, LASER_SIZE_Z), 
+				D3DXVECTOR3(LASER_SIZE_X, LASER_SIZE_Y, LASER_SIZE_Z),
 				CBullet2::BULLET2_USER_PL1);
 
 			//弾うったらゲージを減らす
 			if (m_pCharge != NULL)
 			{
-				m_pCharge->Reduce(50, true);
+				m_pCharge->Reduce(50, true,0);
 			}
 			break;
 
 		case 1:
 			//バレットの生成
-			CLaser::Create(m_pos, 
-				D3DXVECTOR3(0.0f, 0.0f, LASER_SPEED), 
+			CLaser::Create(m_pos,
+				D3DXVECTOR3(0.0f, 0.0f, LASER_SPEED),
 				D3DXVECTOR3(0.0f, m_rot.y, 0.0f),
-				D3DXVECTOR3(LASER_SIZE_X, LASER_SIZE_Y, LASER_SIZE_Z), 
+				D3DXVECTOR3(LASER_SIZE_X, LASER_SIZE_Y, LASER_SIZE_Z),
 				CBullet2::BULLET2_USER_PL2);
 
 			//弾うったらゲージを減らす
 			if (m_pCharge != NULL)
 			{
-				m_pCharge->Reduce(50, true);
+				m_pCharge->Reduce(50, true,1);
 			}
 			break;
 		}
 	}
 
+}
+
+//=============================================================================
+// 範囲外に行かないようにする処理
+//=============================================================================
+void CPlayer::MapLimit(void)
+{
+	//右
+	if (m_pos.x > MAP_LIMIT)
+	{
+		m_pos.x = MAP_LIMIT;
+	}
+
+	//左
+	if (m_pos.x <-MAP_LIMIT)
+	{
+		m_pos.x = -MAP_LIMIT;
+	}
+
+	//奥
+	if (m_pos.z > MAP_LIMIT)
+	{
+		m_pos.z = MAP_LIMIT;
+	}
+
+	//手前
+	if (m_pos.z <-MAP_LIMIT)
+	{
+		m_pos.z = -MAP_LIMIT;
+	}
 }
 
 //=============================================================================
@@ -1181,6 +1268,7 @@ void CPlayer::SetPos(D3DXVECTOR3 pos)
 {
 	m_pos = pos;
 }
+
 
 //=============================================================================
 // 勝ち負けロゴフラグの設定
