@@ -43,7 +43,7 @@ HRESULT CTitlelogo::Load(void)
 
 	//ライフゲージバー
 	D3DXCreateTextureFromFile(pDevice,
-		"data/Texture/title.png", //ファイルの読み込み
+		"data/Texture/", //ファイルの読み込み
 		&m_apTexture[LOGOTIPE_TITLE]);
 
 	//タイムの下

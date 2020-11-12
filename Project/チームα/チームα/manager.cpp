@@ -140,7 +140,6 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindow)
 		}
 	}
 
-
 	//タイトルクラスのクリエイト
 	//m_pTitle = CTitle::Create();
 
@@ -286,7 +285,7 @@ void CManager::LoadAll(void)
 	CBill::LoadModel();
 	CSplash::Load();
 	CLaser::Load();
-	CMissile::Load();
+
 	CFire::Load();
 	CBoost::Load();
 	CSea::Load();
@@ -318,7 +317,7 @@ void CManager::UnLoadAll(void)
 	CSand::UnLoad();
 	CSplash::UnLoad();
 	CLaser::UnLoad();
-	CMissile::UnLoad();
+
 	CFire::UnLoad();
 	CBoost::UnLoad();
 
@@ -333,8 +332,6 @@ void CManager::UnLoadAll(void)
 //=============================================================================
 void CManager::SetMode(MODE_TYPE mode)
 {
-	CSound *pSound = CManager::GetSound();
-
 	//現在モードの終了
 	switch (m_mode)
 	{
@@ -351,7 +348,7 @@ void CManager::SetMode(MODE_TYPE mode)
 		if (m_pTutorial != NULL)
 		{
 			m_pTutorial->Uninit();
-			pSound->Stop(CSound::SOUND_LABEL_BGM_TITLE);
+
 			m_pTutorial = NULL;
 		}
 		break;

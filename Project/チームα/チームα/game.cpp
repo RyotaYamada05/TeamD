@@ -1,6 +1,5 @@
 //=======================================================================================
 //
-
 // ゲーム処理 [game.cpp]
 // Author : Konishi Yuuto
 //
@@ -34,6 +33,8 @@
 #include "continue.h"
 #include "uiend.h"
 #include "sound.h"
+#include "missile.h"
+
 //=======================================================================================
 // static初期化
 //=======================================================================================
@@ -89,12 +90,8 @@ CGame* CGame::Create(void)
 //=======================================================================================
 HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 {
-
-	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
-
 	for (int nCount = 0; nCount < MAX_PLAYER; nCount++)
 	{
-
 		//カメラクラスのクリエイト
 		m_apCamera[nCount] = CCamera::Create();
 	}
@@ -116,7 +113,6 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 	{
 
 		//UIライフゲージ(外枠)の生成
-
 		m_pUi = CUi::Create(D3DXVECTOR3(330.0f, 30.0f, 0.0f), D3DXVECTOR3(UI_LIFE_SIZE_X / 2, UI_LIFE_SIZE_PLAYERY, 0.0f), CUi::UITTYPE_LIFE);
 		m_pUi = CUi::Create(D3DXVECTOR3(1060.0f, 30.0f, 0.0f), D3DXVECTOR3(UI_LIFE_SIZE_X / 2, UI_LIFE_SIZE_PLAYERY, 0.0f), CUi::UITTYPE_LIFE);
 
@@ -133,18 +129,8 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 		m_pUi = CUi::Create(D3DXVECTOR3(805.0f, 65.0f, 0.0f), D3DXVECTOR3(UI_ENEMY_SIZE_X, UI_ENEMY_SIZE_Y, 0.0f), CUi::UITYPE_ENEMY);
 
 		//標準生成
-	
 		m_pUi = CUi::Create(D3DXVECTOR3(UI_LOCKON_POS_LEFT_X, UI_LOCKON_POS_Y, 0.0f), D3DXVECTOR3(UI_LOCKON_SIZE_SMALL_X, UI_LOCKON_SIZE_SMALL_Y, 0.0f), CUi::UITYPE_STANDARD);
 		m_pUi = CUi::Create(D3DXVECTOR3(UI_LOCKON_POS_RIGHT_X, UI_LOCKON_POS_Y, 0.0f), D3DXVECTOR3(UI_LOCKON_SIZE_SMALL_X, UI_LOCKON_SIZE_SMALL_Y, 0.0f), CUi::UITYPE_STANDARD);
-
-		//勝った時の枠
-		m_pUi = CUi::Create(D3DXVECTOR3(UI_WINMARK_POS_LEFT1_X, UI_WINMARK_POS_Y, 0.0f), D3DXVECTOR3(UI_WINMARK_SIZE_X, UI_WINMARK_SIZE_Y, 0.0f), CUi::UYTYPE_WINMARKFRAME);
-		m_pUi = CUi::Create(D3DXVECTOR3(UI_WINMARK_POS_LEFT2_X, UI_WINMARK_POS_Y, 0.0f), D3DXVECTOR3(UI_WINMARK_SIZE_X, UI_WINMARK_SIZE_Y, 0.0f), CUi::UYTYPE_WINMARKFRAME);
-		m_pUi = CUi::Create(D3DXVECTOR3(UI_WINMARK_POS_RIGHT1_X, UI_WINMARK_POS_Y, 0.0f), D3DXVECTOR3(UI_WINMARK_SIZE_X, UI_WINMARK_SIZE_Y, 0.0f), CUi::UYTYPE_WINMARKFRAME);
-		m_pUi = CUi::Create(D3DXVECTOR3(UI_WINMARK_POS_RIGHT2_X, UI_WINMARK_POS_Y, 0.0f), D3DXVECTOR3(UI_WINMARK_SIZE_X, UI_WINMARK_SIZE_Y, 0.0f), CUi::UYTYPE_WINMARKFRAME);
-
-		
-
 	}
 
 	//startのUI
@@ -168,27 +154,24 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 	// プレイヤーの生成
 	if (m_apPlayer[0] == NULL)
 	{
-		
 
 		m_apPlayer[0] = CPlayer::Create(D3DXVECTOR3(0.0f, 50.0f, -1000.0f), D3DXVECTOR3(PLAYER_SIZE_X, PLAYER_SIZE_Y, PLAYER_SIZE_Z));	}
 	if (m_apPlayer[1] == NULL)
 	{
-		
 		m_apPlayer[1] = CPlayer::Create(D3DXVECTOR3(0.0f, 50.0f, 1000.0f), D3DXVECTOR3(PLAYER_SIZE_X, PLAYER_SIZE_Y, PLAYER_SIZE_Z));
 	}
 
 	//ビル
 	if (m_pBill == NULL)
 	{
-		
-		m_pBill = CBill::Create(D3DXVECTOR3(BILL_POS_X_1, 0.0f, -BILL_POS_Z), D3DXVECTOR3(BILL_SIZE_X, BILL_SIZE_Y, BILL_SIZE_Z));
-		m_pBill = CBill::Create(D3DXVECTOR3(-BILL_POS_X_1, 0.0f, -BILL_POS_Z), D3DXVECTOR3(BILL_SIZE_X, BILL_SIZE_Y, BILL_SIZE_Z));
-		m_pBill = CBill::Create(D3DXVECTOR3(BILL_POS_X_1, 0.0f, BILL_POS_Z), D3DXVECTOR3(BILL_SIZE_X, BILL_SIZE_Y, BILL_SIZE_Z));
-		m_pBill = CBill::Create(D3DXVECTOR3(-BILL_POS_X_1, 0.0f, BILL_POS_Z), D3DXVECTOR3(BILL_SIZE_X, BILL_SIZE_Y, BILL_SIZE_Z));
-		m_pBill = CBill::Create(D3DXVECTOR3(BILL_POS_X_2, 0.0f, 0.0f), D3DXVECTOR3(BILL_SIZE_X, BILL_SIZE_Y, BILL_SIZE_Z));
-		m_pBill = CBill::Create(D3DXVECTOR3(-BILL_POS_X_2, 0.0f, .0f), D3DXVECTOR3(BILL_SIZE_X, BILL_SIZE_Y, BILL_SIZE_Z));
+		m_pBill = CBill::Create(D3DXVECTOR3(3000.0f, 0.0f, -4000.0f), D3DXVECTOR3(BILL_SIZE_X, BILL_SIZE_Y, BILL_SIZE_Z));
+		m_pBill = CBill::Create(D3DXVECTOR3(-3000.0f, 0.0f, -4000.0f), D3DXVECTOR3(BILL_SIZE_X, BILL_SIZE_Y, BILL_SIZE_Z));
+		m_pBill = CBill::Create(D3DXVECTOR3(3000.0f, 0.0f, 4000.0f), D3DXVECTOR3(BILL_SIZE_X, BILL_SIZE_Y, BILL_SIZE_Z));
+		m_pBill = CBill::Create(D3DXVECTOR3(-3000.0f, 0.0f, 4000.0f), D3DXVECTOR3(BILL_SIZE_X, BILL_SIZE_Y, BILL_SIZE_Z));
+		m_pBill = CBill::Create(D3DXVECTOR3(2000.0f, 0.0f, 0.0f), D3DXVECTOR3(BILL_SIZE_X, BILL_SIZE_Y, BILL_SIZE_Z));
+		m_pBill = CBill::Create(D3DXVECTOR3(-2000.0f, 0.0f, .0f), D3DXVECTOR3(BILL_SIZE_X, BILL_SIZE_Y, BILL_SIZE_Z));
 	}
-
+	CMissile::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 	// メッシュフィールド
 	if (m_pMeshField == NULL)
 	{
@@ -196,7 +179,6 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 	}
 	CMeshShape::Load();
 
-	
 	//// メッシュスフィア
 	//if (m_pSphere == NULL)
 	//{
@@ -212,7 +194,6 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 	//タイム
 	if (m_pTime == NULL)
 	{
-		
 		m_pTime = CTime::Create(D3DXVECTOR3(TIME_POS_X, TIME_POS_Y, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 	}
 
@@ -233,6 +214,8 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 	D3DXCreateFont(pD3DDevice, 18, 0, 0, 0, FALSE, SHIFTJIS_CHARSET,
 		OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, "Terminal", &m_pFont);
 
+
+	
 	return S_OK;
 }
 
@@ -245,7 +228,6 @@ void CGame::Uninit(void)
 	{
 		if (m_apCamera[nCount] != NULL)
 		{
-			
 			//カメラクラスの終了処理呼び出
 			m_apCamera[nCount]->Uninit();
 
@@ -299,7 +281,6 @@ void CGame::Update(void)
 		if (m_apCamera[nCount] != NULL)
 		{
 			//カメラクラスの更新処理
-	
 			m_apCamera[nCount]->Update();
 		}
 	}
@@ -310,7 +291,6 @@ void CGame::Update(void)
 		m_pMeshField->Update();
 	}
 
-	
 	// メッシュスフィア
 	if (m_pSphere != NULL)
 	{
@@ -536,7 +516,6 @@ CMeshShape * CGame::GetSphere()
 //=======================================================================================
 CLockon * CGame::GetLockon(void)
 {
-	
 	return m_pLockon;}
 
 //=======================================================================================

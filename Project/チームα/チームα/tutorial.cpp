@@ -59,7 +59,7 @@ HRESULT CTutorial::Load(void)
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
 	//テクスチャの読み込み
-	D3DXCreateTextureFromFile(pDevice, "data/Texture/tutorial.png", &m_pTexture[0]);
+	D3DXCreateTextureFromFile(pDevice, "data/Texture/bg001.png", &m_pTexture[0]);
 	return S_OK;
 }
 
@@ -118,7 +118,6 @@ void CTutorial::Update(void)
 		CFade *pFade = CManager::GetFade();
 		pFade->SetFade(CManager::MODE_TYPE_GAME);
 	}
-
 }
 
 //=======================================================================================

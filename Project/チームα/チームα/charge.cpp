@@ -15,7 +15,6 @@
 //静的メンバ変数宣言
 //================================================
 LPDIRECT3DTEXTURE9 CCharge::m_pTexture = {};
-float CCharge::m_fLimit[CHARGE_LIMIT] = {};
 
 //================================================
 //クリエイト処理
@@ -71,7 +70,6 @@ CCharge::CCharge()
 	m_bCharge = false;
 	m_nBlue = 0.00f;
 	m_nRed = 0.00f;
-	m_nPlayerNum = 0;
 }
 
 //================================================
@@ -90,11 +88,6 @@ HRESULT CCharge::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size, D3DXCOLOR c
 	m_pos = pos;		//位置情報
 	m_size = size;		//サイズ
 	m_col = col;		//カラー
-
-	for (int nCount = 0; nCount < CHARGE_LIMIT; nCount++)
-	{
-		m_fLimit[nCount] = m_size.x;
-	}
 
 	CGauge::Init(pos, size);	//CGaugeの初期化
 
@@ -153,11 +146,10 @@ void CCharge::Draw(void)
 //================================================
 //いくつ減らすかの指定
 //================================================
-void CCharge::Reduce(int Counter, bool Charge,int player)
+void CCharge::Reduce(int Counter, bool Charge)
 {
 	m_nReduce = Counter;
 	m_bCharge = Charge;
-	m_nPlayerNum = player;
 }
 
 //================================================
@@ -178,9 +170,6 @@ void CCharge::GaugeRedce(void)
 			m_nCounterCharge++;
 			col = D3DCOLOR_RGBA(87, 210, 128, 255);
 			size.x -= 2;
-
-			m_fLimit[m_nPlayerNum] -= 2;
-
 		}
 
 		//決められたカウント分動いたらもとに戻す
@@ -208,15 +197,12 @@ void CCharge::GaugeReturn(void)
 	D3DXCOLOR col = GetCol();
 
 	//最大数よりゲージが減ってたら最大数まで戻す処理
-	if (size.x < MAX_CHARGE && m_bCharge == false || size.x <= 0)
+	if (size.x < MAX_CHARGE && m_bCharge == false || size.x == 0)
 	{
 		m_nBlue = size.x / 4 * 0.01f;
 		m_nRed = 1.0f - m_nBlue;
 
-		size.x +=2;
-
-		m_fLimit[m_nPlayerNum] +=2;
-
+		size.x += 2;
 		col = D3DXCOLOR(m_nRed, 0.0f, m_nBlue, 1.0f);
 		m_nMaxCounter = 0;
 	}
@@ -258,12 +244,4 @@ void CCharge::GaugeMax(void)
 	SetSize(size);
 	//色の設定
 	SetCol(col);
-}
-
-//================================================
-//弾の制御するプレイヤーの番号を取得する
-//================================================
-float CCharge::GetCharge(int nPlayer)
-{
-	return m_fLimit[nPlayer];
 }

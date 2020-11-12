@@ -33,10 +33,7 @@
 #define PLAYER_COLLISION_Z	(200)		// 当たり判定
 
 #define PLAYER_RADIUS		(150)		// 半径
-#define PLAYER_BOMB			(50)		// ボム撃つのに必要なゲージ数
-#define PLAYER_LASER		(50)		// レーザー撃つのに必要なゲージ数
 
-#define MAP_LIMIT			(6750)		// 行ける上限数
 //=============================================================================
 // 前方宣言
 //=============================================================================
@@ -58,8 +55,9 @@ typedef enum
 	MOTION_JUMP,	//ジャンプモーション
 	MOTION_LANDING,	//着地モーション
 	MOTION_WIN,		//勝利モーション
-	MOTION_JUMP3,	//ジャンプモーション
-	MOTION_JUMP4,	//ジャンプモーション
+	MOTION_RIGHTBOOST,	//右ブースト
+	MOTION_LEFTBOOST,	//左ブースト
+	MOTION_DAMAGE,	//やられ
 	MOTION_MAX,		//モーション最大数
 }MOTION_STATE;
 
@@ -144,7 +142,6 @@ public:
 	void beam(void);												// ビーム
 	D3DXVECTOR3 GetRot(void);										// 角度情報
 	void bomb(void);												// ボム
-	void MapLimit(void);
 	void Laser(void);												// レーザー
 	void BlockUp(void);												// ブロックの上に乗ったとき
 	void SetPos(D3DXVECTOR3 pos);
@@ -154,6 +151,7 @@ public:
 	D3DXVECTOR3 GetOldPos(void);									// 古い座標情報
 	void SetMove(D3DXVECTOR3 move);										// 移動量の設定
 	D3DXVECTOR3 GetMove(void);
+
 	CLife *GetLife(int nNumber);									// ライフの情報
 	CCharge *GetCgarge(void);										// チャージのポインタ
 	HRESULT ReadFile(void);
@@ -190,6 +188,7 @@ private:
 	MOTION_STATE m_MotionState;					//モーションの状態
 	Motion_Info m_Motion[MOTION_MAX];			//モーション情報
 	bool m_bWinLose;							// 勝ち負けのロゴフラグ
+	bool m_bMotionPlaing;
 
 };
 #endif

@@ -17,6 +17,8 @@ CModelAnime::CModelAnime()
 	memset(&m_model, 0, sizeof(m_model));
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_posAnime = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_rotAnime = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_pParent = NULL;
 }
 
@@ -122,21 +124,23 @@ void CModelAnime::Draw(void)
 	//ワールドマトリックスの初期化
 	D3DXMatrixIdentity(&m_mtxWorld);
 
+	//向きを反映
+	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);
+	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
+
 	//アニメーションの向きを反映
 	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rotAnime.y, m_rotAnime.x, m_rotAnime.z);
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
 
-	//向きを反映
-	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
+	//位置を反映
+	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
+	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
 
 	//アニメーションの位置を反映
 	D3DXMatrixTranslation(&mtxTrans, m_posAnime.x, m_posAnime.y, m_posAnime.z);
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
 
-	//位置を反映
-	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
+
 
 	//親が存在する場合
 	if (m_pParent != NULL)
