@@ -315,6 +315,8 @@ void CManager::UnLoadAll(void)
 //=============================================================================
 void CManager::SetMode(MODE_TYPE mode)
 {
+	CSound *pSound = CManager::GetSound();
+
 	//Œ»Ýƒ‚[ƒh‚ÌI—¹
 	switch (m_mode)
 	{
@@ -331,7 +333,7 @@ void CManager::SetMode(MODE_TYPE mode)
 		if (m_pTutorial != NULL)
 		{
 			m_pTutorial->Uninit();
-
+			pSound->Stop(CSound::SOUND_LABEL_BGM_TITLE);
 			m_pTutorial = NULL;
 		}
 		break;

@@ -296,7 +296,8 @@ void CPlayer::Update(void)
 
 	// 地面の制限
 	GroundLimit();
-
+	//範囲外に行かないようにする処理
+	MapLimit();
 	switch (m_nPlayerNum)
 	{
 	case 0:
@@ -485,6 +486,8 @@ void CPlayer::SetMotion(MOTION_STATE motion)
 //=============================================================================
 void CPlayer::PlayerState(void)
 {
+	CSound *pSound = CManager::GetSound();
+
 	switch (m_state)
 	{
 	case PLAYER_STATE_NORMAL:
@@ -519,10 +522,15 @@ void CPlayer::PlayerState(void)
 			// 爆発の生成
 			C2dExplosion::Create(TargetPos,
 				D3DXVECTOR3(EXPLOSION_SIZE_X_2D, EXPLOSION_SIZE_Y_2D, EXPLOSION_SIZE_Z_2D));
+			//爆発音
+			pSound->Play(CSound::SOUND_LABEL_SE_EXPLOSION_DEAH);
+
 		}
 
 		if (m_nStateCounter >= STATE_EXPLOSION_END)
 		{
+			//爆発音を止める
+			pSound->Stop(CSound::SOUND_LABEL_SE_EXPLOSION_DEAH);
 			// 終わりのフラグ
 			m_bEnd = true;
 		}
@@ -663,6 +671,7 @@ void CPlayer::Walk(void)
 //=============================================================================
 void CPlayer::Jump(void)
 {
+	CSound *pSound = CManager::GetSound();
 	// キーボード更新
 	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
 
@@ -675,6 +684,8 @@ void CPlayer::Jump(void)
 		m_move.y = PLAYER_JUMP;
 		m_bJump = true;
 		SetMotion(MOTION_JUMP);
+		pSound->Play(CSound::SOUND_LABEL_SE_JUMP);
+
 	}
 }
 
@@ -683,6 +694,8 @@ void CPlayer::Jump(void)
 //=============================================================================
 void CPlayer::GroundLimit(void)
 {
+	CSound *pSound = CManager::GetSound();
+
 	// 着地の処理
 	if (m_pos.y <= GROUND_RIMIT)
 	{
@@ -698,6 +711,10 @@ void CPlayer::GroundLimit(void)
 			// 煙の生成
 			CSmoke::Create(D3DXVECTOR3(m_pos.x, 0.0f, m_pos.z), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 
 				D3DXVECTOR3(SMOKE_SIZE_X, SMOKE_SIZE_Y, SMOKE_SIZE_Z));
+
+			//着地音
+			pSound->Play(CSound::SOUND_LABEL_SE_SAND);
+
 		}
 	}
 }
@@ -728,6 +745,7 @@ void CPlayer::Dush(void)
 {
 	// キーボード更新
 	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
+	CSound *pSound = CManager::GetSound();
 
 	// ジャンプが使えるとき
 	if (m_bDushInter == false)
@@ -748,6 +766,10 @@ void CPlayer::Dush(void)
 				m_move.z -= cosf(m_fAngle)* PLAYER_DUSH;
 
 				m_bDush = true;
+
+				//ターボ音
+				pSound->Play(CSound::SOUND_LABEL_SE_TURBO);
+
 				// 地上にいたら
 				if (m_bJump == false)
 				{
@@ -775,6 +797,9 @@ void CPlayer::Dush(void)
 				m_move.z += cosf(m_fAngle)* PLAYER_DUSH;
 
 				m_bDush = true;
+
+				//ターボ音
+				pSound->Play(CSound::SOUND_LABEL_SE_TURBO);
 
 				// 地上にいたら
 				if (m_bJump == false)
@@ -866,25 +891,34 @@ void CPlayer::beam(void)
 {
 	// キーボード更新
 	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
+	CSound *pSound = CManager::GetSound();
 
 	// Lキーを押したとき・コントローラのR1を押したとき
 	if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_R_TRIGGER, m_nPlayerNum) && m_bJump == false
-		|| pKeyboard->GetTrigger(DIK_L) && m_bJump == false)
+		|| pKeyboard->GetTrigger(DIK_L) && m_bJump == false )
 	{
 		switch (m_nPlayerNum)
 		{
 		case 0:
-			//バレットの生成
-			CBeam::Create(m_pos, D3DXVECTOR3(0.0f, 0.0f, -BEAM_SPEED), D3DXVECTOR3(BEAM_SIZE_X, BEAM_SIZE_Y, BEAM_SIZE_Z), CBullet2::BULLET2_USER_PL1);
-			//弾うったらゲージを減らす
-			m_pCharge->Reduce(50, true);
+			if (CCharge::GetCharge(0) > PLAYER_LASER)
+			{
+				//バレットの生成
+				CBeam::Create(m_pos, D3DXVECTOR3(0.0f, 0.0f, -BEAM_SPEED), D3DXVECTOR3(BEAM_SIZE_X, BEAM_SIZE_Y, BEAM_SIZE_Z), CBullet2::BULLET2_USER_PL1);
+				//弾うったらゲージを減らす
+				m_pCharge->Reduce(50, true, 0);
+				pSound->Play(CSound::SOUND_LABEL_SE_BULLET);
+			}
 			break;
 
 		case 1:
-			//バレットの生成
-			CBeam::Create(m_pos, D3DXVECTOR3(0.0f, 0.0f, BEAM_SPEED), D3DXVECTOR3(BEAM_SIZE_X, BEAM_SIZE_Y, BEAM_SIZE_Z), CBullet2::BULLET2_USER_PL2);
-			//弾うったらゲージを減らす
-			m_pCharge->Reduce(50, true);
+			if (CCharge::GetCharge(1) > PLAYER_LASER)
+			{
+				//バレットの生成
+				CBeam::Create(m_pos, D3DXVECTOR3(0.0f, 0.0f, BEAM_SPEED), D3DXVECTOR3(BEAM_SIZE_X, BEAM_SIZE_Y, BEAM_SIZE_Z), CBullet2::BULLET2_USER_PL2);
+				//弾うったらゲージを減らす
+				m_pCharge->Reduce(50, true, 1);
+				pSound->Play(CSound::SOUND_LABEL_SE_BULLET);
+			}
 			break;
 		}
 	}
@@ -897,6 +931,8 @@ void CPlayer::bomb(void)
 {
 	// キーボード更新
 	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
+	CSound *pSound = CManager::GetSound();
+	
 
 	// Lキーを押したとき・コントローラのR1を押したとき
 	if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_R2_TRIGGER, m_nPlayerNum) && m_bJump == false
@@ -905,23 +941,69 @@ void CPlayer::bomb(void)
 		switch (m_nPlayerNum)
 		{
 		case 0:
-			//バレットの生成
-			CBomb::Create(D3DXVECTOR3(m_pos.x, m_pos.y + 50.0f, m_pos.z),
-				D3DXVECTOR3(0.0f, BOMB_MOVE_Y, 0.0f),
-				D3DXVECTOR3(BOMB_SIZE_X, BOMB_SIZE_Y, BOMB_SIZE_Z), CBullet2::BULLET2_USER_PL1);
-			//弾うったらゲージを減らす
-			m_pCharge->Reduce(50, true);
+			if (CCharge::GetCharge(0) >  PLAYER_BOMB)
+			{
+				//バレットの生成
+				CBomb::Create(D3DXVECTOR3(m_pos.x, m_pos.y + 50.0f, m_pos.z),
+					D3DXVECTOR3(0.0f, BOMB_MOVE_Y, 0.0f),
+					D3DXVECTOR3(BOMB_SIZE_X, BOMB_SIZE_Y, BOMB_SIZE_Z), CBullet2::BULLET2_USER_PL1);
+
+				//発射音
+				pSound->Play(CSound::SOUND_LABEL_SE_BULLET2);
+				//弾うったらゲージを減らす
+				m_pCharge->Reduce(PLAYER_BOMB, true,0);
+			}
+
 			break;
 
 		case 1:
-			//バレットの生成
-			CBomb::Create(D3DXVECTOR3(m_pos.x, m_pos.y + 50.0f, m_pos.z),
-				D3DXVECTOR3(0.0f, BOMB_MOVE_Y, BOMB_SPEED),
-				D3DXVECTOR3(BOMB_SIZE_X, BOMB_SIZE_Y, BOMB_SIZE_Z), CBullet2::BULLET2_USER_PL2);
-			//弾うったらゲージを減らす
-			m_pCharge->Reduce(50, true);
+			if (CCharge::GetCharge(1) > PLAYER_BOMB)
+			{
+				//バレットの生成
+				CBomb::Create(D3DXVECTOR3(m_pos.x, m_pos.y + 50.0f, m_pos.z),
+					D3DXVECTOR3(0.0f, BOMB_MOVE_Y, BOMB_SPEED),
+					D3DXVECTOR3(BOMB_SIZE_X, BOMB_SIZE_Y, BOMB_SIZE_Z), CBullet2::BULLET2_USER_PL2);
+
+				//発射音
+				pSound->Play(CSound::SOUND_LABEL_SE_BULLET2);
+
+				//弾うったらゲージを減らす
+				m_pCharge->Reduce(PLAYER_BOMB, true,1);
+			}
+
 			break;
 		}
+	}
+
+}
+
+//=============================================================================
+// 範囲外に行かないようにする処理
+//=============================================================================
+void CPlayer::MapLimit(void)
+{
+	//右
+	if (m_pos.x > MAP_LIMIT)
+	{
+		m_pos.x = MAP_LIMIT;
+	}
+
+	//左
+	if (m_pos.x <-MAP_LIMIT)
+	{
+		m_pos.x = -MAP_LIMIT;
+	}
+	
+	//奥
+	if (m_pos.z > MAP_LIMIT)
+	{
+		m_pos.z = MAP_LIMIT;
+	}
+
+	//手前
+	if (m_pos.z <-MAP_LIMIT)
+	{
+		m_pos.z = -MAP_LIMIT;
 	}
 }
 

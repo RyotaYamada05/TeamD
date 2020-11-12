@@ -36,6 +36,10 @@
 #define PLAYER_COLLISION_Y	(350)		// 当たり判定
 #define PLAYER_COLLISION_Z	(250)		// 当たり判定
 
+#define PLAYER_BOMB			(50)		// ボム撃つのに必要なゲージ数
+#define PLAYER_LASER		(50)		// レーザー撃つのに必要なゲージ数
+
+#define MAP_LIMIT			(6750)		// 行ける上限数
 //=============================================================================
 // 前方宣言
 //=============================================================================
@@ -137,6 +141,7 @@ public:
 	void Dush(void);												// ダッシュ
 	void beam(void);												// ビーム
 	void bomb(void);												// ボム
+	void MapLimit(void);
 
 	D3DXVECTOR3 GetPos(void);
 

@@ -10,7 +10,7 @@
 #include "life.h"
 #include "2d_explosion.h"
 #include "shock.h"
-
+#include "manager.h"
 //=============================================================================
 //ƒ}ƒNƒ’è‹`
 //=============================================================================
@@ -186,6 +186,7 @@ bool CBullet::Collision(void)
 
 			m_pTargetPL->GetLife(nCount)->Decrease(50, m_user, true);
 		}
+
 		C2dExplosion::Create(m_pos,
 			D3DXVECTOR3(EXPLOSION_SIZE_X_2D, EXPLOSION_SIZE_Y_2D, EXPLOSION_SIZE_Z_2D));
 		return true;
