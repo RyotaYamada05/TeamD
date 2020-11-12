@@ -35,6 +35,7 @@ class CLockon;
 class CBill;
 class CContinue;
 class CUiEnd;
+
 //***************************************************************************************
 // インクルードファイル
 //***************************************************************************************
@@ -60,11 +61,10 @@ public:
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
+	void SetGame(void);
+	void ResetGame(void);
 
-private:
-
-	
-	static CCamera *m_apCamera[MAX_PLAYER];		// カメラのポインタ	
+private:	static CCamera *m_apCamera[MAX_PLAYER];		// カメラのポインタ	
 	static CLight *m_pLight;					// ライトのポインタ
 	static CMeshField *m_pMeshField;			// メッシュフィールドのポインタ
 	static CMeshShape * m_pSphere;					// メッシュスフィアのポインタ
@@ -77,6 +77,8 @@ private:
 	static CLockon *m_pLockon;					// ロックオンのポインタ
 	static CBill *m_pBill;						// ビルのポインタ
 	static CContinue *m_pContinue;
+	static int m_nRoundNum;						// 現在のラウンド数
+	static int m_aWinNum[MAX_PLAYER];			// 勝利した数
 	LPD3DXFONT m_pFont;
 };
 #endif

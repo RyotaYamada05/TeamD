@@ -50,7 +50,10 @@
 #include "laser.h"
 #include "missile.h"
 #include "fire.h"
-#include "boost.h"//=============================================================================
+#include "sea.h"
+#include "boost.h"
+
+//=============================================================================
 //静的メンバ変数宣言
 //=============================================================================
 CManager::MODE_TYPE CManager::m_mode = CManager::MODE_TYPE_TITLE;
@@ -136,6 +139,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindow)
 			return -1;
 		}
 	}
+
 
 	//タイトルクラスのクリエイト
 	//m_pTitle = CTitle::Create();
@@ -285,6 +289,7 @@ void CManager::LoadAll(void)
 	CMissile::Load();
 	CFire::Load();
 	CBoost::Load();
+	CSea::Load();
 }
 
 //=============================================================================
@@ -316,10 +321,11 @@ void CManager::UnLoadAll(void)
 	CMissile::UnLoad();
 	CFire::UnLoad();
 	CBoost::UnLoad();
+
 	CLockon::Unload();
 	CNumber::Unload();
 	CUiEnd::Unload();
-	
+	CSea::UnLoad();
 }
 
 //=============================================================================

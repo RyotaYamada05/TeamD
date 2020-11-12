@@ -16,6 +16,7 @@
 //================================================
 LPDIRECT3DTEXTURE9 CLife::m_apTexture[LIFETYPE_PLAYER_MAX] = {};
 bool CLife::m_bStart = true;
+
 //================================================
 //クリエイト処理
 //================================================
@@ -80,6 +81,7 @@ CLife::CLife()
 	m_col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);		//カラー
 	m_type = LIFETYPE_NONE;		//タイプ
 	m_bEnd= false;
+	m_bStart = true;
 }
 
 //================================================
@@ -87,7 +89,6 @@ CLife::CLife()
 //================================================
 CLife::~CLife()
 {
-
 }
 
 //================================================
@@ -108,7 +109,7 @@ HRESULT CLife::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size, const D3DXCOL
 	CGauge::SetPos(D3DXVECTOR3(m_pos.x, m_pos.y, m_pos.z));
 
 	//サイズ設定
-	CGauge::SetSize(D3DXVECTOR3(m_size.x, m_size.y, m_size.z));
+	CGauge::SetSize(D3DXVECTOR3(size.x, size.y, size.z));
 
 	//カラー設定
 	CGauge::SetCol(D3DXCOLOR(m_col.r, m_col.g, m_col.b, m_col.a));
@@ -131,13 +132,19 @@ void CLife::Update(void)
 {
 	CGauge::Update();
 
-	//ライフの最初の動き
-	LifeStart();
-	//ライフを減らす
-	Lifereduce();
-	//ライフが半分になると点滅させる
-	LifeFlashing();
-	
+	if (m_bStart == true)
+	{
+		//ライフの最初の動き
+		LifeStart();
+	}
+	else
+	{
+		//ライフを減らす
+		Lifereduce();
+
+		//ライフが半分になると点滅させる
+		LifeFlashing();
+	}
 }
 
 //================================================
@@ -267,11 +274,11 @@ void CLife::LifeStart(void)
 	//サイズの取得
 	D3DXVECTOR3 size = GetSize();
 
-	if (size.x < MAX_LIFE)
+	if (m_size.x < MAX_LIFE)
 	{
 		if (m_bStart == true)
 		{
-			size.x += 2;
+			m_size.x += 2;
 		}
 	}
 	else
@@ -279,7 +286,7 @@ void CLife::LifeStart(void)
 		m_bStart = false;
 	}
 	//サイズの設定
-	SetSize(size);
+	SetSize(m_size);
 }
 
 //================================================

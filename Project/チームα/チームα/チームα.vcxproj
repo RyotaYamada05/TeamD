@@ -193,6 +193,7 @@
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="scene2d.cpp" />
     <ClCompile Include="scene3D.cpp" />
+    <ClCompile Include="sea.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="shape.cpp" />
     <ClCompile Include="shock.cpp" />
@@ -252,6 +253,7 @@
     <ClInclude Include="scene.h" />
     <ClInclude Include="scene2d.h" />
     <ClInclude Include="scene3D.h" />
+    <ClInclude Include="sea.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="shape.h" />
     <ClInclude Include="shock.h" />
