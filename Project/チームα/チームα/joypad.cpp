@@ -24,6 +24,7 @@ CInputJoypad::CInputJoypad()
 	memset(m_aJoyState, 0, sizeof(m_aJoyState));
 	memset(m_aJoyStateTrigger, 0, sizeof(m_aJoyState));
 	memset(m_aJoyStateRelease, 0, sizeof(m_aJoyState));
+	memset(m_JoyPadState, 0, sizeof(m_JoyPadState));
 }
 
 //=====================================================
@@ -128,6 +129,9 @@ void CInputJoypad::Update(void)
 	{
 		if (m_apDevice[nCnt] != NULL)
 		{
+			//１フレーム前の状態を保存
+			m_JoyPadState[nCnt].Old.rgdwPOV[0] = m_JoyPadState[nCnt].Press.rgdwPOV[0];
+
 			m_apDevice[nCnt]->Poll();
 
 			hr = m_apDevice[nCnt]->GetDeviceState(sizeof(DIJOYSTATE), &js);
@@ -135,6 +139,9 @@ void CInputJoypad::Update(void)
 			//デバイスからデータを取得
 			if (SUCCEEDED(hr))
 			{
+				//十字キーの情報を保存
+				m_JoyPadState[nCnt].Press.rgdwPOV[0] = js.rgdwPOV[0];
+
 				for (nCntKey = 0; nCntKey < NUM_JOY_MAX; nCntKey++)
 				{
 					//キートリガー
@@ -177,6 +184,35 @@ bool CInputJoypad::GetJoystickTrigger(int nKey, int nId)
 bool CInputJoypad::GetJoystickRelease(int nKey, int nId)
 {
 	return m_aJoyStateRelease[nKey][nId] & 0x80 ? true : false;
+}
+
+//=============================================================================
+//十字キーが押された瞬間の判定処理
+//=============================================================================
+bool CInputJoypad::GetPushCross(int nButton, int nId)
+{
+	//前回が何も押されていないかつ、現在が押されていたら
+	if (m_JoyPadState[nId].Old.rgdwPOV[0] == 0xFFFFFFFF && 
+		m_JoyPadState[nId].Press.rgdwPOV[0] == nButton)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+//=============================================================================
+//十字キーが離された瞬間の判定処理
+//=============================================================================
+bool CInputJoypad::GetPushRelease(int nButton, int nId)
+{
+	//前回が押されているかつ、現在が押されていない
+	if (m_JoyPadState[nId].Old.rgdwPOV[0] == nButton &&
+		m_JoyPadState[nId].Press.rgdwPOV[0] == 0xFFFFFFFF)
+	{
+		return true;
+	}
+	return false;
 }
 
 LPDIRECTINPUTDEVICE8 CInputJoypad::GetController(int nNumber)

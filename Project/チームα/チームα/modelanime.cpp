@@ -17,6 +17,8 @@ CModelAnime::CModelAnime()
 	memset(&m_model, 0, sizeof(m_model));
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_posAnime = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_rotAnime = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_pParent = NULL;
 }
 
@@ -137,6 +139,14 @@ void CModelAnime::Draw(void)
 	//à íuÇîΩâf
 	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
+
+
+
+
+
+
+
+
 
 	//êeÇ™ë∂ç›Ç∑ÇÈèÍçá
 	if (m_pParent != NULL)
