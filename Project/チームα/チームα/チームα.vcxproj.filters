@@ -142,12 +142,15 @@
     <ClCompile Include="shock.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+
     <ClCompile Include="smoke.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+
     <ClCompile Include="sound.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+
     <ClCompile Include="splash.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -359,7 +362,9 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+
     <Filter Include="ソース ファイル">
+
       <UniqueIdentifier>{a35452cf-3e24-4b8c-b51e-c17b55f93d0b}</UniqueIdentifier>
     </Filter>
     <Filter Include="ヘッダー ファイル">

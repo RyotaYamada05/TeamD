@@ -101,8 +101,7 @@ HRESULT CBillboard::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 // 終了処理
 //=====================================================
 void CBillboard::Uninit(void)
-{
-	//頂点バッファの破棄
+{	//頂点バッファの破棄
 	if (m_pVtxBuff != NULL)
 	{
 		m_pVtxBuff->Release();

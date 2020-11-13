@@ -97,6 +97,11 @@ HRESULT CUi::Load(void)
 		"Data/TEXTURE/continue.png", //ファイルの読み込み
 		&m_apTexture[UYTYPE_CONTINUE]);
 
+	// 引き分け
+	D3DXCreateTextureFromFile(pDevice,
+
+		"Data/TEXTURE/continue.png", //ファイルの読み込み
+		&m_apTexture[UITYPE_DRAW]);
 
 	return S_OK;
 }
@@ -136,7 +141,7 @@ CUi::CUi()
 //================================================
 CUi::~CUi()
 {
-
+	m_nUi--;
 }
 
 //================================================
@@ -185,33 +190,6 @@ void CUi::Update(void)
 
 	// キーボード更新
 	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
-
-	//if (pKeyboard->GetTrigger(DIK_T))
-	//{
-	//	Create(D3DXVECTOR3(UI_RESULT_POS_LEFT_X, UI_RESULT_POS_Y, 0.0f), D3DXVECTOR3(UI_RESULT_SIZE_X, UI_RESULT_SIZE_Y, 0.0f), CUi::UITYPE_WIN);
-	//	Create(D3DXVECTOR3(UI_RESULT_POS_RIGHT_X, UI_RESULT_POS_Y, 0.0f), D3DXVECTOR3(UI_RESULT_SIZE_X, UI_RESULT_SIZE_Y, 0.0f), CUi::UITYPE_LOSE);
-	//}
-
-	//if (pKeyboard->GetTrigger(DIK_Y))
-	//{
-	//	Create(D3DXVECTOR3(UI_RESULT_POS_RIGHT_X, UI_RESULT_POS_Y, 0.0f), D3DXVECTOR3(UI_RESULT_SIZE_X, UI_RESULT_SIZE_Y, 0.0f), CUi::UITYPE_WIN);
-	//	Create(D3DXVECTOR3(UI_RESULT_POS_LEFT_X, UI_RESULT_POS_Y, 0.0f), D3DXVECTOR3(UI_RESULT_SIZE_X, UI_RESULT_SIZE_Y, 0.0f), CUi::UITYPE_LOSE);
-	//}
-
-	if (m_type == UITYPE_WIN || m_type == UITYPE_LOSE)
-	{
-		for (int nCount = 0; nCount < MAX_PLAYER; nCount++)
-		{
-			bool bWinLose = CGame::GetPlayer(nCount)->GetSetWinLose();
-
-			// フラグが無くなったら
-			if (bWinLose == false)
-			{
-				Uninit();
-				break;
-			}
-		}
-	}
 }
 
 //================================================

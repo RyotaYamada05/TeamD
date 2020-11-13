@@ -163,10 +163,11 @@ void CEffect::Draw(void)
 	// 加算合成を行う
 	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);			// aデスティネーションカラー
 
-	D3DMATERIAL9 material;
+	D3DMATERIAL9 material, OldMaterial;
 	ZeroMemory(&material, sizeof(D3DMATERIAL9));
-	material.Ambient = m_col;
+	material.Ambient = D3DXCOLOR(0.1f, 0.4f, 1.0f, 1.0f);
 	material.Diffuse = D3DXCOLOR(0.1f, 0.1f, 0.1f, 1.0f);
+	pDevice->GetMaterial(&OldMaterial);
 	pDevice->SetMaterial(&material);
 	pDevice->SetRenderState(D3DRS_AMBIENT, 0x44444444);
 
@@ -180,11 +181,11 @@ void CEffect::Draw(void)
 
 	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);	// aデスティネーションカラー
 
-
 	// Zバッファ戻す
 	pDevice->SetRenderState(D3DRS_ZENABLE, true);
 
 	pDevice->SetRenderState(D3DRS_AMBIENT, ambient);
+	pDevice->SetMaterial(&OldMaterial);					// マテリアルを元に戻す
 	pDevice->LightEnable(0, TRUE);
 }
 

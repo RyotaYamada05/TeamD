@@ -67,7 +67,7 @@ HRESULT CSea::Load(void)
 	LPDIRECT3DDEVICE9 pDevice = pRenderer->GetDevice();
 
 	// テクスチャの読み込み
-	D3DXCreateTextureFromFile(pDevice, "data/Texture/stone_00124.jpg",
+	D3DXCreateTextureFromFile(pDevice, "data/Texture/sea000.jpeg",
 		&m_apTexture[0]);
 
 	return S_OK;
@@ -139,7 +139,7 @@ HRESULT CSea::Init(void)
 		for (nCntH = 0; nCntH < SEA_WIDTH + 1; nCntH++)
 		{
 			// 頂点の設定
-			pVtx[(nCntV * (SEA_HEIGHT + 1)) + nCntH].pos = D3DXVECTOR3(-SEA_WIDTH_SIZE + (nCntH * m_fOne_SizeW), 0.0f, SEA_HEIGHT_SIZE - (nCntV * m_fOne_SizeH));
+			pVtx[(nCntV * (SEA_HEIGHT + 1)) + nCntH].pos = D3DXVECTOR3(-SEA_WIDTH_SIZE + (nCntH * m_fOne_SizeW), -500.0f, SEA_HEIGHT_SIZE - (nCntV * m_fOne_SizeH));
 
 			// 法線ベクトルの設定
 			pVtx[(nCntV * (SEA_HEIGHT + 1)) + nCntH].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);

@@ -51,11 +51,11 @@ HRESULT CUiStart::Load(void)
 	D3DXCreateTextureFromFile(pDevice,
 		"data/Texture/ROUND1.png", //ファイルの読み込み
 		&m_apTexture[UISTARTTYPE_ROUND_1]);
-
 	//round2
 	D3DXCreateTextureFromFile(pDevice,
 		"data/Texture/ROUND2.png", //ファイルの読み込み
 		&m_apTexture[UISTARTTYPE_ROUND_2]);
+
 
 	//round3
 	D3DXCreateTextureFromFile(pDevice,

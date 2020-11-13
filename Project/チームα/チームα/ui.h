@@ -44,7 +44,7 @@
 #define UI_LOCKON_POS_RIGHT_X	(960.0f)	// ロックオンの右側のX軸
 #define UI_LOCKON_POS_Y			(360.0f)	// ロックオンのY軸
 //種類
-#define UI_TYPE					(12)		// UIの種類の最大数
+#define UI_TYPE					(10)		// UIの種類の最大数
 
 //=============================================================================
 //クラス宣言
@@ -64,6 +64,7 @@ public:
 		UITYPE_LOSE,		// LOSE文字
 		UITYPE_STANDARD,	// 標準表示
 		UYTYPE_CONTINUE,	// CONTINUE文字
+		UITYPE_DRAW,		// 引き分け
 		UITYPE_MAX
 	}UITYPE;
 

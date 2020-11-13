@@ -41,7 +41,10 @@ CTitle::CTitle()
 //=======================================================================================
 CTitle::~CTitle()
 {
-
+	for (int nCount = 0; nCount < MAX_TITLE; nCount++)
+	{
+		m_apTitlelogo[nCount] = NULL;
+	}
 }
 
 //=======================================================================================
@@ -74,6 +77,32 @@ HRESULT CTitle::Load(void)
 //=======================================================================================
 HRESULT CTitle::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 {
+	//デバイスの取得
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
+
+	// ビューポートの設定
+	D3DVIEWPORT9 view_port;
+
+	// ビューポートの左上座標
+	view_port.X = 0;
+	view_port.Y = 0;
+
+	// ビューポートの幅
+	view_port.Width = SCREEN_WIDTH;
+
+	// ビューポートの高さ
+	view_port.Height = SCREEN_HEIGHT;
+
+	// ビューポート深度設定
+	view_port.MinZ = 0.0f;
+	view_port.MaxZ = 1.0f;
+
+	// ビューポート設定
+	if (FAILED(pDevice->SetViewport(&view_port)))
+	{
+		return E_FAIL;
+	}
+
 	if (m_pScene == NULL)
 	{
 		m_pScene = CScene2d::Create(D3DXVECTOR3(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0.0f), D3DXVECTOR3(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0.0f));

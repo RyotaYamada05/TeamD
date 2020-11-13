@@ -228,7 +228,6 @@ bool CBullet2::Collision(void)
 	//位置の取得
 	D3DXVECTOR3 targetPos = pPlayer->GetPos();
 
-
 	// 当たり判定
 	if (targetPos.x >= m_pos.x - PLAYER_COLLISION_X / 2 &&
 		targetPos.x <= m_pos.x + PLAYER_COLLISION_X / 2 &&
@@ -241,7 +240,10 @@ bool CBullet2::Collision(void)
 		{
 			//　プレイヤーのライフを減らす
 
-			m_pTargetPL->GetLife(nCount)->Decrease(50, m_user, true);
+			if (m_pTargetPL != NULL)
+			{
+				m_pTargetPL->GetLife(nCount)->Decrease(50, m_user, true);
+			}
 
 			// 爆発生成
 			C2dExplosion::Create(m_pos,

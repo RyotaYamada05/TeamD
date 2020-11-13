@@ -12,12 +12,24 @@
 //=============================================================================
 #include "main.h"
 
+//=============================================================================
+// 前方宣言
+//=============================================================================
+class CLockon;
+
 //===========================================================
 //カメラクラス
 //=============================================================================
 class CCamera
 {
 public:
+	typedef enum
+	{
+		CAMERASTATE_NONE = 0,
+		CAMERASTATE_NORMAL,	//通常
+		CAMERASTATE_END,	//終了
+		CAMERASTATE_MAX	//STATEの最大数
+	}CAMERASTATE;
 	//=========================================================================
 	//パブリックメンバ関数宣言
 	//=========================================================================
@@ -38,8 +50,8 @@ private:
 	//=========================================================================
 	//プライベートメンバ関数宣言
 	//=========================================================================
-	void EndUpdate(D3DXVECTOR3 PlayerPos[], int nWinPlayer);
-	void NomalUpdate(D3DXVECTOR3 PlayerPos[]);
+	void EndUpdate(D3DXVECTOR3 PlayerPos[], D3DXVECTOR3 PlayerRot[], int nWinPlayer);
+	void NomalUpdate(D3DXVECTOR3 PlayerPos[], D3DXVECTOR3 PlayerRot[]);
 	//=========================================================================
 	//メンバ変数宣言
 	//=========================================================================
@@ -53,12 +65,14 @@ private:
 	D3DXMATRIX m_mtxProjection;				//プロジェクションマトリックス
 	D3DXMATRIX m_mtxView;					//ビューマトリックス
 	D3DXVECTOR3 m_rot;						//向き
-	bool m_bTarget;
-	float m_fθ;
-	float m_fφ;
+	bool m_bTarget;							//ターゲット使用フラグ
+	float m_fθ;							//縦回転角度
+	float m_fφ;							//横回転角
 	int m_nCameraNum;						//プレイヤーの番号
 	float m_fDistance;						//視点～注視点の距離
 	float m_fMove;							//移動量
+	CAMERASTATE m_state;					//ステータス
 	static int m_nCameraAll;				//カメラの数
+	CLockon *m_pLockon[2];
 };
 #endif 

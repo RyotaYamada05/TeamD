@@ -149,25 +149,35 @@ void CLockon::Update(void)
 	//ロックオン
 	if (m_type == LOCKONTYPE_FAST_PLAYER)
 	{
-		if ((CGame::GetCamera(0)->GetTargetBool() == true))
+		CCamera *pCamera = CGame::GetCamera(0);
+
+		if (pCamera != NULL)
 		{
-			col.a = 1.0f;
-		}
-		else
-		{
-			col.a = 0.0f;
+			if ((pCamera->GetTargetBool() == true))
+			{
+				col.a = 1.0f;
+			}
+			else
+			{
+				col.a = 0.0f;
+			}
 		}
 	}
 
 	if (m_type == LOCKONTYPE_SECOND_PLAYER)
 	{
-		if ((CGame::GetCamera(1)->GetTargetBool() == true))
+		CCamera *pCamera = CGame::GetCamera(1);
+
+		if (pCamera != NULL)
 		{
-			col.a = 1.0f;
-		}
-		else
-		{
-			col.a = 0.0f;
+			if ((pCamera->GetTargetBool() == true))
+			{
+				col.a = 1.0f;
+			}
+			else
+			{
+				col.a = 0.0f;
+			}
 		}
 	}
 	//色の設定

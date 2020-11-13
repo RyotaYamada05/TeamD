@@ -50,8 +50,9 @@
 #include "laser.h"
 #include "missile.h"
 #include "fire.h"
-#include "boost.h"
 #include "sea.h"
+#include "boost.h"
+#include "locus.h"
 
 //=============================================================================
 //静的メンバ変数宣言
@@ -67,7 +68,6 @@ CGame *CManager::m_pGame = NULL;
 CResult *CManager::m_pResult = NULL;
 CInputJoypad *CManager::m_pJoypad = NULL;
 CSound *CManager::m_pSound = NULL;			//サウンドクラスのポインタ
-
 //=============================================================================
 //コンストラクタ
 //=============================================================================
@@ -140,6 +140,10 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindow)
 			return -1;
 		}
 	}
+
+
+	//タイトルクラスのクリエイト
+	//m_pTitle = CTitle::Create();
 
 	//フェードクラスのクリエイト
 	m_pFade = CFade::Create();
@@ -287,6 +291,7 @@ void CManager::LoadAll(void)
 	CFire::Load();
 	CBoost::Load();
 	CSea::Load();
+	CLocus::Load();
 }
 
 //=============================================================================
@@ -318,10 +323,12 @@ void CManager::UnLoadAll(void)
 	CMissile::UnLoad();
 	CFire::UnLoad();
 	CBoost::UnLoad();
+
 	CLockon::Unload();
 	CNumber::Unload();
 	CUiEnd::Unload();
 	CSea::UnLoad();
+	CLocus::UnLoad();
 }
 
 //=============================================================================
@@ -354,7 +361,6 @@ void CManager::SetMode(MODE_TYPE mode)
 		if (m_pGame != NULL)
 		{
 			m_pGame->Uninit();
-
 			m_pGame = NULL;
 		}
 		break;

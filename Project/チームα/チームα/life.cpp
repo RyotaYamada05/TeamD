@@ -79,6 +79,7 @@ CLife::CLife()
 	m_bLife = false;
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);		//カラー
+	m_size = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_type = LIFETYPE_NONE;		//タイプ
 	m_bEnd= false;
 	m_bStart = true;
@@ -89,6 +90,7 @@ CLife::CLife()
 //================================================
 CLife::~CLife()
 {
+	m_bStart = false;
 }
 
 //================================================
@@ -287,6 +289,14 @@ void CLife::LifeStart(void)
 	}
 	//サイズの設定
 	SetSize(m_size);
+}
+
+//================================================
+// READYの設定
+//================================================
+void CLife::SetReady(bool bReady)
+{
+	m_bStart = bReady;
 }
 
 //================================================

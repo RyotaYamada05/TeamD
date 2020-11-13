@@ -46,7 +46,7 @@ HRESULT CLight::Init(void)
 	//m_Light.Ambient = D3DXCOLOR(0.5f, 0.5f, 0.5f, 0.5f);
 
 	//ライト方向の指定
-	vecDir = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
+	vecDir = D3DXVECTOR3(0.0f, -1.0f, 0.0f);
 
 	//正規化する（大きさ1のベクトルにする必要がある）
 	D3DXVec3Normalize(&vecDir, &vecDir);	

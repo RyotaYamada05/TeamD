@@ -17,12 +17,9 @@
 // マクロ定義
 //=============================================================================
 #define LIFE_NUM			(2)			// 表示するライフの数
+#define WIN_LOSE_NUM		(2)
 #define MAX_PARTS			(10)		// パーツの数
 #define MOTION_KEYSET_MAX	(32)		// キーセット最大数
-#define PLAYER1_POS_X		(0.0f)		// 座標
-#define PLAYER1_POS_Y		(171.0f)	// 座標
-#define PLAYER1_POS_Z		(0)			// 座標
-
 #define PLAYER2_POS_X		(0.0f)		// 座標
 #define PLAYER2_POS_Y		(171.0f)	// 座標
 #define PLAYER2_POS_Z		(500)		// 座標
@@ -30,11 +27,15 @@
 #define PLAYER_SIZE_X		(1)			// サイズ
 #define PLAYER_SIZE_Y		(1)			// サイズ
 #define PLAYER_SIZE_Z		(1)			// サイズ
-#define MODEL_PARTS			(20)		//モデルのパーツ数
+#define MAX_MODEL_PARTS		(21)		//モデルのパーツの最大数
 
 #define PLAYER_COLLISION_X	(200)		// 当たり判定
 #define PLAYER_COLLISION_Y	(175)		// 当たり判定
 #define PLAYER_COLLISION_Z	(200)		// 当たり判定
+
+#define WEAPON_COLLISION_X	(100)		// 武器の当たり判定
+#define WEAPON_COLLISION_Y	(50)		// 武器の当たり判定
+#define WEAPON_COLLISION_Z	(100)		// 武器の当たり判定
 
 #define PLAYER_RADIUS		(150)		// 半径
 
@@ -45,6 +46,7 @@ class CScore;
 class CLife;
 class CCharge;
 class CBoost;
+class CUi;
 
 //=============================================================================
 //　モーション状態の列挙型
@@ -55,9 +57,13 @@ typedef enum
 	MOTION_NONE = -1,
 	MOTION_IDOL,	//アイドルモーション
 	MOTION_WALK,	//歩行モーション
-	MOTION_DUSH,	//ダッシュモーション
+	MOTION_ATTACK,	//ダッシュモーション
 	MOTION_JUMP,	//ジャンプモーション
-	MOTION_MAX,	//モーション最大数
+	MOTION_LANDING,	//着地モーション
+	MOTION_WIN,		//勝利モーション
+	MOTION_JUMP3,	//ジャンプモーション
+	MOTION_JUMP4,	//ジャンプモーション
+	MOTION_MAX,		//モーション最大数
 }MOTION_STATE;
 
 //=============================================================================
@@ -90,7 +96,7 @@ typedef struct
 typedef struct
 {
 	int nFrame;	//フレーム数
-	KEY aKey[MODEL_PARTS];	//各パーツのキー情報
+	KEY aKey[MAX_MODEL_PARTS];	//各パーツのキー情報
 }KEY_INFO;
 
 //=============================================================================
@@ -100,7 +106,7 @@ typedef struct
 {
 	bool bLoop;	//ループするかどうか
 	int nNumKey;	//キー数
-	KEY_INFO aKeyInfo[10];	//キー情報
+	KEY_INFO aKeyInfo[20];	//キー情報
 }Motion_Info;
 
 //=============================================================================
@@ -115,7 +121,8 @@ public:
 		PLAYER_STATE_NONE = 0,		// 初期置
 		PLAYER_STATE_NORMAL,		// 通常状態
 		PLAYER_STATE_DAMAGE,		// ダメージ
-		PLAYER_STATE_EXPLOSION,		// 爆発7
+		PLAYER_STATE_EXPLOSION,		// 爆発
+		PLAYER_STATE_DRAW,			// 引き分け
 		PLAYER_STATE_MAX
 	}PLAYER_STATE;
 
@@ -139,30 +146,40 @@ public:
 	void Fall(void);												// 急降下
 	void Dush(void);												// ダッシュ
 	void beam(void);												// ビーム
+	void Locus(void);												// 軌跡
+	D3DXVECTOR3 GetRot(void);										// 角度情報
 	void bomb(void);												// ボム
 	void Laser(void);												// レーザー
 	void BlockUp(void);												// ブロックの上に乗ったとき
 	void SetPos(D3DXVECTOR3 pos);
 	void SetWinToLose(bool bFlag);									// 勝ち負けロゴの設定
+	void MotionState(void);											// モーション状態
+	void WeaponCollision(void);										// 武器の当たり判定
+	void TimeLimit(void);											// タイムリミット
 	bool GetSetWinLose(void);
 	D3DXVECTOR3 GetPos(void);										// 現在の座標情報
 	D3DXVECTOR3 GetOldPos(void);									// 古い座標情報
 	void SetMove(D3DXVECTOR3 move);										// 移動量の設定
 	D3DXVECTOR3 GetMove(void);
-	D3DXVECTOR3 GetRot(void);
-
+	void SetState(PLAYER_STATE state);									// プレイヤー情報の設定
 	CLife *GetLife(int nNumber);									// ライフの情報
 	CCharge *GetCgarge(void);										// チャージのポインタ
 	HRESULT ReadFile(void);
 	bool GetEnd(void);												// エンド情報
 	PLAYER_STATE GetState(void);									// プレイヤーの状態
+	bool GetDraw(void);												// 引き分けのフラグ
 private:
+
 	CScore *pScore;								// スコアの情報
 	CLife *m_pLife[LIFE_NUM];					// ライフのポインタ
+	CUi *m_pWinLose[WIN_LOSE_NUM];				// 勝敗のポインタ
 	CBoost *m_pBoost;							// ブーストのポインタ
 	CCharge *m_pCharge;							// チャージのポインタ
+	CUi *m_pDraw;								// 引き分けのポインタ
 	D3DXVECTOR3 m_pos;							// 座標
-	D3DXVECTOR3 m_OldPos;						// 1フレーム前の座標
+	D3DXVECTOR3 m_OldPos;						// 古い座標
+	D3DXVECTOR3 m_OldOrigin;					// 1フレーム前の座標
+	D3DXVECTOR3 m_OldTop;						// 1フレーム前の座標
 	D3DXVECTOR3 m_rot;							// 回転
 	D3DXVECTOR3 m_move;							// 移動
 	PLAYER_STATE m_state;						// プレイヤー状態
@@ -178,7 +195,7 @@ private:
 	bool m_bFall;								// 急降下フラグ
 	static int m_nPlayerAll;					// プレイヤーの数
 	D3DXMATRIX m_mtxWorld;						// ワールドマトリックス
-	CModelAnime *m_apModelAnime[MODEL_PARTS];	//モデルパーツ用のポインタ
+	CModelAnime *m_apModelAnime[MAX_MODEL_PARTS];	//モデルパーツ用のポインタ
 	int m_nNumKey;								//キーの総数
 	int m_nKey;									//現在キーのNo
 	int m_nCountMotion;							//モーションカウンター
@@ -186,5 +203,6 @@ private:
 	MOTION_STATE m_MotionState;					//モーションの状態
 	Motion_Info m_Motion[MOTION_MAX];			//モーション情報
 	bool m_bWinLose;							// 勝ち負けのロゴフラグ
+	bool m_bDraw;								// 引き分けフラグ
 };
 #endif

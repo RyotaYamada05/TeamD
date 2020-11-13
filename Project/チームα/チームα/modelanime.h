@@ -48,6 +48,7 @@ public:
 	D3DXVECTOR3 GetRot(void)const;
 	D3DXVECTOR3 GetRotAnime(void)const;
 	D3DXMATRIX GetMtxWorld(void);
+	D3DXMATRIX GetOldMtxWorld(void);
 
 private:
 	//=========================================================================
@@ -60,6 +61,9 @@ private:
 	D3DXVECTOR3 m_rotAnime;	//アニメーション用の向き
 	D3DXMATRIX m_mtxWorld;		// ワールドマトリックス
 	CModelAnime *m_pParent;	//親情報のポインタ
+	D3DXMATRIX m_OldMtxWorld;
+	D3DXMATRIX m_OldMtxWorld1[5];
+
 };
 
 #endif 

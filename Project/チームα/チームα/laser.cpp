@@ -44,7 +44,7 @@ CLaser * CLaser::Create(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXVECTOR3 rot, D3DX
 		pLaser->Init(pos, move, size, user);	// ‰Šú‰»î•ñ
 		pLaser->SetMove(move);					// ˆÚ“®—Ê
 		pLaser->SetLife(LASER_LIFE);			// ƒ‰ƒCƒt‚Ìî•ñ
-		pLaser->SetRot(rot);					// Šp“x
+		pLaser->SetRot(D3DXVECTOR3(rot.x, rot.y + D3DXToRadian(180), rot.z));		// Šp“x
 	}
 
 	return pLaser;

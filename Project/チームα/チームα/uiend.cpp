@@ -13,6 +13,13 @@
 #include "renderer.h"
 #include "game.h"
 #include "life.h"
+#include "fade.h"
+
+//================================================
+// マクロ定義
+//================================================
+#define END_TIME	(200)
+
 //================================================
 //静的メンバ変数宣言
 //================================================
@@ -30,7 +37,6 @@ CUiEnd* CUiEnd::Create(D3DXVECTOR3 pos, D3DXVECTOR3 size, UIENDTYPE type)
 	pUiStart->Init(pos, size, type);
 
 	return pUiStart;
-
 }
 
 //================================================
@@ -79,6 +85,7 @@ CUiEnd::CUiEnd()
 	m_move = (D3DXVECTOR3(0.0f, 0.0f, 0.0f));	// 移動量
 	m_size = (D3DXVECTOR3(0.0f, 0.0f, 0.0f));	// サイズ
 	m_type = UIENDTYPE_NONE;						// タイプ
+	m_nCount = 0;
 }
 
 //================================================
@@ -128,6 +135,21 @@ void CUiEnd::Uninit(void)
 void CUiEnd::Update(void)
 {
 	CScene2d::Update();
+
+	// 最後のロゴの時
+	if (m_type == UIENDTYPE_THANKS)
+	{
+		m_nCount++;
+
+		if (m_nCount >= END_TIME)
+		{
+			// 終了処理
+			Uninit();
+
+			CManager::GetFade()->SetFade(CManager::MODE_TYPE_TITLE);
+			return;
+		}
+	}
 }
 
 //================================================

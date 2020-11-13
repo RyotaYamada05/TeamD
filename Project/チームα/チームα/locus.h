@@ -19,22 +19,26 @@
 #define LOCUS_SIZE_X	(30.0f)
 #define LOCUS_SIZE_Y	(100.0f)
 #define LOCUS_SIZE_Z	(50.0f)
-#define LOCUS_LIFE		(15)
+#define LOCUS_LIFE		(8)
 
 //=========================================================================
 // 軌跡クラス
 //=========================================================================
-class CLocus :public CScene3D
+class CLocus :public CScene
 {
 public:
 	CLocus();
 	~CLocus();
 
-	static CLocus *Create(D3DXVECTOR3 pos, D3DXVECTOR3 posOld, D3DXVECTOR3 rot, D3DXVECTOR3 size, int nLife);
+	static CLocus *Create(D3DXVECTOR3 pos1, D3DXVECTOR3 pos2,
+		D3DXVECTOR3 posOld1, D3DXVECTOR3 posOld2, D3DXVECTOR3 rot, D3DXVECTOR3 size, int nLife);
 	static HRESULT Load(void);
 	static void UnLoad(void);
 
 	HRESULT Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size);		// 初期化
+	HRESULT Init(D3DXVECTOR3 pos1, D3DXVECTOR3 pos2,
+		D3DXVECTOR3 posOld1, D3DXVECTOR3 posOld2);		// 初期化
+
 	void Uninit(void);													// 終了
 	void Update(void);													// 更新
 	void Draw(void);													// 描画

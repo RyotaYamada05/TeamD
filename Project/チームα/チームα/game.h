@@ -35,6 +35,7 @@ class CLockon;
 class CBill;
 class CContinue;
 class CUiEnd;
+class CSea;
 
 //***************************************************************************************
 // インクルードファイル
@@ -52,7 +53,6 @@ public:
 	static CMeshShape*GetSphere();
 	static CUi *GetUi(void);
 	static CUiStart *GetUiStart(void);
-	static CUiEnd *GetUiEnd(void);
 	static CLockon *GetLockon(void);
 	static CBill *GetBill(void);
 	static CContinue *GetContinue(void);
@@ -64,8 +64,7 @@ public:
 	void SetGame(void);
 	void ResetGame(void);
 
-private:
-	static CCamera *m_apCamera[MAX_PLAYER];		// カメラのポインタ	
+private:	static CCamera *m_apCamera[MAX_PLAYER];		// カメラのポインタ	
 	static CLight *m_pLight;					// ライトのポインタ
 	static CMeshField *m_pMeshField;			// メッシュフィールドのポインタ
 	static CMeshShape * m_pSphere;					// メッシュスフィアのポインタ
@@ -74,12 +73,13 @@ private:
 	static CTime *m_pTime;						// タイムのポインタ
 	static CUi *m_pUi;							// uiのポインタ
 	static CUiStart *m_pUiStart;				// uistartのポインタ
-	static CUiEnd *m_pUiEnd;					// uiendのポインタ
 	static CLockon *m_pLockon;					// ロックオンのポインタ
 	static CBill *m_pBill;						// ビルのポインタ
+	static CSea *m_pSea;						// 海のポインタ
 	static CContinue *m_pContinue;
 	static int m_nRoundNum;						// 現在のラウンド数
 	static int m_aWinNum[MAX_PLAYER];			// 勝利した数
 	LPD3DXFONT m_pFont;
+	bool m_bGameEnd;
 };
 #endif

@@ -99,7 +99,8 @@ void CScene2d::Uninit(void)
 		m_pVetxBuff->Release();
 		m_pVetxBuff = NULL;
 	}
-	CScene::Release();
+
+	Release();
 }
 
 //=======================================================================================

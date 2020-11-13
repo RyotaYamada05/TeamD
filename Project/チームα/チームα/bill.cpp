@@ -169,63 +169,65 @@ bool CBill::Collision(void)
 		// プレイヤー情報
 		CPlayer *pPlayer = CGame::GetPlayer(nCount);
 
-		//位置の取得
-		D3DXVECTOR3 targetPos = pPlayer->GetPos();
-
-		// 当たり判定
-		if (targetPos.x - PLAYER_COLLISION_X / 2 <= m_pos.x + BILL_COLLISION_SIZE_X / 2 &&
-			targetPos.x + PLAYER_COLLISION_X / 2 >= m_pos.x - BILL_COLLISION_SIZE_X / 2 &&
-			targetPos.y - PLAYER_COLLISION_Y / 2 <= m_pos.y + BILL_COLLISION_SIZE_Y / 2 &&
-			targetPos.y + PLAYER_COLLISION_Y / 2 >= m_pos.y - BILL_COLLISION_SIZE_Y / 2 &&
-			targetPos.z - PLAYER_COLLISION_Z / 2 <= m_pos.z + BILL_COLLISION_SIZE_Z / 2 &&
-			targetPos.z + PLAYER_COLLISION_Z / 2 >= m_pos.z - BILL_COLLISION_SIZE_Z / 2)
+		if (pPlayer != NULL)
 		{
-			D3DXVECTOR3 OldTarget = pPlayer->GetOldPos();
-			D3DXVECTOR3 move = pPlayer->GetMove();
+			//位置の取得
+			D3DXVECTOR3 targetPos = pPlayer->GetPos();
 
+			// 当たり判定
 			if (targetPos.x - PLAYER_COLLISION_X / 2 <= m_pos.x + BILL_COLLISION_SIZE_X / 2 &&
-				OldTarget.x + PLAYER_COLLISION_X / 2 >= m_pos.x + BILL_COLLISION_SIZE_X / 2)
+				targetPos.x + PLAYER_COLLISION_X / 2 >= m_pos.x - BILL_COLLISION_SIZE_X / 2 &&
+				targetPos.y - PLAYER_COLLISION_Y / 2 <= m_pos.y + BILL_COLLISION_SIZE_Y / 2 &&
+				targetPos.y + PLAYER_COLLISION_Y / 2 >= m_pos.y - BILL_COLLISION_SIZE_Y / 2 &&
+				targetPos.z - PLAYER_COLLISION_Z / 2 <= m_pos.z + BILL_COLLISION_SIZE_Z / 2 &&
+				targetPos.z + PLAYER_COLLISION_Z / 2 >= m_pos.z - BILL_COLLISION_SIZE_Z / 2)
 			{
-				// ブロックに右から当たったとき
-				pPlayer->SetPos(D3DXVECTOR3(PLAYER_COLLISION_X / 2 + m_pos.x + BILL_COLLISION_SIZE_X / 2, targetPos.y, targetPos.z));	// プレイヤーを押し戻す
-			}
-			else if (targetPos.x + PLAYER_COLLISION_X / 2 >= m_pos.x - BILL_COLLISION_SIZE_X / 2 &&
-				OldTarget.x - (PLAYER_COLLISION_X / 2) <= m_pos.x - BILL_COLLISION_SIZE_X / 2)
-			{
-				// ブロックに左から当たった時
-				pPlayer->SetPos(D3DXVECTOR3(m_pos.x - BILL_COLLISION_SIZE_X / 2 - PLAYER_COLLISION_X / 2, targetPos.y, targetPos.z));	// プレイヤーを押し戻す
-			}
-			else if ((targetPos.y - PLAYER_COLLISION_Y / 2) < m_pos.y + BILL_COLLISION_SIZE_Y / 2 &&
-				OldTarget.y - PLAYER_COLLISION_Y / 2 >= m_pos.y)
-			{
-				// ブロックに上から当たった時
-				pPlayer->SetPos(D3DXVECTOR3(targetPos.x, PLAYER_COLLISION_Y / 2 + m_pos.y + BILL_COLLISION_SIZE_Y / 2, targetPos.z));
-				pPlayer->BlockUp();
-			}
-			else if (targetPos.z - PLAYER_COLLISION_Z / 2 < m_pos.z + BILL_COLLISION_SIZE_Z / 2 &&
-				OldTarget.z + PLAYER_COLLISION_Z / 2 >= m_pos.z)
-			{
-				// ブロックに手前から当たった時
-				pPlayer->SetPos(D3DXVECTOR3(targetPos.x, targetPos.y, PLAYER_COLLISION_Z / 2+ m_pos.z + BILL_COLLISION_SIZE_Z / 2));
+				D3DXVECTOR3 OldTarget = pPlayer->GetOldPos();
+				D3DXVECTOR3 move = pPlayer->GetMove();
+
+				if (targetPos.x - PLAYER_COLLISION_X / 2 <= m_pos.x + BILL_COLLISION_SIZE_X / 2 &&
+					OldTarget.x + PLAYER_COLLISION_X / 2 >= m_pos.x + BILL_COLLISION_SIZE_X / 2)
+				{
+					// ブロックに右から当たったとき
+					pPlayer->SetPos(D3DXVECTOR3(PLAYER_COLLISION_X / 2 + m_pos.x + BILL_COLLISION_SIZE_X / 2, targetPos.y, targetPos.z));	// プレイヤーを押し戻す
+				}
+				else if (targetPos.x + PLAYER_COLLISION_X / 2 >= m_pos.x - BILL_COLLISION_SIZE_X / 2 &&
+					OldTarget.x - (PLAYER_COLLISION_X / 2) <= m_pos.x - BILL_COLLISION_SIZE_X / 2)
+				{
+					// ブロックに左から当たった時
+					pPlayer->SetPos(D3DXVECTOR3(m_pos.x - BILL_COLLISION_SIZE_X / 2 - PLAYER_COLLISION_X / 2, targetPos.y, targetPos.z));	// プレイヤーを押し戻す
+				}
+				else if ((targetPos.y - PLAYER_COLLISION_Y / 2) < m_pos.y + BILL_COLLISION_SIZE_Y / 2 &&
+					OldTarget.y - PLAYER_COLLISION_Y / 2 >= m_pos.y)
+				{
+					// ブロックに上から当たった時
+					pPlayer->SetPos(D3DXVECTOR3(targetPos.x, PLAYER_COLLISION_Y / 2 + m_pos.y + BILL_COLLISION_SIZE_Y / 2, targetPos.z));
+					pPlayer->BlockUp();
+				}
+				else if (targetPos.z - PLAYER_COLLISION_Z / 2 < m_pos.z + BILL_COLLISION_SIZE_Z / 2 &&
+					OldTarget.z + PLAYER_COLLISION_Z / 2 >= m_pos.z)
+				{
+					// ブロックに手前から当たった時
+					pPlayer->SetPos(D3DXVECTOR3(targetPos.x, targetPos.y, PLAYER_COLLISION_Z / 2 + m_pos.z + BILL_COLLISION_SIZE_Z / 2));
+
+				}
+				else if (targetPos.z + PLAYER_COLLISION_Z / 2 > m_pos.z - BILL_COLLISION_SIZE_Z / 2 &&
+					OldTarget.z - PLAYER_COLLISION_Z / 2 <= m_pos.z - BILL_COLLISION_SIZE_Z / 2)
+				{
+					// ブロックに奥から当たった時
+					pPlayer->SetPos(D3DXVECTOR3(targetPos.x, targetPos.y, m_pos.z - BILL_COLLISION_SIZE_Z / 2 - PLAYER_COLLISION_Z / 2));
+				}
+				else if (targetPos.y + PLAYER_COLLISION_Y / 2 > m_pos.y - BILL_COLLISION_SIZE_Y / 2 &&
+					OldTarget.y + PLAYER_COLLISION_Y / 2 <= m_pos.y)
+				{
+					// ブロックに下から当たった時
+					pPlayer->SetPos(D3DXVECTOR3(targetPos.x, m_pos.y - BILL_COLLISION_SIZE_Y / 2, targetPos.z));		// プレイヤーがブロックにめり込まないようにする
+					pPlayer->SetMove(D3DXVECTOR3(move.x, 0.0f, move.z));
+				}
+
 
 			}
-			else if (targetPos.z + PLAYER_COLLISION_Z / 2 > m_pos.z - BILL_COLLISION_SIZE_Z / 2 &&
-				OldTarget.z - PLAYER_COLLISION_Z / 2 <= m_pos.z - BILL_COLLISION_SIZE_Z / 2)
-			{
-				// ブロックに奥から当たった時
-				pPlayer->SetPos(D3DXVECTOR3(targetPos.x, targetPos.y, m_pos.z - BILL_COLLISION_SIZE_Z / 2- PLAYER_COLLISION_Z / 2));
-			}
-			else if (targetPos.y + PLAYER_COLLISION_Y / 2 > m_pos.y - BILL_COLLISION_SIZE_Y / 2 &&
-				OldTarget.y + PLAYER_COLLISION_Y / 2 <= m_pos.y)
-			{
-				// ブロックに下から当たった時
-				pPlayer->SetPos(D3DXVECTOR3(targetPos.x, m_pos.y - BILL_COLLISION_SIZE_Y / 2, targetPos.z));		// プレイヤーがブロックにめり込まないようにする
-				pPlayer->SetMove(D3DXVECTOR3(move.x, 0.0f, move.z));
-			}
-
-
 		}
-
 	}
 	//for (int nCount = 0; nCount < MAX_PLAYER; nCount++)
 	//{

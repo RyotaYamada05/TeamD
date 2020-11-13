@@ -165,10 +165,13 @@ void CModel::Draw(void)
 		pMat[nCntMat].MatD3D.Diffuse.a = 1.0f;
 	}
 
+
 	//•ÛŽ‚µ‚Ä‚¢‚½ƒ}ƒeƒŠƒAƒ‹‚ð–ß‚·
 	pDevice->SetMaterial(&matDef);
 
 	pDevice->SetTexture(0, NULL);
+
+
 }
 
 void CModel::BindModel(MODEL model)
