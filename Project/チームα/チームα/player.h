@@ -33,8 +33,8 @@
 #define PLAYER_COLLISION_Z	(200)		// 当たり判定
 
 #define PLAYER_RADIUS		(150)		// 半径
-#define PLAYER_BOMB			(50)		// ボム撃つのに必要なゲージ数
-#define PLAYER_LASER		(50)		// レーザー撃つのに必要なゲージ数
+#define PLAYER_BOMB			(100)		// ボム撃つのに必要なゲージ数
+#define PLAYER_LASER		(35)		// レーザー撃つのに必要なゲージ数
 
 #define MAP_LIMIT			(6750)		// 行ける上限数
 //=============================================================================
