@@ -52,7 +52,8 @@
 #include "fire.h"
 #include "sea.h"
 #include "boost.h"
-
+#include "pause.h"
+#include "uipause.h"
 //=============================================================================
 //静的メンバ変数宣言
 //=============================================================================
@@ -67,6 +68,7 @@ CGame *CManager::m_pGame = NULL;
 CResult *CManager::m_pResult = NULL;
 CInputJoypad *CManager::m_pJoypad = NULL;
 CSound *CManager::m_pSound = NULL;			//サウンドクラスのポインタ
+CScene *CManager::m_pScene = NULL;
 //=============================================================================
 //コンストラクタ
 //=============================================================================
@@ -238,6 +240,21 @@ void CManager::Update(void)
 		//フェードクラスの更新処理呼び出し
 		m_pFade->Update();
 	}
+
+	/*switch (m_mode)
+	{
+	case MODE_TYPE_GAME:
+		if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_START, 0))
+		{
+			m_pScene->GetPause(false);
+		}
+
+		else if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_B, 0))
+		{
+			m_pScene->GetPause(true);
+		}
+		break;
+	}*/
 }
 
 //=============================================================================
@@ -290,6 +307,8 @@ void CManager::LoadAll(void)
 	CFire::Load();
 	CBoost::Load();
 	CSea::Load();
+	CPause::Load();
+	CUiPause::Load();
 }
 
 //=============================================================================
@@ -321,7 +340,7 @@ void CManager::UnLoadAll(void)
 	CMissile::UnLoad();
 	CFire::UnLoad();
 	CBoost::UnLoad();
-
+	CUiPause::UnLoad();
 	CLockon::Unload();
 	CNumber::Unload();
 	CUiEnd::Unload();
@@ -360,7 +379,7 @@ void CManager::SetMode(MODE_TYPE mode)
 		if (m_pGame != NULL)
 		{
 			m_pGame->Uninit();
-
+			pSound->Stop(CSound::SOUND_LABEL_BGM_GAME);
 			m_pGame = NULL;
 		}
 		break;
@@ -403,7 +422,7 @@ void CManager::SetMode(MODE_TYPE mode)
 		{
 			m_pGame = CGame::Create();
 		}
-		
+
 		break;
 
 	case MODE_TYPE_RESULT:

@@ -55,6 +55,7 @@
     <ClCompile Include="modelanime.cpp" />
     <ClCompile Include="number.cpp" />
     <ClCompile Include="particle.cpp" />
+    <ClCompile Include="pause.cpp" />
     <ClCompile Include="player.cpp" />
     <ClCompile Include="polygon.cpp" />
     <ClCompile Include="renderer.cpp" />
@@ -77,6 +78,7 @@
     <ClCompile Include="tutorial.cpp" />
     <ClCompile Include="ui.cpp" />
     <ClCompile Include="uiend.cpp" />
+    <ClCompile Include="uipause.cpp" />
     <ClCompile Include="uistart.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -116,6 +118,7 @@
     <ClInclude Include="modelanime.h" />
     <ClInclude Include="number.h" />
     <ClInclude Include="particle.h" />
+    <ClInclude Include="pause.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="polygon.h" />
     <ClInclude Include="renderer.h" />
@@ -138,6 +141,7 @@
     <ClInclude Include="tutorial.h" />
     <ClInclude Include="ui.h" />
     <ClInclude Include="uiend.h" />
+    <ClInclude Include="uipause.h" />
     <ClInclude Include="uistart.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

@@ -11,6 +11,7 @@
 //=============================================================================
 CScene *CScene::m_apScene[MAX_NUM] = {};	//オブジェクトクラスのポインタ変数
 int CScene::m_nNumAll = 0;	//オブジェクトの総数カウント変数
+bool CScene::m_bPause = false;
 
 //=============================================================================
 //オブジェクトクラスのデフォルトコンストラクタ
@@ -71,14 +72,27 @@ void CScene::AllUpdate(void)
 	//最大ポリゴン数分繰り返す
 	for (int nCntScene = 0; nCntScene < MAX_NUM; nCntScene++)
 	{
-		//メモリが確保できていたら
-		if (m_apScene[nCntScene] != NULL)
+		CScene *pScene = GetScene(nCntScene);
+
+		if (pScene != NULL)
 		{
-			//更新処理呼び出し
-			m_apScene[nCntScene]->Update();
+			// それぞれのタイプ
+			OBJTYPE type = pScene->GetObjType();
+
+			// ポーズしているか　bool pause = m_pause   ->>  pause =true ->> if (type == OBJTYPE_PAUSE)
+			if (m_bPause == false || type == OBJTYPE_PAUSE)
+			{
+				//メモリが確保できていたら
+				if (m_apScene[nCntScene] != NULL)
+				{
+					//更新処理呼び出し
+					m_apScene[nCntScene]->Update();
+				}
+			}
 		}
 	}
 }
+
 
 //=============================================================================
 //全ての描画処理
@@ -135,6 +149,7 @@ void CScene::SetObjType(const OBJTYPE objtype)
 //=============================================================================
 CScene::OBJTYPE CScene::GetObjType(void)const
 {
+
 	return m_apScene[m_nID]->m_ObjType;
 }
 
@@ -144,4 +159,12 @@ CScene::OBJTYPE CScene::GetObjType(void)const
 CScene * CScene::GetScene(int nNum)
 {
 	return m_apScene[nNum];
+}
+
+//=============================================================================
+//ポーズ情報の取得
+//=============================================================================
+void CScene::GetPause(bool Pause)
+{
+	m_bPause = Pause;
 }

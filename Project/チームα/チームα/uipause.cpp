@@ -1,60 +1,58 @@
-//=============================================================================
+//================================================
 //
-// タイトルロゴの処理 [titlelogo.cpp]
+// ui処理 [ui.cpp]
 // Author : 佐藤颯紀
 //
-//=============================================================================
+//================================================
 
 //================================================
 // インクルード
 //================================================
-#include "titlelogo.h"
+#include "uipause.h"
 #include "manager.h"
 #include "renderer.h"
+#include "game.h"
+#include "life.h"
+#include "joypad.h"
 
 //================================================
 //静的メンバ変数宣言
 //================================================
-LPDIRECT3DTEXTURE9 CTitlelogo::m_apTexture[TITLELOGO_TYPE] = {};
+LPDIRECT3DTEXTURE9 CUiPause::m_apTexture[UISTART_TYPE] = {};
 
 //================================================
 //クリエイト処理
 //================================================
-CTitlelogo* CTitlelogo::Create(D3DXVECTOR3 pos, D3DXVECTOR3 size, LOGOTYPE type)
+CUiPause* CUiPause::Create(D3DXVECTOR3 pos, D3DXVECTOR3 size, D3DXCOLOR col, UIPAUSETYPE type)
 {
 	// オブジェクトを生成
-	CTitlelogo* pLogo = new CTitlelogo;
+	CUiPause* pUiPause = new CUiPause;
 
 	// 初期化処理
-	pLogo->Init(pos, size, type);
+	pUiPause->Init(pos, size, col,type);
 
-	return pLogo;
+	return pUiPause;
+
 }
 
 //================================================
 //ロード処理
 //================================================
-HRESULT CTitlelogo::Load(void)
+HRESULT CUiPause::Load(void)
 {
 	LPDIRECT3DDEVICE9 pDevice;
 	pDevice = CManager::GetRenderer()->GetDevice();
 
 	//テクスチャの読み込み
-
-	//ライフゲージバー
+	//ready
 	D3DXCreateTextureFromFile(pDevice,
-		"data/Texture/title002.png", //ファイルの読み込み
-		&m_apTexture[LOGOTIPE_TITLE]);
+		"data/Texture/restart.png", //ファイルの読み込み
+		&m_apTexture[UIPAUSETYPE_START]);
 
-	//タイムの下
+	//round1
 	D3DXCreateTextureFromFile(pDevice,
-		"data/Texture/press.png", //ファイルの読み込み
-		&m_apTexture[LOGOTIPE_PRESS]);
-
-	//プレイヤー文字
-	D3DXCreateTextureFromFile(pDevice,
-		"data/Texture/rotation.png", //ファイルの読み込み
-		&m_apTexture[LOGOTIPE_UI]);
+		"data/Texture/titleback.png", //ファイルの読み込み
+		&m_apTexture[UIPAUSETYPE_TITLE]);
 
 	return S_OK;
 }
@@ -62,9 +60,9 @@ HRESULT CTitlelogo::Load(void)
 //================================================
 //ロードの終了
 //================================================
-void CTitlelogo::Unload(void)
+void CUiPause::UnLoad(void)
 {
-	for (int nCount = 0; nCount < TITLELOGO_TYPE; nCount++)
+	for (int nCount = 0; nCount < UISTART_TYPE; nCount++)
 	{
 		//テクスチャの開放
 		if (m_apTexture[nCount] != NULL)
@@ -73,27 +71,23 @@ void CTitlelogo::Unload(void)
 			m_apTexture[nCount] = NULL;
 		}
 	}
-
 }
 
 //================================================
 //コンストラクタ
 //================================================
-CTitlelogo::CTitlelogo()
+CUiPause::CUiPause()
 {
-	m_nPattern = 0;								// パターン数
-	m_nCounter = 0;								// カウンタ	
-	
 	m_pos = (D3DXVECTOR3(0.0f, 0.0f, 0.0f));	// 座標
 	m_move = (D3DXVECTOR3(0.0f, 0.0f, 0.0f));	// 移動量
 	m_size = (D3DXVECTOR3(0.0f, 0.0f, 0.0f));	// サイズ
-	m_type = LOGOTYPE_NONE;						// タイプ
+	m_type = UIPAUSETYPE_NONE;						// タイプ
 }
 
 //================================================
 //デストラクタ
 //================================================
-CTitlelogo::~CTitlelogo()
+CUiPause::~CUiPause()
 {
 
 }
@@ -101,13 +95,15 @@ CTitlelogo::~CTitlelogo()
 //================================================
 //初期化処理
 //================================================
-HRESULT CTitlelogo::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size, LOGOTYPE type)
+HRESULT CUiPause::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size, D3DXCOLOR col, UIPAUSETYPE type)
 {
 	m_pos = pos;	//位置情報
 	m_size = size;	//サイズ
+	m_col = col;
 	m_type = type;	//タイプ
 
-	CScene2d::Init(pos, size);	//CScene2dの初期化
+	//CScene2dの初期化
+	CScene2d::Init(pos, size);
 
 	CScene2d::BindTexture(m_apTexture[type]);
 
@@ -118,15 +114,18 @@ HRESULT CTitlelogo::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size, LOGOTYPE type)
 	CScene2d::SetPolygonSize(D3DXVECTOR3(m_size.x, m_size.y, m_size.z));
 
 	//カラー設定
-	CScene2d::SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
-	
+	CScene2d::SetCol(D3DXCOLOR(m_col.r, m_col.g, m_col.b, m_col.a));
+
+	//オブジェクトタイプの設定
+	SetObjType(CScene::OBJTYPE_PAUSE);
+
 	return S_OK;
 }
 
 //================================================
 //終了処理
 //================================================
-void CTitlelogo::Uninit(void)
+void CUiPause::Uninit(void)
 {
 	CScene2d::Uninit();
 }
@@ -134,60 +133,59 @@ void CTitlelogo::Uninit(void)
 //================================================
 //更新処理
 //================================================
-void CTitlelogo::Update(void)
+void CUiPause::Update(void)
 {
 	CScene2d::Update();
 
-	//点滅させる処理
-	Flashing();
-
-	//回転させる処理
-	Rotation();
-
+	Select();
 }
 
 //================================================
 //描画処理
 //================================================
-void CTitlelogo::Draw(void)
+void CUiPause::Draw(void)
 {
 	CScene2d::Draw();
 }
 
 //================================================
-//点滅させる処理
+//Selectされてる色の変化の処理
 //================================================
-void CTitlelogo::Flashing(void)
+void CUiPause::Select(void)
 {
-	//色の取得
+	// ジョイパッドの取得
+	DIJOYSTATE js = CInputJoypad::GetStick(0);
+
 	D3DXCOLOR col = GetCol();
-
-	if (m_type == LOGOTIPE_PRESS)
+	//入力が存在する
+	if (js.lX != 0.0f || js.lY != 0.0f)
 	{
-		m_nCounter++;
-		if (m_nCounter == 15)
+		if (js.lY < -5)
 		{
-			col.a = 0.0f;
-		}
-		else if (m_nCounter == 30)
-		{
-			col.a = 1.0f;
+			if (m_type == UIPAUSETYPE_START)
+			{
+				col.a = 1.0f;
+			}
 
-			m_nCounter = 0;
+			if (m_type == UIPAUSETYPE_TITLE)
+			{
+				col.a = 0.5f;
+			}
+		}
+
+		if (js.lY > 5)
+		{
+			if (m_type == UIPAUSETYPE_START)
+			{
+				col.a = 0.5f;
+			}
+
+			if (m_type == UIPAUSETYPE_TITLE)
+			{
+				col.a = 1.0f;
+			}
 		}
 	}
-	
-	//色の設定
+
 	SetCol(col);
-}
-
-//================================================
-//回転させる処理
-//================================================
-void CTitlelogo::Rotation(void)
-{
-	if (m_type == LOGOTIPE_UI)
-	{
-		SetRotation(0.1f);
-	}
 }

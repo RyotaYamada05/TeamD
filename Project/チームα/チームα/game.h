@@ -35,7 +35,7 @@ class CLockon;
 class CBill;
 class CContinue;
 class CUiEnd;
-
+class CPause;
 //***************************************************************************************
 // インクルードファイル
 //***************************************************************************************
@@ -56,6 +56,7 @@ public:
 	static CLockon *GetLockon(void);
 	static CBill *GetBill(void);
 	static CContinue *GetContinue(void);
+	static CPause *GetPause(void);
 
 	HRESULT Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size);
 	void Uninit(void);
@@ -76,7 +77,8 @@ private:	static CCamera *m_apCamera[MAX_PLAYER];		// カメラのポインタ
 	static CUiEnd *m_pUiEnd;					// uiendのポインタ
 	static CLockon *m_pLockon;					// ロックオンのポインタ
 	static CBill *m_pBill;						// ビルのポインタ
-	static CContinue *m_pContinue;
+	static CContinue *m_pContinue;				// コンテニューのポインタ
+	static CPause *m_pPause;					// ポーズのポインタ
 	static int m_nRoundNum;						// 現在のラウンド数
 	static int m_aWinNum[MAX_PLAYER];			// 勝利した数
 	LPD3DXFONT m_pFont;

@@ -34,6 +34,8 @@
 #include "continue.h"
 #include "uiend.h"
 #include "sound.h"
+#include "pause.h"
+#include "keyboard.h"
 //=======================================================================================
 // static初期化
 //=======================================================================================
@@ -52,6 +54,8 @@ CBill *CGame::m_pBill = NULL;
 
 CContinue *CGame::m_pContinue = NULL;
 CUiEnd *CGame::m_pUiEnd = NULL;
+CPause *CGame::m_pPause = NULL;
+
 int CGame::m_nRoundNum = 0;
 int CGame::m_aWinNum[MAX_PLAYER] = {};
 
@@ -299,7 +303,7 @@ void CGame::Update(void)
 		if (m_apCamera[nCount] != NULL)
 		{
 			//カメラクラスの更新処理
-	
+
 			m_apCamera[nCount]->Update();
 		}
 	}
@@ -310,7 +314,7 @@ void CGame::Update(void)
 		m_pMeshField->Update();
 	}
 
-	
+
 	// メッシュスフィア
 	if (m_pSphere != NULL)
 	{
@@ -328,6 +332,15 @@ void CGame::Update(void)
 			D3DXVECTOR3(FIRE_SIZE_X, FIRE_SIZE_Y, 0.0f), FIRE_LIFE);
 		CFire::Create(D3DXVECTOR3(0.0f, 50.0f, 0.0f),
 			D3DXVECTOR3(FIRE_SIZE_X, FIRE_SIZE_Y, 0.0f), FIRE_LIFE);
+	}
+
+	CInputKeyboard* pKey = CManager::GetKeyboard();
+	CScene* pScene = CManager::GetScene();
+
+	if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_START, 0) || pKey->GetTrigger(DIK_I))
+	{
+		pScene->GetPause(true);
+		m_pPause = CPause::Create();
 	}
 
 	// ゲームの設定
@@ -555,3 +568,10 @@ CContinue * CGame::GetContinue(void)
 	return m_pContinue;
 }
 
+//=======================================================================================
+// コンテニューの情報
+//=======================================================================================
+CPause * CGame::GetPause(void)
+{
+	return m_pPause;
+}

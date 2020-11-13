@@ -34,6 +34,7 @@ public:
 		OBJTYPE_SPHERE,	//球タイプ
 		OBJTYPE_BULLET,	//バレットタイプ
 		OBJTYPE_MODEL,	// モデル
+		OBJTYPE_PAUSE,
 		OBJTYPE_MAX	//オブジェクトタイプの最大数
 	}OBJTYPE;	//オブジェクトタイプ
 
@@ -54,6 +55,8 @@ public:
 	void SetObjType(const OBJTYPE objtype);
 	OBJTYPE GetObjType(void)const;
 	static CScene *GetScene(int nNum);
+	static void GetPause(bool Pause);
+
 protected:
 	void Release(void);
 
@@ -65,6 +68,7 @@ private:
 	static int m_nNumAll;	//総数
 	int m_nID;	//ナンバーの保存
 	OBJTYPE m_ObjType;	//オブジェクトの種類
+	static bool m_bPause;
 };
 
 #endif
