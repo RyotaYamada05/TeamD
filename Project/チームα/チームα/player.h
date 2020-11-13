@@ -33,6 +33,8 @@
 
 #define PLAYER_RADIUS		(200)		// 半径
 
+#define MAX_BOOST			(2)
+
 //=============================================================================
 // 前方宣言
 //=============================================================================
@@ -150,14 +152,16 @@ public:
 	HRESULT ReadFile(void);
 	bool GetEnd(void);												// エンド情報
 	PLAYER_STATE GetState(void);									// プレイヤーの状態
+	bool GetJump(void);
 private:
 	CScore *pScore;							// スコアの情報
 	CLife *m_pLife[LIFE_NUM];				// ライフのポインタ
-	CBoost *m_pBoost;						// ブーストのポインタ
+	CBoost *m_pBoost[MAX_BOOST];						// ブーストのポインタ
 	CCharge *m_pCharge;						// チャージのポインタ
 	D3DXVECTOR3 m_pos;						// 座標
 	D3DXVECTOR3 m_OldPos;					// 1フレーム前の座標
-	D3DXVECTOR3 m_rot;						// 回転
+	D3DXVECTOR3 m_rot;						// 回転(現在地)
+	D3DXVECTOR3 m_rotDest;					// 回転(目標値)
 	D3DXVECTOR3 m_move;						// 移動
 	PLAYER_STATE m_state;					// プレイヤー状態
 	float m_fAngle;							// 角度

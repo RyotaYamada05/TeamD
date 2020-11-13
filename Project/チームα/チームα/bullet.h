@@ -54,8 +54,8 @@ private:
 	D3DXVECTOR3 m_pos;	//位置
 	D3DXVECTOR3 m_move;	//移動量
 	D3DXVECTOR3 m_size;	//大きさ
-	int m_nAtk;	//攻撃力
-	int m_nLife;	//ライフ	
+	int m_nAtk;			//攻撃力
+	int m_nLife;		//ライフ	
 	int m_nCounter;
 	BULLET_USER m_user;	//使用者	
 	CPlayer * m_pTargetPL;	//敵プレイヤーのポインタ

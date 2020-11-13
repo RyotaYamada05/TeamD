@@ -86,6 +86,7 @@ CPlayer::CPlayer()
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_OldPos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_rotDest = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_nDushFlame = 0;
 	m_nDushInterCnt = 0;
@@ -105,7 +106,7 @@ CPlayer::CPlayer()
 	m_nCountMotion = 0;
 	memset(&m_Motion, 0, sizeof(m_Motion));
 	m_MotionState = MOTION_NONE;
-	m_pBoost = NULL;
+	memset(m_pBoost,0,sizeof(m_pBoost));
 }
 
 //=============================================================================
@@ -155,6 +156,7 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 		}
 		//ROTの初期値設定（敵の方向）
 		m_rot = D3DXVECTOR3(0.0f, D3DXToRadian(180.0f), 0.0f);
+		m_rotDest = D3DXVECTOR3(0.0f, D3DXToRadian(180.0f), 0.0f);
 		break;
 
 		//2Pだった場合
@@ -182,7 +184,7 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 				D3DXVECTOR3(MAX_CHARGE, CHARGE_SIZE_Y, 0.0f), D3DCOLOR_RGBA(87, 210, 128, 255));
 		}
 		//ROTの初期値設定（敵の方向）
-		m_rot = D3DXVECTOR3(0.0f, D3DXToRadian(0.0f), 0.0f);
+		m_rotDest = D3DXVECTOR3(0.0f, D3DXToRadian(0.0f), 0.0f);
 
 		break;
 
@@ -323,11 +325,23 @@ void CPlayer::Update(void)
 	//位置へ移動量を加算
 	m_pos += m_move;
 
+	while (m_rotDest.y - m_rot.y > D3DXToRadian(180))
+	{
+		m_rotDest.y -= D3DXToRadian(360);
+	}
+
+	while (m_rotDest.y - m_rot.y < D3DXToRadian(-180))
+	{
+		m_rotDest.y += D3DXToRadian(360);
+	}
+
+	m_rot += (m_rotDest - m_rot)*0.1;
+
 	//ターゲットON
 	if (CGame::GetCamera(m_nPlayerNum)->GetTargetBool())
 	{
 		//角度設定
-		m_rot.y = CGame::GetCamera(m_nPlayerNum)->Getφ();
+		m_rotDest.y = CGame::GetCamera(m_nPlayerNum)->Getφ();
 	}
 	else //ターゲットOFF
 	{
@@ -610,15 +624,19 @@ void CPlayer::Walk(void)
 	{
 		//カメラ角度取得
 		m_fAngle = CGame::GetCamera(m_nPlayerNum)->Getφ();
+
 		//スティックXの入力が感度超えている
 		if (js.lX < -STICK_SENSITIVITY)
-		{			// ジョイパッド操作
+		{
+			m_rotDest.y = m_fAngle + D3DXToRadian(270.0f);
+
 			m_pos.x += cosf(m_fAngle)* PLAYER_SPEED;
 			m_pos.z -= sinf(m_fAngle)* PLAYER_SPEED;
 		}
 		else if (js.lX > STICK_SENSITIVITY)
 		{
-			// ジョイパッド操作
+			m_rotDest.y = m_fAngle + D3DXToRadian(90.0f);
+
 			m_pos.x -= cosf(m_fAngle)* PLAYER_SPEED;
 			m_pos.z += sinf(m_fAngle)* PLAYER_SPEED;
 		}
@@ -630,13 +648,35 @@ void CPlayer::Walk(void)
 		//スティックYの入力が感度を超えている
 		if (js.lY < -STICK_SENSITIVITY)
 		{
+			m_rotDest.y = m_fAngle;
+
 			m_pos.x -= sinf(m_fAngle)* PLAYER_SPEED;
 			m_pos.z -= cosf(m_fAngle)* PLAYER_SPEED;
+
+			if (js.lX < -STICK_SENSITIVITY)
+			{
+				m_rotDest.y = m_fAngle + D3DXToRadian(315.0f);
+			}
+			else if (js.lX > STICK_SENSITIVITY)
+			{
+				m_rotDest.y = m_fAngle + D3DXToRadian(45.0f);
+			}
 		}
 		else if (js.lY > STICK_SENSITIVITY)
-		{			// ジョイパッド操作
+		{	
+			m_rotDest.y = m_fAngle + D3DXToRadian(180.0f);
+
 			m_pos.x += sinf(m_fAngle)* PLAYER_SPEED;
 			m_pos.z += cosf(m_fAngle)* PLAYER_SPEED;
+
+			if (js.lX < -STICK_SENSITIVITY)
+			{
+				m_rotDest.y = m_fAngle + D3DXToRadian(225.0f);
+			}
+			else if (js.lX > STICK_SENSITIVITY)
+			{
+				m_rotDest.y = m_fAngle + D3DXToRadian(135.0f);
+			}
 		}
 		else
 		{
@@ -647,11 +687,15 @@ void CPlayer::Walk(void)
 	// Wキーを押したとき
 	if (pKeyboard->GetPress(DIK_W))
 	{
+		m_rotDest.y = D3DXToDegree(m_fAngle);
+
 		m_pos.z += cosf(0)*PLAYER_SPEED;
 	}
 	// Sキーを押したとき
 	if (pKeyboard->GetPress(DIK_S))
 	{
+		m_rotDest.y = sin(m_fAngle);
+
 		m_pos.z += cosf(D3DX_PI)*PLAYER_SPEED;
 	}
 	// Aキーを押したとき
@@ -770,17 +814,14 @@ void CPlayer::Dush(void)
 				}
 				D3DXVECTOR3 TargetPos = D3DXVECTOR3(m_pos.x - sinf(m_rot.y) * 70.0f, m_pos.y - 50.0f, m_pos.z - cosf(m_rot.y) * 70.0f);
 
-				if (m_pBoost != NULL)
+				for (int nCount = 0; nCount <= MAX_BOOST; nCount++)
 				{
-					m_pBoost->Uninit();
-					m_pBoost = NULL;
-				}
-
-				if (m_pBoost == NULL)
-				{
-					// ブースト処理
-					m_pBoost = CBoost::Create(TargetPos + m_move,
-						m_rot, D3DXVECTOR3(BOOST_SIZE_X, BOOST_SIZE_Y, BOOST_SIZE_Z), m_nPlayerNum);
+					if (m_pBoost[nCount] == NULL)
+					{
+						// ブースト処理
+						m_pBoost[nCount] = CBoost::Create(TargetPos + m_move,
+							D3DXVECTOR3(m_rot.x + D3DXToRadian(270.0f), m_rot.y + 0.0f, m_rot.z + 0.0f), D3DXVECTOR3(BOOST_SIZE_X, BOOST_SIZE_Y, BOOST_SIZE_Z), m_nPlayerNum);
+					}
 				}
 
 				// 地上にいたら
@@ -843,6 +884,18 @@ void CPlayer::Dush(void)
 			m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 			m_move.x -= sinf(D3DX_PI / 2)*PLAYER_DUSH;
 			m_bDush = true;
+
+			D3DXVECTOR3 TargetPos = D3DXVECTOR3(m_pos.x - sinf(m_rot.y) * 70.0f, m_pos.y - 50.0f, m_pos.z - cosf(m_rot.y) * 70.0f);
+
+			for (int nCount = 0; nCount < MAX_BOOST; nCount++)
+			{
+				if (m_pBoost[nCount] == NULL)
+				{
+					// ブースト処理
+					m_pBoost[nCount] = CBoost::Create(TargetPos + m_move,
+						D3DXVECTOR3(m_rot.x + D3DXToRadian(270.0f), m_rot.y + 0.0f, m_rot.z + 0.0f), D3DXVECTOR3(BOOST_SIZE_X, BOOST_SIZE_Y, BOOST_SIZE_Z), m_nPlayerNum);
+				}
+			}
 		}
 		// Dキーを押したとき
 		if (pKeyboard->GetPress(DIK_D) && pKeyboard->GetTrigger(DIK_RSHIFT))
@@ -886,10 +939,13 @@ void CPlayer::Dush(void)
 		m_bDush = false;
 		m_bDushInter = true;
 
-		if (m_pBoost != NULL)
+		for (int nCount = 0; nCount <= MAX_BOOST; nCount++)
 		{
-			m_pBoost->Uninit();
-			m_pBoost = NULL;
+			if (m_pBoost[nCount] != NULL)
+			{
+				m_pBoost[nCount]->Uninit();
+				m_pBoost[nCount] = NULL;
+			}
 		}
 
 	}
@@ -1113,6 +1169,10 @@ bool CPlayer::GetEnd(void)
 CPlayer::PLAYER_STATE CPlayer::GetState(void)
 {
 	return m_state;
+}
+bool CPlayer::GetJump(void)
+{
+	return m_bJump;
 }
 //=============================================================================
 // ファイル読み込み処理
