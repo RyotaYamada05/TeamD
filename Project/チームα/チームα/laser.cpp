@@ -14,6 +14,7 @@
 #include "effect.h"
 #include "shock.h"
 
+
 //=================================================================================
 // マクロ定義
 //=================================================================================
@@ -88,6 +89,9 @@ HRESULT CLaser::Init(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXVECTOR3 size, BULLET
 	CBullet2::Init(pos, size, user, LASER_SPEED);		// 初期化情報
 	SetRot(D3DXVECTOR3(0.0f, 0.0f, 0.0f));				// 向き
 	m_fSizeZ = size.z;									// サイズの取得
+	SetType(BULLET2_TYPE_LASER);							// タイプの設定
+
+
 	return S_OK;
 }
 

@@ -43,6 +43,7 @@ CBullet2::CBullet2()
 	m_pTargetPL = NULL;							//敵プレイヤーのポインタ
 	m_fSpeed = 0.0f;
 	m_fHeight = 0.0f;
+	m_nDamage = 20;
 }
 
 //=============================================================================
@@ -158,7 +159,14 @@ void CBullet2::Update(void)
 				m_pTargetPL->GetPos().x, m_pTargetPL->GetPos().y, m_pTargetPL->GetPos().z),
 				m_fSpeed);
 		}
-
+	case BULLET2_TYPE_LASER:
+		// 通常の場合
+		if (m_nCounter <= FOLLOW_TIME_NONE)
+		{
+			//移動量の計算
+			m_move = VectorMath(m_pTargetPL->GetPos(), m_fSpeed);
+		}
+		break;
 		// 高さの調整
 		m_move.y = m_fHeight;
 		break;
@@ -242,14 +250,33 @@ bool CBullet2::Collision(void)
 			//　プレイヤーのライフを減らす
 			if (m_pTargetPL != NULL)
 			{
-				m_pTargetPL->GetLife(nCount)->Decrease(50, m_user, true);
+				switch (m_type)
+				{
+				case BULLET2_TYPE_NONE:
+					// 通常の場合
+					m_nDamage = 20;
+					break;
 
-				// 爆発生成
-				C2dExplosion::Create(m_pos,
-					D3DXVECTOR3(EXPLOSION_SIZE_X_2D, EXPLOSION_SIZE_Y_2D, EXPLOSION_SIZE_Z_2D));
+				case BULLET2_TYPE_BOMB:
+					// ボムの時
+					m_nDamage = 100;
+					break;
+				case BULLET2_TYPE_LASER:
+					// ボムの時
+					m_nDamage = 160;
+					break;
 
-				CExplosion::Create(D3DXVECTOR3(m_pos.x, 0.0f, m_pos.z), D3DXVECTOR3(0.0f, 0.0f, 0.0f),
-					D3DXVECTOR3(EXPLOSION_SIZE_X, EXPLOSION_SIZE_Y, EXPLOSION_SIZE_Z));
+
+				}
+					m_pTargetPL->GetLife(nCount)->Decrease(m_nDamage, m_user, true);
+
+					// 爆発生成
+					C2dExplosion::Create(m_pos,
+						D3DXVECTOR3(EXPLOSION_SIZE_X_2D, EXPLOSION_SIZE_Y_2D, EXPLOSION_SIZE_Z_2D));
+
+					CExplosion::Create(D3DXVECTOR3(m_pos.x, 0.0f, m_pos.z), D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+						D3DXVECTOR3(EXPLOSION_SIZE_X, EXPLOSION_SIZE_Y, EXPLOSION_SIZE_Z));
+		
 			}
 		}
 

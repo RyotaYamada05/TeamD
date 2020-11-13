@@ -1119,7 +1119,7 @@ void CPlayer::beam(void)
 				//バレットの生成
 				CBeam::Create(m_pos, D3DXVECTOR3(0.0f, 0.0f, -BEAM_SPEED), D3DXVECTOR3(BEAM_SIZE_X, BEAM_SIZE_Y, BEAM_SIZE_Z), CBullet2::BULLET2_USER_PL1);
 				//弾うったらゲージを減らす
-				m_pCharge->Reduce(50, true, 0);
+				m_pCharge->Reduce(PLAYER_LASER, true, 0);
 				pSound->Play(CSound::SOUND_LABEL_SE_BULLET);
 			}
 			break;
@@ -1131,7 +1131,7 @@ void CPlayer::beam(void)
 				//バレットの生成
 				CBeam::Create(m_pos, D3DXVECTOR3(0.0f, 0.0f, BEAM_SPEED), D3DXVECTOR3(BEAM_SIZE_X, BEAM_SIZE_Y, BEAM_SIZE_Z), CBullet2::BULLET2_USER_PL2);
 				//弾うったらゲージを減らす
-				m_pCharge->Reduce(50, true, 1);
+				m_pCharge->Reduce(PLAYER_LASER, true, 1);
 				pSound->Play(CSound::SOUND_LABEL_SE_BULLET);
 			}
 			break;
@@ -1207,7 +1207,7 @@ void CPlayer::Laser(void)
 	// キーボード更新
 	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
 
-	// Lキーを押したとき・コントローラのR1を押したとき
+	// Mキーを押したとき・コントローラのR1を押したとき
 	if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_L2_TRIGGER, m_nPlayerNum) && m_bJump == false
 		|| pKeyboard->GetTrigger(DIK_M) && m_bJump == false)
 	{
@@ -1224,7 +1224,7 @@ void CPlayer::Laser(void)
 			//弾うったらゲージを減らす
 			if (m_pCharge != NULL)
 			{
-				m_pCharge->Reduce(50, true,0);
+				m_pCharge->Reduce(150, true,0);
 			}
 			break;
 
@@ -1239,7 +1239,7 @@ void CPlayer::Laser(void)
 			//弾うったらゲージを減らす
 			if (m_pCharge != NULL)
 			{
-				m_pCharge->Reduce(50, true,1);
+				m_pCharge->Reduce(150, true,1);
 			}
 			break;
 		}

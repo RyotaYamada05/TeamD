@@ -39,6 +39,7 @@ public:
 		BULLET2_TYPE_NONE = 0,	// 初期値
 		BULLET2_TYPE_NORMAL,	// 通常弾
 		BULLET2_TYPE_BOMB,		// ボム
+		BULLET2_TYPE_LASER,		// レーザー
 		BULLET2_TYPE_MAX
 	}BULLET2_TYPE;
 
@@ -81,6 +82,7 @@ private:
 	BULLET2_TYPE m_type;	// タイプ
 	CPlayer *m_pTargetPL;	//敵プレイヤーのポインタ
 	int m_nCounter;
+	int m_nDamage;			//ダメージ数
 	float m_fSpeed;			// 速さ
 	float m_fHeight;		// 高さ
 };
