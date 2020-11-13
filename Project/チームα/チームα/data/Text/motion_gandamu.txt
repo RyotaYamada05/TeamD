@@ -14,27 +14,27 @@ NUM_MODEL = 21
 #------------------------------------------------------------------------------
 # モデルファイル名
 #------------------------------------------------------------------------------
-MODEL_FILENAME = data/MODEL/LBX/00_waist.x				# [0]腰
-MODEL_FILENAME = data/MODEL/LBX/01_body.x				# [1]体
-MODEL_FILENAME = data/MODEL/LBX/02_head.x				# [2]頭
-MODEL_FILENAME = data/MODEL/LBX/03_rightshoulder.x		# [3]右肩
-MODEL_FILENAME = data/MODEL/LBX/04_rightUpperArm.x		# [4]右上腕
-MODEL_FILENAME = data/MODEL/LBX/05_rightarm.x			# [5]右腕
-MODEL_FILENAME = data/MODEL/LBX/06_rightHand.x			# [6]右手のひら
-MODEL_FILENAME = data/MODEL/LBX/07_leftshoulder.x		# [7]左肩
-MODEL_FILENAME = data/MODEL/LBX/08_leftUpperArm.x		# [8]左上腕
-MODEL_FILENAME = data/MODEL/LBX/09_leftarm.x			# [9]左腕
-MODEL_FILENAME = data/MODEL/LBX/10_rightThighs.x		# [10]右腿
-MODEL_FILENAME = data/MODEL/LBX/11_rightshin.x			# [11]右脛
-MODEL_FILENAME = data/MODEL/LBX/12_rightshoe.x			# [12]右足
-MODEL_FILENAME = data/MODEL/LBX/13_leftThighs.x			# [13]左腿
-MODEL_FILENAME = data/MODEL/LBX/14_leftshin.x			# [14]左脛
-MODEL_FILENAME = data/MODEL/LBX/15_leftshoe.x			# [15]左足
-MODEL_FILENAME = data/MODEL/LBX/16_backpack.x			# [16]バックパック
-MODEL_FILENAME = data/MODEL/LBX/17_rightwing.x			# [17]右翼
-MODEL_FILENAME = data/MODEL/LBX/18_leftwing.x			# [18]左翼
-MODEL_FILENAME = data/MODEL/LBX/19_Weapon.x				# [19]武器
-MODEL_FILENAME = data/MODEL/LBX/20_Collision.x			# [20]当たり判定
+MODEL_FILENAME = data/MODEL/01_gandamu/00_waist.x				# [0]腰
+MODEL_FILENAME = data/MODEL/01_gandamu/01_body.x				# [1]体
+MODEL_FILENAME = data/MODEL/01_gandamu/02_head.x				# [2]頭
+MODEL_FILENAME = data/MODEL/01_gandamu/03_rightshoulder.x		# [3]右肩
+MODEL_FILENAME = data/MODEL/01_gandamu/04_rightUpperArm.x		# [4]右上腕
+MODEL_FILENAME = data/MODEL/01_gandamu/05_rightarm.x			# [5]右腕
+MODEL_FILENAME = data/MODEL/01_gandamu/06_rightHand.x			# [6]右手のひら
+MODEL_FILENAME = data/MODEL/01_gandamu/07_leftshoulder.x		# [7]左肩
+MODEL_FILENAME = data/MODEL/01_gandamu/08_leftUpperArm.x		# [8]左上腕
+MODEL_FILENAME = data/MODEL/01_gandamu/09_leftarm.x				# [9]左腕
+MODEL_FILENAME = data/MODEL/01_gandamu/10_rightThighs.x			# [10]右腿
+MODEL_FILENAME = data/MODEL/01_gandamu/11_rightshin.x			# [11]右脛
+MODEL_FILENAME = data/MODEL/01_gandamu/12_rightshoe.x			# [12]右足
+MODEL_FILENAME = data/MODEL/01_gandamu/13_leftThighs.x			# [13]左腿
+MODEL_FILENAME = data/MODEL/01_gandamu/14_leftshin.x			# [14]左脛
+MODEL_FILENAME = data/MODEL/01_gandamu/15_leftshoe.x			# [15]左足
+MODEL_FILENAME = data/MODEL/01_gandamu/16_backpack.x			# [16]バックパック
+MODEL_FILENAME = data/MODEL/01_gandamu/17_rightwing.x			# [17]右翼
+MODEL_FILENAME = data/MODEL/01_gandamu/18_leftwing.x			# [18]左翼
+MODEL_FILENAME = data/MODEL/01_gandamu/19_Weapon.x				# [19]武器
+MODEL_FILENAME = data/MODEL/01_gandamu/20_Collision.x			# [20]当たり判定
 
 #------------------------------------------------------------------------------
 # キャラクター情報
@@ -43,33 +43,33 @@ CHARACTERSET
 	MOVE = 3.2						# 移動量
 	JUMP = 11.25					# ジャンプ量
 	RADIUS = 40.0					# 半径
-	NUM_PARTS = 21					# パーツ数
+	NUM_PARTS = 20					# パーツ数
 
 	PARTSSET
-		INDEX = 0					# 腹
+		INDEX = 0					# 腰
 		PARENT = -1					# (親)NULL
-		POS = 0.0 150.0 0.0
+		POS = 0.0 230.0 0.0
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 
 	PARTSSET
 		INDEX = 1					# 体
-		PARENT = 0					# (親)NULL
-		POS = 0.0 65.0 0.0
+		PARENT = 0					# (親)腰
+		POS = 0.0 55.0 0.0
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 
 	PARTSSET
 		INDEX = 2					# 頭
 		PARENT = 1					# (親)体
-		POS = 0.0 80.0 0.0
+		POS = 0.0 70.0 0.0
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 
 	PARTSSET
 		INDEX = 3					# 右肩
 		PARENT = 1					# (親)体
-		POS = -40.0 60.0 0.0
+		POS = -40.0 50.0 0.0
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 
@@ -97,7 +97,7 @@ CHARACTERSET
 	PARTSSET
 		INDEX = 7					# 左肩
 		PARENT = 1					# (親)体
-		POS = 40.0 60.0 0.0
+		POS = 40.0 50.0 0.0
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 
@@ -118,42 +118,42 @@ CHARACTERSET
 	PARTSSET
 		INDEX = 10					# 右腿
 		PARENT = 0					# (親)腰
-		POS = -30.0 15.0 0.0
+		POS = -20.0 30.0 5.0
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 
 	PARTSSET
 		INDEX = 11					# 右脛
 		PARENT = 10					# (親)右腿
-		POS = 0.0 -45.0 0.0
+		POS = 0.0 -50.0 0.0
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 
 	PARTSSET
 		INDEX = 12					# 右足
 		PARENT = 11					# (親)右脛
-		POS = 0.0 -85.0 0.0
+		POS = -15.0 -161.0 0.0
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 
 	PARTSSET
 		INDEX = 13					# 左腿
 		PARENT = 0					# (親)腰
-		POS = 30.0 15.0 0.0
+		POS = 20.0 30.0 5.0
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 
 	PARTSSET
 		INDEX = 14					# 左脛
 		PARENT = 13					# (親)左腿
-		POS = 0.0 -45.0 0.0
+		POS = 5.0 -50.0 0.0
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 
 	PARTSSET
 		INDEX = 15					# 左足
 		PARENT = 14					# (親)左脛
-		POS = 0.0 -85.0 0.0
+		POS = 15.0 -161.0 0.0
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 
@@ -185,10 +185,10 @@ CHARACTERSET
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 	
-	PARTSSET
+		PARTSSET
 		INDEX = 20					# 当たり判定
 		PARENT = 19					# (親)武器
-		POS = 0.0 0.0 -210.0
+		POS = 0.0 -190.0 20.0
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 END_CHARACTERSET
@@ -4158,4 +4158,5 @@ MOTIONSET
 		END_KEY
 	END_KEYSET
 END_MOTIONSET
+
 END_SCRIPT		# この行は絶対消さないこと！

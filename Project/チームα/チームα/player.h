@@ -56,12 +56,13 @@ typedef enum
 	MOTION_NONE = -1,
 	MOTION_IDOL,	//アイドルモーション
 	MOTION_WALK,	//歩行モーション
-	MOTION_ATTACK,	//ダッシュモーション
+	MOTION_ATTACK,	//攻撃モーション
 	MOTION_JUMP,	//ジャンプモーション
 	MOTION_LANDING,	//着地モーション
 	MOTION_WIN,		//勝利モーション
-	MOTION_JUMP3,	//ジャンプモーション
-	MOTION_JUMP4,	//ジャンプモーション
+	MOTION_RIGHTBOOST,	//右ブースト
+	MOTION_LEFTBOOST,	//左ブースト
+	MOTION_DAMAGE,	//やられ
 	MOTION_MAX,		//モーション最大数
 }MOTION_STATE;
 
@@ -183,16 +184,20 @@ private:
 	bool m_bDushInter;							// ダッシュのインターバル
 	bool m_bEnd;								// 終了フラグ
 	bool m_bFall;								// 急降下フラグ
+	bool m_bWalk;								//移動フラグ
 	static int m_nPlayerAll;					// プレイヤーの数
 	D3DXMATRIX m_mtxWorld;						// ワールドマトリックス
 	CModelAnime *m_apModelAnime[MAX_MODEL_PARTS];	//モデルパーツ用のポインタ
 	int m_nNumKey;								//キーの総数
 	int m_nKey;									//現在キーのNo
 	int m_nCountMotion;							//モーションカウンター
+	int m_nMotionInterval;						//モーションのインターバル
 	KEY_INFO *m_apKeyInfo;						//キー情報のポインタ
 	MOTION_STATE m_MotionState;					//モーションの状態
 	Motion_Info m_Motion[MOTION_MAX];			//モーション情報
 	bool m_bWinLose;							// 勝ち負けのロゴフラグ
+	bool m_bEntered;							//移動入力があるかどうか
+	bool m_bMotionPlaing;
 
 };
 #endif

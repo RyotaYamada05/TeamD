@@ -140,7 +140,6 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindow)
 		}
 	}
 
-
 	//タイトルクラスのクリエイト
 	//m_pTitle = CTitle::Create();
 
@@ -286,7 +285,7 @@ void CManager::LoadAll(void)
 	CBill::LoadModel();
 	CSplash::Load();
 	CLaser::Load();
-	CMissile::Load();
+
 	CFire::Load();
 	CBoost::Load();
 	CSea::Load();
@@ -318,7 +317,7 @@ void CManager::UnLoadAll(void)
 	CSand::UnLoad();
 	CSplash::UnLoad();
 	CLaser::UnLoad();
-	CMissile::UnLoad();
+
 	CFire::UnLoad();
 	CBoost::UnLoad();
 

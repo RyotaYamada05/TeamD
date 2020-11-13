@@ -256,7 +256,6 @@ bool CBullet2::Collision(void)
 					// í èÌÇÃèÍçá
 					m_nDamage = 20;
 					break;
-
 				case BULLET2_TYPE_BOMB:
 					// É{ÉÄÇÃéû
 					m_nDamage = 100;
@@ -265,10 +264,9 @@ bool CBullet2::Collision(void)
 					// É{ÉÄÇÃéû
 					m_nDamage = 160;
 					break;
-
-
 				}
 					m_pTargetPL->GetLife(nCount)->Decrease(m_nDamage, m_user, true);
+					m_pTargetPL->SetMotion(MOTION_DAMAGE);
 
 					// îöî≠ê∂ê¨
 					C2dExplosion::Create(m_pos,

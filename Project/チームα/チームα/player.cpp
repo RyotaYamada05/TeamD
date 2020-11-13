@@ -54,7 +54,9 @@
 #define STATE_EXPLOSION_TIME	(30)				// 爆発状態のカウント
 #define STATE_EXPLOSION_END		(500)				// 爆発状態の終了フレーム
 
-#define LBX_XFAILE_NAME "data/Text/motion_LBX.txt"	//LBXのXファイルパス
+#define LBX_XFAILE_NAME "data/Text/motion_LBX.txt"	//LBXのファイルパス
+#define GANDAMU_XFAILE_NAME "data/Text/motion_gandamu.txt"	//ガンダムのファイルパス
+
 //=============================================================================
 // グローバル変数宣言
 //=============================================================================
@@ -82,6 +84,7 @@ CPlayer * CPlayer::Create(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 	return pPlayer;
 }
 
+//=============================================================================
 // コンストラクタ
 //=============================================================================
 CPlayer::CPlayer()
@@ -106,15 +109,19 @@ CPlayer::CPlayer()
 	m_bEnd = false;
 
 	m_bFall = false;	
+	m_bWalk = false;
 	memset(m_apModelAnime, 0, sizeof(m_apModelAnime));
 	m_nNumKey = 0;
 	m_apKeyInfo = NULL;
 	m_nKey = 0;;
 	m_nCountMotion = 0;
+	m_nMotionInterval = 0;
 	memset(&m_Motion, 0, sizeof(m_Motion));
 	m_MotionState = MOTION_NONE;
 	memset(m_pBoost,0,sizeof(m_pBoost));
 	m_bWinLose = false;
+	m_bMotionPlaing = false;
+	m_bEntered = false;
 }
 
 //=============================================================================
@@ -260,7 +267,7 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 			}
 		}
 	}
-	//アニメーションの設定
+	//待機モーションの再生
 	SetMotion(MOTION_IDOL);
 
 	//オブジェクトタイプの設定
@@ -307,8 +314,8 @@ void CPlayer::Update(void)
 	// プレイヤーの状態
 	PlayerState();
 
-	if (m_pLife[0] != NULL)	{
-
+	if (m_pLife[0] != NULL)	
+	{
 		D3DXVECTOR3 size = m_pLife[0]->GetSize();
 
 		// 終了処理
@@ -390,7 +397,7 @@ void CPlayer::Update(void)
 	}
 	// 地面の制限
 	GroundLimit();
-//範囲外に行かないようにする処理
+	//範囲外に行かないようにする処理
 	MapLimit();
 	//// 軌跡の生成
 	//CLocus::Create(pos, m_OldPos,
@@ -406,7 +413,6 @@ void CPlayer::Update(void)
 void CPlayer::UpdateMotion(void)
 {
 	KEY *pKey[MAX_MODEL_PARTS];
-	KEY *pKeyNext[MAX_MODEL_PARTS];
 	D3DXVECTOR3 diffPos, diffRot, startPos, startRot, setPos, setRot;
 
 	//現在キーが最大キー数未満の場合
@@ -417,18 +423,6 @@ void CPlayer::UpdateMotion(void)
 			m_apKeyInfo = &m_Motion[m_MotionState].aKeyInfo[m_nKey];
 
 			pKey[nCntModel] = &m_apKeyInfo->aKey[nCntModel];
-
-			if (m_nKey + 1 == m_Motion[m_MotionState].nNumKey)
-			{
-				m_apKeyInfo = &m_Motion[m_MotionState].aKeyInfo[0];
-			}
-			else
-			{
-				m_apKeyInfo = &m_Motion[m_MotionState].aKeyInfo[m_nKey + 1];
-			}
-
-			//次キーの取得
-			pKeyNext[nCntModel] = &m_apKeyInfo->aKey[nCntModel];
 		}
 
 		for (int nCntModel = 0; nCntModel < MAX_MODEL_PARTS; nCntModel++)
@@ -439,7 +433,6 @@ void CPlayer::UpdateMotion(void)
 				D3DXVECTOR3 startRot = m_apModelAnime[nCntModel]->GetRotAnime();
 
 				//1フレーム当たりの更新値 = (終点位置-開始位置) / フレーム数
-				
 				diffPos.x = (pKey[nCntModel]->fPosX - startPos.x) / (float)m_Motion[m_MotionState].aKeyInfo[m_nKey].nFrame;
 				diffPos.y = (pKey[nCntModel]->fPosY - startPos.y) / (float)m_Motion[m_MotionState].aKeyInfo[m_nKey].nFrame;
 				diffPos.z = (pKey[nCntModel]->fPosZ - startPos.z) / (float)m_Motion[m_MotionState].aKeyInfo[m_nKey].nFrame;
@@ -452,7 +445,6 @@ void CPlayer::UpdateMotion(void)
 				setPos.x = diffPos.x * m_nCountMotion + startPos.x;
 				setPos.y = diffPos.y * m_nCountMotion + startPos.y;
 				setPos.z = diffPos.z * m_nCountMotion + startPos.z;
-					
 
 				setRot.x = diffRot.x * m_nCountMotion + startRot.x;
 				setRot.y = diffRot.y * m_nCountMotion + startRot.y;
@@ -466,7 +458,6 @@ void CPlayer::UpdateMotion(void)
 
 				//向きに更新用の向きを加算
 				rot += setRot;
-			
 
 				//位置の設定
 				m_apModelAnime[nCntModel]->SetPosAnime(setPos);
@@ -475,7 +466,6 @@ void CPlayer::UpdateMotion(void)
 				m_apModelAnime[nCntModel]->SetRotAnime(setRot);
 			}
 		}
-
 
 		//モーションカウンターの加算
 		m_nCountMotion++;
@@ -497,6 +487,25 @@ void CPlayer::UpdateMotion(void)
 		}
 		else
 		{
+			m_nMotionInterval++;
+
+			if (m_nMotionInterval == 10)
+			{
+				m_bMotionPlaing = false;
+				
+				//着地・攻撃・左右ブーストモーションの時かつ入力がtrue・ジャンプがfalse
+				if ((m_MotionState == MOTION_LANDING || m_MotionState == MOTION_ATTACK ||
+					m_MotionState == MOTION_LEFTBOOST || m_MotionState == MOTION_RIGHTBOOST)
+					&& m_bEntered == true && m_bJump == false)
+				{
+					SetMotion(MOTION_WALK);
+				}
+				else if (m_bJump == false)
+				{
+					SetMotion(MOTION_IDOL);
+				}
+			}
+			
 			return;
 		}
 	}
@@ -542,10 +551,22 @@ void CPlayer::Draw(void)
 //=============================================================================
 void CPlayer::SetMotion(MOTION_STATE motion)
 {
-	m_MotionState = motion;
+	if (m_Motion[m_MotionState].bLoop == false)
+	{
+		if (m_bMotionPlaing == true)
+		{
+			return;
+		}
+	}
 	m_nKey = 0;
+	m_nCountMotion = 0;
+	m_nMotionInterval = 0;
 	D3DXVECTOR3 pos, rot;
 	
+	m_MotionState = motion;
+
+	m_bMotionPlaing = true;
+
 	for (int nCntModel = 0; nCntModel < MAX_MODEL_PARTS; nCntModel++)
 	{
 		if (m_apModelAnime[nCntModel] != NULL)
@@ -584,11 +605,13 @@ void CPlayer::PlayerState(void)
 		break;
 
 	case PLAYER_STATE_DAMAGE:
+
 		// ダメージを受けたら
 		m_nStateCounter++;
-
+		
 		// 一定以上で
-		if (m_nStateCounter >= STATE_DAMAGE_TIME)
+
+		if (m_MotionState == MOTION_DAMAGE && m_bMotionPlaing == false)
 		{
 			m_nStateCounter = 0;
 			m_state = PLAYER_STATE_NORMAL;
@@ -697,8 +720,7 @@ void CPlayer::PlayerState(void)
 			}
 			break;
 	default:
-		break;
-		}
+		break;		}
 	}
 }
 
@@ -749,95 +771,116 @@ void CPlayer::Walk(void)
 
 	CSound *pSound = CManager::GetSound();
 
+	if (pKeyboard->GetTrigger(DIK_I) ||
+		CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_L_TRIGGER, m_nPlayerNum))
+	{
+		//攻撃モーションを再生
+		SetMotion(MOTION_ATTACK);
+	}
 	//入力が存在する
 	if (js.lX != 0.0f || js.lY != 0.0f)
 	{
-		//カメラ角度取得
-		m_fAngle = CGame::GetCamera(m_nPlayerNum)->Getφ();
-		//スティックXの入力が感度超えている
-		if (js.lX < -STICK_SENSITIVITY)
+		//入力ありにする
+		m_bEntered = true;
+
+		//ダメージを受けていないときのみ移動する
+		if (m_MotionState != MOTION_DAMAGE)
 		{
-			m_rotDest.y = m_fAngle + D3DXToRadian(270.0f);
-
-			m_pos.x += cosf(m_fAngle)* PLAYER_SPEED;
-			m_pos.z -= sinf(m_fAngle)* PLAYER_SPEED;
-		}
-
-		else if (js.lX > STICK_SENSITIVITY)
-		{
-			m_rotDest.y = m_fAngle + D3DXToRadian(90.0f);
-
-			m_pos.x -= cosf(m_fAngle)* PLAYER_SPEED;
-			m_pos.z += sinf(m_fAngle)* PLAYER_SPEED;
-		}
-		else
-		{
-
-		}
-
-
-		//スティックYの入力が感度を超えている
-		if (js.lY < -STICK_SENSITIVITY)
-		{
-			m_rotDest.y = m_fAngle;
-
-			m_pos.x -= sinf(m_fAngle)* PLAYER_SPEED;
-			m_pos.z -= cosf(m_fAngle)* PLAYER_SPEED;
-
+			//ジャンプしていないとき
+			if (m_bJump == false && m_bWalk == false)
+			{
+				m_bWalk = true;
+				//歩行モーションの再生
+				SetMotion(MOTION_WALK);
+			}
+			//スティックXの入力が感度超えている
 			if (js.lX < -STICK_SENSITIVITY)
 			{
-				m_rotDest.y = m_fAngle + D3DXToRadian(315.0f);
-			}
-			else if (js.lX > STICK_SENSITIVITY)
-			{
-				m_rotDest.y = m_fAngle + D3DXToRadian(45.0f);
-			}
-		}
-		else if (js.lY > STICK_SENSITIVITY)
-		{	
-			m_rotDest.y = m_fAngle + D3DXToRadian(180.0f);
-			m_pos.x += sinf(m_fAngle)* PLAYER_SPEED;
-			m_pos.z += cosf(m_fAngle)* PLAYER_SPEED;
+				m_rotDest.y = m_fAngle + D3DXToRadian(270.0f);
 
-			if (js.lX < -STICK_SENSITIVITY)
-			{
-				m_rotDest.y = m_fAngle + D3DXToRadian(225.0f);
+				m_pos.x += cosf(m_fAngle)* PLAYER_SPEED;
+				m_pos.z -= sinf(m_fAngle)* PLAYER_SPEED;
 			}
+
 			else if (js.lX > STICK_SENSITIVITY)
 			{
-				m_rotDest.y = m_fAngle + D3DXToRadian(135.0f);
+				m_rotDest.y = m_fAngle + D3DXToRadian(90.0f);
+
+				m_pos.x -= cosf(m_fAngle)* PLAYER_SPEED;
+				m_pos.z += sinf(m_fAngle)* PLAYER_SPEED;
 			}
+			else
+			{
+			}
+			//スティックYの入力が感度を超えている
+			if (js.lY < -STICK_SENSITIVITY)
+			{
+				m_rotDest.y = m_fAngle;
+
+				m_pos.x -= sinf(m_fAngle)* PLAYER_SPEED;
+				m_pos.z -= cosf(m_fAngle)* PLAYER_SPEED;
+
+				if (js.lX < -STICK_SENSITIVITY)
+				{
+					m_rotDest.y = m_fAngle + D3DXToRadian(315.0f);
+				}
+				else if (js.lX > STICK_SENSITIVITY)
+				{
+					m_rotDest.y = m_fAngle + D3DXToRadian(45.0f);
+				}
+			}
+
+			else if (js.lY > STICK_SENSITIVITY)
+			{
+				m_rotDest.y = m_fAngle + D3DXToRadian(180.0f);
+				m_pos.x += sinf(m_fAngle)* PLAYER_SPEED;
+				m_pos.z += cosf(m_fAngle)* PLAYER_SPEED;
+
+				if (js.lX < -STICK_SENSITIVITY)
+				{
+					m_rotDest.y = m_fAngle + D3DXToRadian(225.0f);
+				}
+				else if (js.lX > STICK_SENSITIVITY)
+				{
+					m_rotDest.y = m_fAngle + D3DXToRadian(135.0f);
+				}
+			}
+			
 		}
-		else
+		// Wキーを押したとき
+		if (pKeyboard->GetPress(DIK_W))
 		{
-
+			m_rotDest.y = D3DXToDegree(m_fAngle);
+			m_pos.z += cosf(0)*PLAYER_SPEED;
+		}
+		// Sキーを押したとき
+		if (pKeyboard->GetPress(DIK_S))
+		{
+			m_rotDest.y = sin(m_fAngle);
+			m_pos.z += cosf(D3DX_PI)*PLAYER_SPEED;
+		}
+		// Aキーを押したとき
+		if (pKeyboard->GetPress(DIK_A))
+		{
+			m_pos.x += sinf(-D3DX_PI / 2)*PLAYER_SPEED;
+		}
+		// Dキーを押したとき
+		if (pKeyboard->GetPress(DIK_D))
+		{
+			m_pos.x += sinf(D3DX_PI / 2)*PLAYER_SPEED;
 		}
 	}
-
-	// Wキーを押したとき
-	if (pKeyboard->GetPress(DIK_W))
+	else
 	{
-		m_rotDest.y = D3DXToDegree(m_fAngle);
-		m_pos.z += cosf(0)*PLAYER_SPEED;
-	}
-	// Sキーを押したとき
-	if (pKeyboard->GetPress(DIK_S))
-	{
-		m_rotDest.y = sin(m_fAngle);
-		m_pos.z += cosf(D3DX_PI)*PLAYER_SPEED;
-	}
-	// Aキーを押したとき
-	if (pKeyboard->GetPress(DIK_A))
-	{
-		m_pos.x += sinf(-D3DX_PI / 2)*PLAYER_SPEED;
-	}
-	// Dキーを押したとき
-	if (pKeyboard->GetPress(DIK_D))
-	{
-		m_pos.x += sinf(D3DX_PI / 2)*PLAYER_SPEED;
+		m_bEntered = false;
+		if (m_bWalk == true)
+		{
+			//待機モーションを再生
+			SetMotion(MOTION_IDOL);
+			m_bWalk = false;
+		}
 	}
 }
-
 //=============================================================================
 // ジャンプ処理
 //=============================================================================
@@ -848,12 +891,17 @@ void CPlayer::Jump(void)
 	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
 
 	// SPACEキーを押したとき・コントローラのYを押したとき
-		if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_Y, m_nPlayerNum) && m_bJump == false		|| pKeyboard->GetTrigger(DIK_SPACE) && m_bJump == false)
+
+		if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_Y, m_nPlayerNum) && m_bJump == false	
+			|| pKeyboard->GetTrigger(DIK_SPACE) && m_bJump == false)
 	{
 		// ジャンプの処理
 		m_move.y = 0.0f;
 		m_move.y = PLAYER_JUMP;
 		m_bJump = true;
+		m_bWalk = false;
+
+		//ジャンプモーションの再生
 		SetMotion(MOTION_JUMP);
 		pSound->Play(CSound::SOUND_LABEL_SE_JUMP);
 	}
@@ -869,10 +917,14 @@ void CPlayer::GroundLimit(void)
 	// 着地の処理
 	if (m_pos.y <= GROUND_RIMIT)
 	{
+		if (m_bJump == true)
+		{
+			SetMotion(MOTION_LANDING);
+		}
 		m_move.y = 0.0f;
 		m_pos.y = GROUND_RIMIT;
 		m_bJump = false;
-
+		
 		if (m_bFall == true)
 		{
 			// 急降下を使用していない状態にする
@@ -917,7 +969,7 @@ void CPlayer::Dush(void)
 	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
 	CSound *pSound = CManager::GetSound();
 
-	// ジャンプが使えるとき
+	// ダッシュが使えるとき
 	if (m_bDushInter == false)
 	{
 		//カメラ角度取得
@@ -940,7 +992,7 @@ void CPlayer::Dush(void)
 				m_move.z -= sinf(m_fAngle)* PLAYER_DUSH;
 
 				m_bDush = true;
-
+				m_bWalk = false;
 				//ターボ音
 				pSound->Play(CSound::SOUND_LABEL_SE_TURBO);
 
@@ -954,6 +1006,7 @@ void CPlayer::Dush(void)
 				}
 				D3DXVECTOR3 TargetPos = D3DXVECTOR3(m_pos.x - sinf(m_rot.y) * 70.0f, m_pos.y - 50.0f, m_pos.z - cosf(m_rot.y) * 70.0f);
 
+
 				for (int nCount = 0; nCount <= MAX_BOOST; nCount++)
 				{
 					if (m_pBoost[nCount] == NULL)
@@ -963,6 +1016,9 @@ void CPlayer::Dush(void)
 							D3DXVECTOR3(m_rot.x + D3DXToRadian(270.0f), m_rot.y + 0.0f, m_rot.z + 0.0f), D3DXVECTOR3(BOOST_SIZE_X, BOOST_SIZE_Y, BOOST_SIZE_Z), m_nPlayerNum);
 					}
 				}
+
+				//左ブーストモーションの再生
+				SetMotion(MOTION_LEFTBOOST);
 
 				// 地上にいたら
 				if (m_bJump == false)
@@ -990,9 +1046,12 @@ void CPlayer::Dush(void)
 				m_move.z += sinf(m_fAngle)* PLAYER_DUSH;
 
 				m_bDush = true;
-
+				//右ブーストモーションの再生
+				SetMotion(MOTION_RIGHTBOOST);
 				//ターボ音
-				pSound->Play(CSound::SOUND_LABEL_SE_TURBO);				// 地上にいたら
+				pSound->Play(CSound::SOUND_LABEL_SE_TURBO);				
+
+				// 地上にいたら
 				if (m_bJump == false)
 				{
 					// 砂の生成
@@ -1000,7 +1059,6 @@ void CPlayer::Dush(void)
 						D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(m_rot.x , m_rot.y + 3.14f, m_rot.z + 0.0f),
 						D3DXVECTOR3(SAND_SIZE_X, SAND_SIZE_Y, SAND_SIZE_Z));
 				}
-
 			}
 		}
 
@@ -1079,6 +1137,7 @@ void CPlayer::Dush(void)
 		m_bDush = false;
 		m_bDushInter = true;
 
+
 		for (int nCount = 0; nCount < MAX_BOOST; nCount++)
 		{
 			if (m_pBoost[nCount] != NULL)
@@ -1113,9 +1172,11 @@ void CPlayer::beam(void)
 		switch (m_nPlayerNum)
 		{
 		case 0:
+
 			
 			if (CCharge::GetCharge(0) > PLAYER_LASER)
 			{
+
 				//バレットの生成
 				CBeam::Create(m_pos, D3DXVECTOR3(0.0f, 0.0f, -BEAM_SPEED), D3DXVECTOR3(BEAM_SIZE_X, BEAM_SIZE_Y, BEAM_SIZE_Z), CBullet2::BULLET2_USER_PL1);
 				//弾うったらゲージを減らす
@@ -1157,8 +1218,10 @@ void CPlayer::bomb(void)
 		{
 		case 0:
 
+
 			if (CCharge::GetCharge(0) >  PLAYER_BOMB)
 			{
+		
 				//バレットの生成
 				CBomb::Create(D3DXVECTOR3(m_pos.x, m_pos.y + 50.0f, m_pos.z),
 					D3DXVECTOR3(0.0f, BOMB_MOVE_Y, 0.0f),
@@ -1218,33 +1281,37 @@ void CPlayer::Laser(void)
 			CLaser::Create(/*D3DXVECTOR3(m_pos.x + sinf(m_rot.z)+200.0f, m_pos.y, m_pos.z + cosf(m_rot.z)+200.0f)*/m_pos,
 				D3DXVECTOR3(0.0f, 0.0f, -LASER_SPEED),
 				D3DXVECTOR3(0.0f, m_rot.y, 0.0f),
+
 				D3DXVECTOR3(LASER_SIZE_X, LASER_SIZE_Y, LASER_SIZE_Z),
 				CBullet2::BULLET2_USER_PL1);
 
 			//弾うったらゲージを減らす
 			if (m_pCharge != NULL)
 			{
+
 				m_pCharge->Reduce(150, true,0);
 			}
 			break;
 
 		case 1:
 			//バレットの生成
+
 			CLaser::Create(m_pos,
 				D3DXVECTOR3(0.0f, 0.0f, LASER_SPEED),
 				D3DXVECTOR3(0.0f, m_rot.y, 0.0f),
+
 				D3DXVECTOR3(LASER_SIZE_X, LASER_SIZE_Y, LASER_SIZE_Z),
 				CBullet2::BULLET2_USER_PL2);
 
 			//弾うったらゲージを減らす
 			if (m_pCharge != NULL)
 			{
+
 				m_pCharge->Reduce(150, true,1);
 			}
 			break;
 		}
 	}
-
 }
 
 //=============================================================================
@@ -1282,8 +1349,15 @@ void CPlayer::MapLimit(void)
 //=============================================================================
 void CPlayer::BlockUp(void)
 {
+	if (m_bJump == true)
+	{
+		//着地モーションの再生
+		SetMotion(MOTION_LANDING);
+	}
 	m_move.y = 0.0f;
 	m_bJump = false;
+
+	
 
 	if (m_bFall == true)
 	{
@@ -1389,11 +1463,18 @@ HRESULT CPlayer::ReadFile(void)
 	char aModeName[1024];
 	int nModelIndex = 0;	//モデルのインデックス
 	int nMotionType = 0;	//モーションのタイプ
-	int nKeyNum = 0;//キー番号
-	int nMotionNum = 0;	//モーション番号
-
-						//ファイルオープン
-	pFile = fopen(LBX_XFAILE_NAME, "r");
+	int nKeyNum = 0;		//キー番号
+	int nMotionNum = 0;		//モーション番号
+	if (m_nPlayerNum == 0)
+	{
+		//ファイルオープン
+		pFile = fopen(LBX_XFAILE_NAME, "r");
+	}
+	else
+	{
+		//ファイルオープン
+		pFile = fopen(GANDAMU_XFAILE_NAME, "r");
+	}
 
 	if (pFile != NULL)
 	{
