@@ -1,45 +1,43 @@
-//=======================================================================================
+//=============================================================================
 //
-// 背景描画処理 [bg.cpp]
-// Author : 伊藤　航
+//  [Pause.cpp]
+// Author : 佐藤 颯紀
 //
-//=======================================================================================
+//=============================================================================
 
 //=======================================================================================
 // インクルードファイル
 //=======================================================================================
-#include "title.h"
+#include "pause.h"
 #include "scene2d.h"
 #include "manager.h"
 #include "keyboard.h"
 #include "manager.h"
 #include "renderer.h"
-#include "conection.h"
-#include "tcp_client.h"
 #include "fade.h"
-#include "titlelogo.h"
-#include "sound.h"
 #include "joypad.h"
-
+#include "scene.h"
+#include "uipause.h"
+#include "sound.h"
 //=======================================================================================
 //静的メンバ変数宣言
 //=======================================================================================
-LPDIRECT3DTEXTURE9 CTitle::m_pTexture[1] = {};
-CTitlelogo *CTitle::m_apTitlelogo[MAX_TITLE] = {};
+LPDIRECT3DTEXTURE9 CPause::m_pTexture[1] = {};
+CUiPause *CPause::m_apPauselogo[MAX_PAUSE] = {};
 
 //=======================================================================================
 // タイトルクラスのコンストラクタ
 //=======================================================================================
-CTitle::CTitle()
+CPause::CPause()
 {
 	m_pScene = NULL;
-	m_bModechenge = false;
+	m_SelectPos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 }
 
 //=======================================================================================
 // タイトルクラスのデストラクタ
 //=======================================================================================
-CTitle::~CTitle()
+CPause::~CPause()
 {
 
 }
@@ -47,32 +45,35 @@ CTitle::~CTitle()
 //=======================================================================================
 // タイトルクラスのクリエイト処理
 //=======================================================================================
-CTitle* CTitle::Create(void)
+CPause* CPause::Create(void)
 {
-	CTitle* pTitle = new CTitle();
+	CPause* pPause = new CPause();
 
-	pTitle->Init(D3DXVECTOR3(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 0.0f), D3DXVECTOR3(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0.0f));
-
-	return pTitle;
+	pPause->Init(D3DXVECTOR3(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0.0f), D3DXVECTOR3(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0.0f));
+	
+	return pPause;
 }
 
 //=======================================================================================
 // タイトルクラスのテクスチャ読み込み処理
 //=======================================================================================
-HRESULT CTitle::Load(void)
+HRESULT CPause::Load(void)
 {
 	//デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
 	//テクスチャの読み込み
-	D3DXCreateTextureFromFile(pDevice, "data/Texture/bg001.png", &m_pTexture[0]);
-		return S_OK;
+	D3DXCreateTextureFromFile(pDevice,
+		"data/Texture/pause001.png", 
+		&m_pTexture[0]);
+
+	return S_OK;
 }
 
 //=======================================================================================
 // タイトルクラスの初期化処理
 //=======================================================================================
-HRESULT CTitle::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
+HRESULT CPause::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 {
 	if (m_pScene == NULL)
 	{
@@ -81,22 +82,21 @@ HRESULT CTitle::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 		//テクスチャの設定
 		m_pScene->BindTexture(m_pTexture[0]);
 	}
-	
-	if (m_apTitlelogo[0] == NULL)
+
+	if (m_apPauselogo[0] == NULL)
 	{
-		m_apTitlelogo[0] = CTitlelogo::Create(D3DXVECTOR3(TITLE_UI_POS_X, TITLE_UI_POS_Y, 0.0f), D3DXVECTOR3(TITLE_UI_SIZE, TITLE_UI_SIZE, 0.0f), CTitlelogo::LOGOTIPE_UI);
-	}
-	if (m_apTitlelogo[1] == NULL)
-	{
-		m_apTitlelogo[1] = CTitlelogo::Create(D3DXVECTOR3(TITLE_PLESS_POS_X, TITLE_PLESS_POS_Y, 0.0f), D3DXVECTOR3(TITLE_PLESS_SIZE_X, TITLE_PLESS_SIZE_Y, 0.0f), CTitlelogo::LOGOTIPE_PRESS);
-	}
-	if (m_apTitlelogo[2] == NULL)
-	{
-		m_apTitlelogo[2] = CTitlelogo::Create(D3DXVECTOR3(TITLE_POS_X, TITLE_POS_Y, 0.0f), D3DXVECTOR3(TITLE_SIZE_X, TITLE_SIZE_Y, 0.0f), CTitlelogo::LOGOTIPE_TITLE);
+		m_apPauselogo[0] = CUiPause::Create(D3DXVECTOR3(UIPAUSE_START_POS_X, UIPAUSE_START_POS_Y, 0.0f), D3DXVECTOR3(UIPAUSE_SIZE_X, UIPAUSE_SIZE_Y, 0.0f), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), CUiPause::UIPAUSETYPE_START);
 	}
 
-	CSound *pSound = CManager::GetSound();
-	pSound->Play(CSound::SOUND_LABEL_BGM_TITLE);
+	if (m_apPauselogo[1] == NULL)
+	{
+		m_apPauselogo[1] = CUiPause::Create(D3DXVECTOR3(UIPAUSE_TITLE_POS_X, UIPAUSE_TITLE_POS_Y, 0.0f), D3DXVECTOR3(UIPAUSE_SIZE_X, UIPAUSE_SIZE_Y, 0.0f), D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f), CUiPause::UIPAUSETYPE_TITLE);
+	}
+
+	m_SelectPos = D3DXVECTOR3(UIPAUSE_START_POS_X, UIPAUSE_START_POS_Y, 0.0f);
+
+	//オブジェクトタイプの設定
+	SetObjType(CScene::OBJTYPE_PAUSE);
 
 	return S_OK;
 }
@@ -104,25 +104,22 @@ HRESULT CTitle::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 //=======================================================================================
 // タイトルクラスの終了処理
 //=======================================================================================
-void CTitle::Uninit(void)
+void CPause::Uninit(void)
 {
-	for (int nCount = 0; nCount < TITLELOGO_TYPE; nCount++)
-	{
-		if (m_apTitlelogo[nCount] != NULL)
-		{
-			m_apTitlelogo[nCount]->Uninit();
-			m_apTitlelogo[nCount] = NULL;
-		}
-	}
-
 	if (m_pScene != NULL)
 	{
 		m_pScene->Uninit();
+		m_pScene = NULL;
 	}
 
-	//BGMを止める処理
-	CSound *pSound = CManager::GetSound();
-	//pSound->Stop(CSound::SOUND_LABEL_BGM_TITLE);
+	for (int nCount = 0; nCount < UISTART_TYPE; nCount++)
+	{
+		if (m_apPauselogo[nCount] != NULL)
+		{
+			m_apPauselogo[nCount]->Uninit();
+			m_apPauselogo[nCount] = NULL;
+		}
+	}
 
 	//オブジェクトの破棄
 	Release();
@@ -131,34 +128,61 @@ void CTitle::Uninit(void)
 //=======================================================================================
 // タイトルクラスの更新処理
 //=======================================================================================
-void CTitle::Update(void)
+void CPause::Update(void)
 {
 	CInputKeyboard* pKey = CManager::GetKeyboard();
 	CFade::FADE_MODE mode = CManager::GetFade()->GetFade();
-	CSound *pSound = CManager::GetSound();
-	
-	// コントローラのstartを押したときか、エンターキーを押したとき
-	if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_START, 0) && mode == CFade::FADE_MODE_NONE 
-		|| pKey->GetTrigger(DIK_RETURN) && mode == CFade::FADE_MODE_NONE)
-	{
-		CFade *pFade = CManager::GetFade();
-		pFade->SetFade(CManager::MODE_TYPE_TUTORIAL);
-		pSound->Play(CSound::SOUND_LABEL_SE_START);
-	}
 
-
-	//エンターキーを押したとき
-	/*if (pKey->GetTrigger(DIK_RETURN) && mode == CFade::FADE_MODE_NONE)
-	{
-		CFade *pFade = CManager::GetFade();
-		pFade->SetFade(CManager::MODE_TYPE_TUTORIAL);
-	}*/
+	Select();
 }
 
 //=======================================================================================
 // タイトルクラスの描画処理
 //=======================================================================================
-void CTitle::Draw(void)
+void CPause::Draw(void)
 {
 
+}
+
+//=======================================================================================
+// 選択処理
+//=======================================================================================
+void CPause::Select(void)
+{
+	CFade::FADE_MODE mode = CManager::GetFade()->GetFade();
+	// ジョイパッドの取得
+	DIJOYSTATE js = CInputJoypad::GetStick(0);
+
+	//入力が存在する
+	if (js.lX != 0.0f || js.lY != 0.0f)
+	{
+		if (js.lY < -5)
+		{
+			m_SelectPos = D3DXVECTOR3(UIPAUSE_START_POS_X, UIPAUSE_START_POS_Y, 0.0f);
+		}
+
+		if (js.lY > 5)
+		{
+			m_SelectPos = D3DXVECTOR3(UIPAUSE_TITLE_POS_X, UIPAUSE_TITLE_POS_Y, 0.0f);
+		}
+	}
+
+	if (m_SelectPos.y == UIPAUSE_START_POS_Y)
+	{
+		if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_B, 0))
+		{
+			m_pScene->GetPause(false);
+			Uninit();
+		}
+	}
+
+	if (m_SelectPos.y == UIPAUSE_TITLE_POS_Y)
+	{
+		if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_B, 0))
+		{
+			m_pScene->GetPause(false);
+			CFade *pFade = CManager::GetFade();
+			pFade->SetFade(CManager::MODE_TYPE_TITLE);
+		}
+	}
 }

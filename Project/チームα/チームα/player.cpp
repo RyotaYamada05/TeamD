@@ -117,7 +117,7 @@ CPlayer::CPlayer()
 	m_nCountMotion = 0;
 	m_nMotionInterval = 0;
 	memset(&m_Motion, 0, sizeof(m_Motion));
-	m_MotionState = MOTION_NONE;
+	m_MotionState = MOTION_IDOL;
 	memset(m_pBoost,0,sizeof(m_pBoost));
 	m_bWinLose = false;
 	m_bMotionPlaing = false;
@@ -160,7 +160,7 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 	m_nKey = 0;;
 	m_nCountMotion = 0;
 	memset(&m_Motion, 0, sizeof(m_Motion));
-	m_MotionState = MOTION_NONE;
+	m_MotionState = MOTION_IDOL;
 	memset(m_pBoost, 0, sizeof(m_pBoost));
 	m_bWinLose = false;
 
@@ -551,13 +551,13 @@ void CPlayer::Draw(void)
 //=============================================================================
 void CPlayer::SetMotion(MOTION_STATE motion)
 {
-	if (m_Motion[m_MotionState].bLoop == false)
+
+	if (m_Motion[m_MotionState].bLoop == false && 
+		m_bMotionPlaing == true)
 	{
-		if (m_bMotionPlaing == true)
-		{
 			return;
-		}
 	}
+
 	m_nKey = 0;
 	m_nCountMotion = 0;
 	m_nMotionInterval = 0;

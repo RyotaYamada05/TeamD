@@ -186,6 +186,12 @@
     <ClCompile Include="uistart.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
+    <ClCompile Include="pause.cpp">
+      <Filter>ソースファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="uipause.cpp">
+      <Filter>ソースファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="2d_explosion.h">
@@ -363,6 +369,12 @@
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
     <ClInclude Include="uistart.h">
+      <Filter>ヘッダーファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="pause.h">
+      <Filter>ヘッダーファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="uipause.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
   </ItemGroup>

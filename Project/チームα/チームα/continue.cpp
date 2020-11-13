@@ -15,7 +15,8 @@
 #include "renderer.h"
 #include "ui.h"
 #include "keyboard.h"
-
+#include "sound.h"
+#include "joypad.h"
 //=============================================================================
 //静的メンバ変数宣言
 //=============================================================================
@@ -106,12 +107,24 @@ void CContinue::Update(void)
 
 	// キーボード更新
 	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
+
+	CSound *pSound = CManager::GetSound();
+
 	m_nContinueCount++;
 	if (m_nContinueCount % 60 == 0)
 	{
 		if (m_nContinue > 0)
 		{
 			AddTime(1);
+		}
+	}
+
+	if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_A, 0))
+	{
+		if (m_nContinue > 0)
+		{
+			AddTime(1);
+			pSound->Play(CSound::SOUND_LABEL_SE_COUNTDOWN);
 		}
 	}
 }
