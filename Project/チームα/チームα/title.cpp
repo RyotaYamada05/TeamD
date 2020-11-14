@@ -30,7 +30,7 @@ CTitlelogo *CTitle::m_apTitlelogo[MAX_TITLE] = {};
 //=======================================================================================
 // タイトルクラスのコンストラクタ
 //=======================================================================================
-CTitle::CTitle()
+CTitle::CTitle(int nPriority) : CScene(nPriority)
 {
 	m_pScene = NULL;
 	m_bModechenge = false;
@@ -155,7 +155,7 @@ void CTitle::Uninit(void)
 	//pSound->Stop(CSound::SOUND_LABEL_BGM_TITLE);
 
 	//オブジェクトの破棄
-	Release();
+	SetDeathFlag();
 }
 
 //=======================================================================================

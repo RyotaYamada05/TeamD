@@ -134,7 +134,7 @@ public:
 		PLAYER_STATE_MAX
 	}PLAYER_STATE;
 
-	CPlayer();						// コンストラクタ
+	CPlayer(int nPriority = PRIORITY_0);						// コンストラクタ
 	~CPlayer();						// デストラクタ
 
 	static CPlayer*Create(D3DXVECTOR3 pos, D3DXVECTOR3 size);		// クリエイト

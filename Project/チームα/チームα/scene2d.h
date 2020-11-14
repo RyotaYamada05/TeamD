@@ -19,7 +19,7 @@ class CScene2d : public CScene
 {
 public:
 
-	CScene2d();
+	CScene2d(int nPriority = PRIORITY_0);
 	~CScene2d();
 	static CScene2d* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 size);
 	HRESULT Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size);

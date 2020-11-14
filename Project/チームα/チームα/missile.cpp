@@ -23,7 +23,7 @@ CMissile::MODELFILLEs g_modelfile[MAX_MODEL_MISSILE_PARTS];	//モデルファイルのグ
 //=============================================================================
 //ミサイルクラスのコンストラクタ
 //=============================================================================
-CMissile::CMissile()
+CMissile::CMissile(int nPriority) : CScene(nPriority)
 {
 	//各メンバ変数のクリア
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -133,7 +133,7 @@ void CMissile::Uninit(void)
 	}
 
 	//オブジェクトの破棄
-	Release();
+	SetDeathFlag();
 }
 
 //=============================================================================

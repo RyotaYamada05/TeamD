@@ -32,7 +32,7 @@ CTime *CTime::Create(D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 //=============================================================================
 // コンストラクタ
 //=============================================================================
-CTime::CTime()
+CTime::CTime(int nPriority) : CScene(nPriority)
 {
 
 }
@@ -91,7 +91,7 @@ void CTime::Uninit(void)
 	}
 
 	// リリース
-	Release();
+	SetDeathFlag();
 
 
 	

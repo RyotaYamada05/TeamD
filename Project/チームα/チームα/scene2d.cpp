@@ -16,7 +16,7 @@
 //=======================================================================================
 // コンストラクタ
 //=======================================================================================
-CScene2d::CScene2d() 
+CScene2d::CScene2d(int nPriority) : CScene(nPriority)
 {
 	m_pTextuer = NULL;
 	m_pVetxBuff = NULL;
@@ -99,7 +99,7 @@ void CScene2d::Uninit(void)
 		m_pVetxBuff->Release();
 		m_pVetxBuff = NULL;
 	}
-	CScene::Release();
+	CScene::SetDeathFlag();
 }
 
 //=======================================================================================

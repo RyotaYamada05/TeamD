@@ -26,7 +26,7 @@ class CTitlelogo;
 class CTitle : public CScene
 {
 public:
-	CTitle();
+	CTitle(int nPriority = PRIORITY_0);
 	~CTitle();
 	static CTitle* Create(void);
 	static HRESULT Load(void);

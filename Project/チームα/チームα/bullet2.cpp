@@ -26,7 +26,6 @@
 #define FOLLOW_TIME_BOMB	(50)		// ボムの追従タイム
 
 //=============================================================================
-
 // コンストラクタ
 //=============================================================================
 CBullet2::CBullet2()
@@ -293,14 +292,13 @@ bool CBullet2::Collision(void)
 		return true;
 	}
 
-	for (int nCount = 0; nCount < MAX_NUM; nCount++)
+	for (int nCount = 0; nCount < PRIORITY_MAX; nCount++)
 	{
-		CScene *pScene = NULL;
+		//先頭情報を取得
+		CScene *pScene = CScene::GetTop(nCount);
 
-		// 取得
-		pScene = CScene::GetScene(nCount);
-
-		if (pScene != NULL)
+		//NULLになるまで繰り返す
+		while (pScene)
 		{
 			// オブジェクトタイプを取得
 			OBJTYPE type = pScene->GetObjType();
@@ -338,9 +336,11 @@ bool CBullet2::Collision(void)
 					}
 				}
 			}
-
+			//次の情報を取得
+			pScene = pScene->GetNext();
 		}
 	}
+	
 	return false;
 }
 

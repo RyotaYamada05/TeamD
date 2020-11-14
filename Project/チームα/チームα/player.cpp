@@ -88,7 +88,7 @@ CPlayer * CPlayer::Create(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 //=============================================================================
 // コンストラクタ
 //=============================================================================
-CPlayer::CPlayer()
+CPlayer::CPlayer(int nPriority) : CScene(nPriority)
 {
 	pScore = NULL;
 	memset(m_pLife, 0, sizeof(m_pLife));
@@ -316,7 +316,7 @@ void CPlayer::Uninit(void)
 	}
 
 	//オブジェクトの破棄
-	Release();
+	SetDeathFlag();
 }
 
 //=============================================================================

@@ -31,7 +31,7 @@ class CScene;
 class CBillboard : public CScene
 {
 public:
-	CBillboard();
+	CBillboard(int nPriority = PRIORITY_0);
 	~CBillboard();
 
 	HRESULT Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size);		// ‰Šú‰»ˆ—

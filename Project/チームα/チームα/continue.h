@@ -37,7 +37,7 @@ class CUiEnd;
 class CContinue :public CScene
 {
 public:
-	CContinue();
+	CContinue(int nPriority = PRIORITY_0);
 	~CContinue();
 	static CContinue *Create(D3DXVECTOR3 pos, const D3DXVECTOR3 size);
 	HRESULT Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size);

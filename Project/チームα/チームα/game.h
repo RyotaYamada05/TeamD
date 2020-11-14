@@ -44,7 +44,7 @@ class CSea;
 class CGame : public CScene
 {
 public:
-	CGame();
+	CGame(int nPriority = PRIORITY_0);
 	~CGame();
 	static CGame* Create();
 	static CCamera *GetCamera(int nCount);

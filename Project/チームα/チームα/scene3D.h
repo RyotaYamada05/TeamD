@@ -24,7 +24,7 @@ public:
 	//=========================================================================
 	//ƒƒ“ƒoŠÖ”éŒ¾
 	//=========================================================================
-	CScene3D();
+	CScene3D(int nPriority = PRIORITY_0);
 	virtual ~CScene3D();
 
 	static CScene3D *Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 size);

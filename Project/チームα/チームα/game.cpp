@@ -64,7 +64,7 @@ CSea *CGame::m_pSea = NULL;
 //=======================================================================================
 // コンストラクタ
 //=======================================================================================
-CGame::CGame()
+CGame::CGame(int nPriority) : CScene(nPriority)
 {
 	m_bGameEnd = false;
 }
@@ -345,7 +345,7 @@ void CGame::Uninit(void)
 	CManager::GetConection()->Uninit();
 
 	//オブジェクトの破棄
-	Release();
+	SetDeathFlag();
 }
 
 //=======================================================================================
@@ -399,11 +399,9 @@ void CGame::Update(void)
 	}
 
 	CInputKeyboard* pKey = CManager::GetKeyboard();
-	CScene* pScene = CManager::GetScene();
 
 	if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_START, 0) || pKey->GetTrigger(DIK_I))
 	{
-		pScene->GetPause(true);
 		m_pPause = CPause::Create();
 	}
 

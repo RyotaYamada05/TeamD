@@ -23,7 +23,7 @@
 class CGauge : public CScene
 {
 public:
-	CGauge();
+	CGauge(int nPriority = PRIORITY_0);
 	~CGauge();
 	static CGauge* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 size);
 	HRESULT Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size);

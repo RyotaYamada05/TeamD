@@ -29,7 +29,7 @@ CUiPause *CPause::m_apPauselogo[MAX_PAUSE] = {};
 //=======================================================================================
 // タイトルクラスのコンストラクタ
 //=======================================================================================
-CPause::CPause()
+CPause::CPause(int nPriority) : CScene(nPriority)
 {
 	m_pScene = NULL;
 	m_SelectPos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -99,6 +99,8 @@ HRESULT CPause::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 	//オブジェクトタイプの設定
 	SetObjType(CScene::OBJTYPE_PAUSE);
 
+	//フラグをtrueにする
+	SetPause(true);
 	return S_OK;
 }
 
@@ -123,7 +125,7 @@ void CPause::Uninit(void)
 	}
 
 	//オブジェクトの破棄
-	Release();
+	SetDeathFlag();
 }
 
 //=======================================================================================
@@ -172,7 +174,7 @@ void CPause::Select(void)
 	{
 		if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_B, 0))
 		{
-			m_pScene->GetPause(false);
+			m_pScene->SetPause(false);
 			Uninit();
 		}
 	}
@@ -181,7 +183,7 @@ void CPause::Select(void)
 	{
 		if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_B, 0))
 		{
-			m_pScene->GetPause(false);
+			m_pScene->SetPause(false);
 			CFade *pFade = CManager::GetFade();
 			pFade->SetFade(CManager::MODE_TYPE_TITLE);
 		}

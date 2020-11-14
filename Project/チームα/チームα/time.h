@@ -40,7 +40,7 @@ class CNumber;
 class CTime : public CScene
 {
 public:
-	CTime();
+	CTime(int nPriority = PRIORITY_0);
 	~CTime();
 	static CTime *Create(D3DXVECTOR3 pos, const D3DXVECTOR3 size);
 	HRESULT Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size);

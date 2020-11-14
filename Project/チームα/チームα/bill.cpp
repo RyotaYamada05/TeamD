@@ -50,7 +50,7 @@ HRESULT CBill::LoadModel(void)
 
 	// ÉÇÉfÉãÇÃê∂ê¨
 
-	D3DXLoadMeshFromX("data/model/WoodBox.x", D3DXMESH_SYSTEMMEM,
+	D3DXLoadMeshFromX("data/model/bill.x", D3DXMESH_SYSTEMMEM,
 		pD3DDevice,
 		NULL,
 		&m_pBuffMat,
