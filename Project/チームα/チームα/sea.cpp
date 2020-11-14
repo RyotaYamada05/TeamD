@@ -46,14 +46,14 @@ CSea::~CSea()
 //=============================================================================
 CSea * CSea::Create(void)
 {
-	CSea *pMeshField = new CSea;
+	CSea *pSea = new CSea;
 
-	if (pMeshField != NULL)
+	if (pSea != NULL)
 	{
-		pMeshField->Init();
+		pSea->Init();
 	}
 
-	return pMeshField;
+	return pSea;
 }
 
 //=============================================================================
@@ -66,8 +66,9 @@ HRESULT CSea::Load(void)
 	pRenderer = CManager::GetRenderer();
 	LPDIRECT3DDEVICE9 pDevice = pRenderer->GetDevice();
 
+
 	// テクスチャの読み込み
-	D3DXCreateTextureFromFile(pDevice, "data/Texture/stone_00124.jpg",
+	D3DXCreateTextureFromFile(pDevice, "data/Texture/sea000.jpeg",
 		&m_apTexture[0]);
 
 	return S_OK;
@@ -139,7 +140,7 @@ HRESULT CSea::Init(void)
 		for (nCntH = 0; nCntH < SEA_WIDTH + 1; nCntH++)
 		{
 			// 頂点の設定
-			pVtx[(nCntV * (SEA_HEIGHT + 1)) + nCntH].pos = D3DXVECTOR3(-SEA_WIDTH_SIZE + (nCntH * m_fOne_SizeW), 0.0f, SEA_HEIGHT_SIZE - (nCntV * m_fOne_SizeH));
+			pVtx[(nCntV * (SEA_HEIGHT + 1)) + nCntH].pos = D3DXVECTOR3(-SEA_WIDTH_SIZE + (nCntH * m_fOne_SizeW), -500.0f, SEA_HEIGHT_SIZE - (nCntV * m_fOne_SizeH));
 
 			// 法線ベクトルの設定
 			pVtx[(nCntV * (SEA_HEIGHT + 1)) + nCntH].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
@@ -262,8 +263,6 @@ void CSea::Draw(void)
 	// インデックスバッファをデータストリームにバインド
 	pDevice->SetIndices(m_pIdxBuff);
 
-	// テクスチャの設定
-	pDevice->SetTexture(0, NULL);
 
 	// 頂点フォーマットの設定
 	pDevice->SetFVF(FVF_VERTEX_3D);
@@ -274,7 +273,6 @@ void CSea::Draw(void)
 	// ポリゴンの描画
 	pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP, 0, 0, m_nNumVertex, 0, m_nNumPolygon);
 
-	// 頂点フォーマットの設定
 	pDevice->SetTexture(0, NULL);
 
 }

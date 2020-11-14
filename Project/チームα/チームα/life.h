@@ -54,6 +54,7 @@ public:
 	void Lifereduce(void);
 	void LifeFlashing(void);
 	void LifeStart(void);
+	static void SetReady(bool bReady);
 	static bool GetReadey(void);
 
 	//bool GetLife(void);

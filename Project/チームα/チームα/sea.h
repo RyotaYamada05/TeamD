@@ -18,11 +18,9 @@
 //=============================================================================
 #define SEA_WIDTH					(4)
 #define SEA_HEIGHT				(4)
-#define SEA_WIDTH_SIZE			(7000.0f)
-#define SEA_HEIGHT_SIZE			(7000.0f)
-
-#define SEA_WIDTH_SIZE_TUTORIAL	(300.0f)
-#define SEA_HEIGHT_SIZE_TUTORIAL	(300.0f)
+#define SEA_WIDTH_SIZE			(50000.0f)
+#define SEA_HEIGHT_SIZE			(50000.0f)
+#define SEA_HEIGHT_POS_Y		(-500.0f)
 
 #define MAX_SEA_TEXTURE		(1)				// テクスチャの数
 

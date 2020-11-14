@@ -78,6 +78,7 @@ CCamera::CCamera()
 	m_nCameraNum = m_nCameraAll++;				// カメラの番号
 	m_bTarget = false;							//ターゲットoff
 	m_state = CAMERASTATE_NONE;					//ステータス初期化
+	memset(m_pLockon, 0, sizeof(m_pLockon));
 }
 
 //=============================================================================
@@ -141,6 +142,15 @@ HRESULT CCamera::Init(void)
 void CCamera::Uninit(void)
 {
 	m_nCameraAll = 0;
+
+	for (int nCount = 0; nCount < 2; nCount++)
+	{
+		if (m_pLockon[nCount] != NULL)
+		{
+			m_pLockon[nCount]->Uninit();
+			m_pLockon[nCount] = NULL;
+		}
+	}
 }
 
 //=============================================================================
@@ -310,7 +320,6 @@ void CCamera::EndUpdate(D3DXVECTOR3 PlayerPos[], D3DXVECTOR3 PlayerRot[], int nW
 //=============================================================================
 void CCamera::NomalUpdate(D3DXVECTOR3 PlayerPos[], D3DXVECTOR3 PlayerRot[])
 {
-	CLockon *pLockon = CGame::GetLockon();
 
 	int nCameraSecond = 0;	//プレイヤー2カメラ保存用
 	//カメラ番号から敵のカメラ番号の設定
@@ -371,6 +380,22 @@ void CCamera::NomalUpdate(D3DXVECTOR3 PlayerPos[], D3DXVECTOR3 PlayerRot[])
 
 		m_posV += (m_posVDest - m_posV) *0.9; //カメラフロー
 		m_posR += (m_posRDest - m_posR) *0.9; //カメラフロー
+
+		if (m_nCameraNum == 0)
+		{
+			if (m_pLockon[0] == NULL)
+			{
+				m_pLockon[0] = CLockon::Create(D3DXVECTOR3(UI_LOCKON_POS_LEFT_X, UI_RESULT_POS_Y, 0.0f), D3DXVECTOR3(UI_LOCKON_SIZE_X, UI_LOCKON_SIZE_Y, 0.0f), CLockon::LOCKONTYPE_FAST_PLAYER);
+			}
+		}
+
+		if (m_nCameraNum == 1)
+		{
+			if (m_pLockon[1] == NULL)
+			{
+				m_pLockon[1] = CLockon::Create(D3DXVECTOR3(UI_LOCKON_POS_RIGHT_X, UI_RESULT_POS_Y, 0.0f), D3DXVECTOR3(UI_LOCKON_SIZE_X, UI_LOCKON_SIZE_Y, 0.0f), CLockon::LOCKONTYPE_SECOND_PLAYER);
+			}
+		}
 	}
 	else //ターゲット機能OFF
 	{
@@ -414,14 +439,21 @@ void CCamera::NomalUpdate(D3DXVECTOR3 PlayerPos[], D3DXVECTOR3 PlayerRot[])
 
 		if (m_nCameraNum == 0)
 		{
-			pLockon->Create(D3DXVECTOR3(UI_LOCKON_POS_LEFT_X, UI_RESULT_POS_Y, 0.0f), D3DXVECTOR3(UI_LOCKON_SIZE_X, UI_LOCKON_SIZE_Y, 0.0f), CLockon::LOCKONTYPE_FAST_PLAYER);
+			if (m_pLockon[0] != NULL)
+			{
+				m_pLockon[0]->Uninit();
+				m_pLockon[0] = NULL;
+			}
 		}
 
 		if (m_nCameraNum == 1)
 		{
-			pLockon->Create(D3DXVECTOR3(UI_LOCKON_POS_RIGHT_X, UI_RESULT_POS_Y, 0.0f), D3DXVECTOR3(UI_LOCKON_SIZE_X, UI_LOCKON_SIZE_Y, 0.0f), CLockon::LOCKONTYPE_SECOND_PLAYER);
+			if (m_pLockon[1] != NULL)
+			{
+				m_pLockon[1]->Uninit();
+				m_pLockon[1] = NULL;
+			}
 		}
-		
 	}
 }
 

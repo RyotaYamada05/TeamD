@@ -15,6 +15,7 @@
 #include "game.h"
 #include "player.h"
 #include "keyboard.h"
+
 //================================================
 //Ã“Iƒƒ“ƒo•Ï”éŒ¾
 //================================================
@@ -139,7 +140,7 @@ CUi::CUi()
 //================================================
 CUi::~CUi()
 {
-
+	m_nUi--;
 }
 
 //================================================
@@ -216,14 +217,24 @@ void CUi::Update(void)
 		}
 	}
 
-	if (pKeyboard->GetTrigger(DIK_M))
-	{
-		Create(D3DXVECTOR3(UI_WINMARK_POS_LEFT1_X, UI_WINMARK_POS_Y, 0.0f), D3DXVECTOR3(UI_WINMARK_SIZE_X, UI_WINMARK_SIZE_Y, 0.0f), CUi::UYTYPE_WINMARK);
-		Create(D3DXVECTOR3(UI_WINMARK_POS_LEFT2_X, UI_WINMARK_POS_Y, 0.0f), D3DXVECTOR3(UI_WINMARK_SIZE_X, UI_WINMARK_SIZE_Y, 0.0f), CUi::UYTYPE_WINMARK);
-		Create(D3DXVECTOR3(UI_WINMARK_POS_RIGHT1_X, UI_WINMARK_POS_Y, 0.0f), D3DXVECTOR3(UI_WINMARK_SIZE_X, UI_WINMARK_SIZE_Y, 0.0f), CUi::UYTYPE_WINMARK);
-		Create(D3DXVECTOR3(UI_WINMARK_POS_RIGHT2_X, UI_WINMARK_POS_Y, 0.0f), D3DXVECTOR3(UI_WINMARK_SIZE_X, UI_WINMARK_SIZE_Y, 0.0f), CUi::UYTYPE_WINMARK);
+	CManager::MODE_TYPE mode = CManager::GetMode();
 
+	if (mode == CManager::MODE_TYPE_TITLE)
+	{
+		// I—¹ˆ—
+		Uninit();
+
+		return;
 	}
+
+	//if (pKeyboard->GetTrigger(DIK_M))
+	//{
+	//	Create(D3DXVECTOR3(UI_WINMARK_POS_LEFT1_X, UI_WINMARK_POS_Y, 0.0f), D3DXVECTOR3(UI_WINMARK_SIZE_X, UI_WINMARK_SIZE_Y, 0.0f), CUi::UYTYPE_WINMARK);
+	//	Create(D3DXVECTOR3(UI_WINMARK_POS_LEFT2_X, UI_WINMARK_POS_Y, 0.0f), D3DXVECTOR3(UI_WINMARK_SIZE_X, UI_WINMARK_SIZE_Y, 0.0f), CUi::UYTYPE_WINMARK);
+	//	Create(D3DXVECTOR3(UI_WINMARK_POS_RIGHT1_X, UI_WINMARK_POS_Y, 0.0f), D3DXVECTOR3(UI_WINMARK_SIZE_X, UI_WINMARK_SIZE_Y, 0.0f), CUi::UYTYPE_WINMARK);
+	//	Create(D3DXVECTOR3(UI_WINMARK_POS_RIGHT2_X, UI_WINMARK_POS_Y, 0.0f), D3DXVECTOR3(UI_WINMARK_SIZE_X, UI_WINMARK_SIZE_Y, 0.0f), CUi::UYTYPE_WINMARK);
+
+	//}
 }
 
 //================================================

@@ -22,7 +22,7 @@
 //マクロ定義
 //=============================================================================
 #define BULLET2_ATK			(20)		// 攻撃力
-#define FOLLOW_TIME_NONE	(5)			// 通常弾の追従タイム
+#define FOLLOW_TIME_NONE	(10)		// 通常弾の追従タイム
 #define FOLLOW_TIME_BOMB	(50)		// ボムの追従タイム
 
 //=============================================================================
@@ -159,6 +159,11 @@ void CBullet2::Update(void)
 				m_pTargetPL->GetPos().x, m_pTargetPL->GetPos().y, m_pTargetPL->GetPos().z),
 				m_fSpeed);
 		}
+
+		// 高さの調整
+		m_move.y = m_fHeight;
+		break;
+
 	case BULLET2_TYPE_LASER:
 		// 通常の場合
 		if (m_nCounter <= FOLLOW_TIME_NONE)
@@ -166,9 +171,6 @@ void CBullet2::Update(void)
 			//移動量の計算
 			m_move = VectorMath(m_pTargetPL->GetPos(), m_fSpeed);
 		}
-		break;
-		// 高さの調整
-		m_move.y = m_fHeight;
 		break;
 
 	}
@@ -265,8 +267,16 @@ bool CBullet2::Collision(void)
 					m_nDamage = 160;
 					break;
 				}
+				if (pPlayer->GetArmor() == false)
+				{
 					m_pTargetPL->GetLife(nCount)->Decrease(m_nDamage, m_user, true);
-					m_pTargetPL->SetMotion(MOTION_DAMAGE);
+					m_pTargetPL->GetLife(1)->Decrease(m_nDamage, m_user, true);
+
+					if (m_type != BULLET2_TYPE_NONE)
+					{
+						m_pTargetPL->SetMotion(MOTION_DAMAGE);
+					}
+				}
 
 					// 爆発生成
 					C2dExplosion::Create(m_pos,

@@ -54,6 +54,8 @@
 #include "boost.h"
 #include "pause.h"
 #include "uipause.h"
+#include "locus.h"
+
 //=============================================================================
 //静的メンバ変数宣言
 //=============================================================================
@@ -302,7 +304,7 @@ void CManager::LoadAll(void)
 	CBill::LoadModel();
 	CSplash::Load();
 	CLaser::Load();
-
+	CLocus::Load();
 	CFire::Load();
 	CBoost::Load();
 	CSea::Load();
@@ -344,6 +346,7 @@ void CManager::UnLoadAll(void)
 	CNumber::Unload();
 	CUiEnd::Unload();
 	CSea::UnLoad();
+	CLocus::UnLoad();
 }
 
 //=============================================================================
@@ -393,6 +396,8 @@ void CManager::SetMode(MODE_TYPE mode)
 		break;
 
 	}
+
+	CScene::ReleaseAll();
 
 	//モードを設定
 	m_mode = mode;

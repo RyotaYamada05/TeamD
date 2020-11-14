@@ -121,6 +121,13 @@ void CModelAnime::Draw(void)
 	D3DMATERIAL9 matDef;	//現在のマテリアル保持用
 	D3DXMATERIAL*pMat;		//マテリアルデータへのポインタ
 
+	m_OldMtxWorld1[4] = m_OldMtxWorld1[3];
+	m_OldMtxWorld1[3] = m_OldMtxWorld1[2];
+	m_OldMtxWorld1[2] = m_OldMtxWorld1[1];
+	m_OldMtxWorld1[1] = m_OldMtxWorld1[0];
+	m_OldMtxWorld1[0] = m_OldMtxWorld;	//2
+	m_OldMtxWorld = m_mtxWorld;
+
 	//ワールドマトリックスの初期化
 	D3DXMatrixIdentity(&m_mtxWorld);
 
@@ -139,14 +146,6 @@ void CModelAnime::Draw(void)
 	//位置を反映
 	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
-
-
-
-
-
-
-
-
 
 	//親が存在する場合
 	if (m_pParent != NULL)
@@ -255,4 +254,9 @@ D3DXVECTOR3 CModelAnime::GetRotAnime(void) const
 D3DXMATRIX CModelAnime::GetMtxWorld(void)
 {
 	return m_mtxWorld;
+}
+
+D3DXMATRIX CModelAnime::GetOldMtxWorld(void)
+{
+	return m_OldMtxWorld1[1];
 }

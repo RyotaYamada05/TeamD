@@ -9,6 +9,7 @@
 #define  _UIPAUSE_H_
 
 #include "scene2d.h"
+#include "uistart.h"
 
 //=============================================================================
 //マクロ定義
@@ -20,7 +21,6 @@
 #define UIPAUSE_TITLE_POS_X		(640.0f)
 #define UIPAUSE_TITLE_POS_Y		(540.0f)
 
-#define UISTART_TYPE					(3)		// UIの種類の最大数
 
 //=============================================================================
 //クラス宣言

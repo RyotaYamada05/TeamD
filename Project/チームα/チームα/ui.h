@@ -75,6 +75,8 @@ public:
 		UITYPE_STANDARD,		// 標準表示
 		UYTYPE_WINMARKFRAME,	// 勝ちの枠
 		UYTYPE_WINMARK,			// 勝ったマーク
+		UYTYPE_CONTINUE,	// CONTINUE文字
+		UITYPE_DRAW,		// 引き分け
 		UITYPE_MAX
 	}UITYPE;
 

@@ -57,5 +57,7 @@ private:
 	D3DXVECTOR3		m_size;		// ポリゴンのサイズ
 	D3DXCOLOR		m_col;		// カラー
 	UIENDTYPE		m_type;		// ポリゴンのタイプ
+	int m_nCount;				// フレームカウント
+
 };
 #endif // !_UI_H_

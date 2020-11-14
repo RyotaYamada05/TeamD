@@ -84,6 +84,7 @@ void CMeshField::UnLoad(void)
 		if (m_apTexture[nCount] != NULL)
 		{
 			m_apTexture[nCount]->Release();
+
 			m_apTexture[nCount] = NULL;
 		}
 	}

@@ -41,7 +41,8 @@ CLocus::~CLocus()
 //=============================================================================
 // クリエイト
 //=============================================================================
-CLocus * CLocus::Create(D3DXVECTOR3 pos, D3DXVECTOR3 posOld, D3DXVECTOR3 rot, D3DXVECTOR3 size, int nLife)
+CLocus * CLocus::Create(D3DXVECTOR3 Origin, D3DXVECTOR3 Top, D3DXVECTOR3 OldOrigin, D3DXVECTOR3 OldTop,
+	D3DXVECTOR3 rot, D3DXVECTOR3 size, int nLife)
 {
 	//ポインタ変数
 	CLocus *pLocus = NULL;
@@ -53,10 +54,7 @@ CLocus * CLocus::Create(D3DXVECTOR3 pos, D3DXVECTOR3 posOld, D3DXVECTOR3 rot, D3
 	if (pLocus != NULL)
 	{
 		//初期化処理呼び出し
-		pLocus->Init(pos, size);
-		pLocus->SetColor(D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f));
-		pLocus->SetRot(rot);
-		pLocus->m_posOld = posOld;
+		pLocus->Init(Origin, Top, OldOrigin, OldTop);
 		pLocus->m_rot = rot;
 		pLocus->m_nLife = nLife;
 	}
@@ -77,7 +75,7 @@ HRESULT CLocus::Load(void)
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
 	//テクスチャの読み込み
-	D3DXCreateTextureFromFile(pDevice, "data/Texture/board000.png", &m_pTexture);
+	D3DXCreateTextureFromFile(pDevice, "data/Texture/SwordLocus003.png", &m_pTexture);
 
 	return S_OK;
 }
@@ -100,9 +98,14 @@ void CLocus::UnLoad(void)
 //=============================================================================
 HRESULT CLocus::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 {
-	// 初期化処理
-	CScene3D::Init(pos, size);
+	return S_OK;
+}
 
+//=============================================================================
+// 初期化処理
+//=============================================================================
+HRESULT CLocus::Init(D3DXVECTOR3 Origin, D3DXVECTOR3 Top, D3DXVECTOR3 OldOrigin, D3DXVECTOR3 OldTop)
+{
 	//デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
@@ -116,28 +119,31 @@ HRESULT CLocus::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 
 	VERTEX_3D*pVtx = NULL;
 
-
-	m_pos = pos;
-	m_size = size;
-
-	float sizeX = sqrtf((m_posOld.x - m_pos.x)*(m_posOld.x - m_pos.x));
-	float sizeY = sqrtf((m_posOld.y - m_pos.y)*(m_posOld.y - m_pos.y));
-	float sizeZ = sqrtf((m_posOld.z - m_pos.z)*(m_posOld.z - m_pos.z));
-
 	//頂点バッファをロック
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
+	//pVtx[0].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	//pVtx[1].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
+	////頂点座標設定の設定
+	//pVtx[0].pos = OldOrigin;
+	//pVtx[1].pos = OldTop;
+	//pVtx[2].pos = Origin;
+	//pVtx[3].pos = Top;
+
 	//頂点座標設定の設定
-	pVtx[0].pos = D3DXVECTOR3(-(sizeX / 2), +(sizeY / 2), 0.0f);
-	pVtx[1].pos = D3DXVECTOR3(+(sizeX / 2), +(sizeY / 2), 0.0f);
-	pVtx[2].pos = D3DXVECTOR3(-(sizeX / 2), -(sizeY / 2), 0.0f);
-	pVtx[3].pos = D3DXVECTOR3(+(sizeX / 2), -(sizeY / 2), 0.0f);
+	pVtx[0].pos = OldTop;
+	pVtx[1].pos = Top;
+	pVtx[2].pos = OldOrigin;
+	pVtx[3].pos = Origin;
+
+	D3DXVECTOR3 size;
 
 	//各頂点の法線の設定（※ベクトルの大きさは１にする必要がある）
-	pVtx[0].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
-	pVtx[1].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
-	pVtx[2].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
-	pVtx[3].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+	pVtx[0].nor = D3DXVECTOR3(0.0f, -1.0f, 0.0f);
+	pVtx[1].nor = D3DXVECTOR3(0.0f, -1.0f, 0.0f);
+	pVtx[2].nor = D3DXVECTOR3(0.0f, -1.0f, 0.0f);
+	pVtx[3].nor = D3DXVECTOR3(0.0f, -1.0f, 0.0f);
 
 	//頂点カラーの設定（0～255の数値で設定）
 	pVtx[0].col = D3DCOLOR_RGBA(255, 255, 255, 255);
@@ -153,8 +159,6 @@ HRESULT CLocus::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 
 	//頂点バッファのアンロック
 	m_pVtxBuff->Unlock();
-
-	return S_OK;
 
 	return S_OK;
 }
@@ -199,59 +203,51 @@ void CLocus::Draw(void)
 	pRenderer = CManager::GetRenderer();
 	LPDIRECT3DDEVICE9 pDevice = pRenderer->GetDevice();
 
-	pDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
-	pDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
-	pDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_CURRENT);
-
-	// かぶさらないようにする　(Zバッファ)
-	pDevice->SetRenderState(D3DRS_ZENABLE, false);
-
-	// 加算合成を行う
-	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);			// aデスティネーションカラー
-
 	D3DXMATRIX mtxRot, mtxTrans;	//計算用のマトリクス
 
-	//ワールドマトリクスの初期化
-	D3DXMatrixIdentity(&m_mtxWorld);
+	pDevice->SetRenderState(D3DRS_EMISSIVEMATERIALSOURCE, D3DMCS_MATERIAL);
+	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+	pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+	pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);//透明度を使うか
+	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);//ディスティネーションカラーの指定
 
-	//向きを反映
-	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
+																   // アルファテスト基準値の設定
+	pDevice->SetRenderState(D3DRS_ALPHAREF, 100);
 
-	float sizeX = sqrtf((m_posOld.x - m_pos.x)*(m_posOld.x - m_pos.x));
-	float sizeY = sqrtf((m_posOld.y - m_pos.y)*(m_posOld.y - m_pos.y));
-	float sizeZ = sqrtf((m_posOld.z - m_pos.z)*(m_posOld.z - m_pos.z));
+	D3DMATERIAL9 material, OldMaterial;
+	ZeroMemory(&material, sizeof(D3DMATERIAL9));
+	material.Ambient = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+	material.Diffuse = D3DXCOLOR(0.7f, 0.7f, 0.7f, 1.0f);
+	pDevice->GetMaterial(&OldMaterial);
+	pDevice->SetMaterial(&material);
+	pDevice->SetRenderState(D3DRS_AMBIENT, 0x44444444);
 
-	//位置を反映
-	D3DXMatrixTranslation(&mtxTrans, sizeX, sizeY, sizeZ);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
-
-	//ワールドマトリックスの設定
-	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
+	DWORD ambient;
+	pDevice->GetRenderState(D3DRS_AMBIENT, &ambient);
+	pDevice->SetRenderState(D3DRS_AMBIENT, 0xffffffff);
 
 	//頂点バッファをデバイスのデータストリームに設定
 	pDevice->SetStreamSource(0, m_pVtxBuff, 0, sizeof(VERTEX_3D));
 
-	//頂点フォーマットの設定
-	pDevice->SetFVF(FVF_VERTEX_3D);
+	D3DXMATRIX EffectMtx;
 
-	//テクスチャの設定
+	D3DXMatrixIdentity(&EffectMtx);
+
 	pDevice->SetTexture(0, m_pTexture);
 
-	//ポリゴンの描画
-	pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, NUM_POLYGON);
+	// 頂点フォーマットの設定
+	pDevice->SetFVF(FVF_VERTEX_3D);
 
-	//テクスチャの設定
+	// ワールドマトリックスの設定
+	pDevice->SetTransform(D3DTS_WORLD, &EffectMtx);
+
+	// ポリゴンの描画
+	pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
+
+	pDevice->SetRenderState(D3DRS_AMBIENT, ambient);
+	pDevice->SetMaterial(&OldMaterial);					// マテリアルを元に戻す
+
+	pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
+
 	pDevice->SetTexture(0, NULL);
-
-	// 描画処理
-	//CScene3D::Draw();
-
-	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);	// aデスティネーションカラー
-
-	// Zバッファ戻す
-	pDevice->SetRenderState(D3DRS_ZENABLE, true);
-
-	pDevice->LightEnable(0, TRUE);
-
 }

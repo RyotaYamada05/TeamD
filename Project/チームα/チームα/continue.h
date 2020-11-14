@@ -18,6 +18,7 @@
 //=============================================================================
 class CNumber;
 class CUi;
+class CUiEnd;
 
 //=============================================================================
 // マクロ定義
@@ -46,10 +47,8 @@ public:
 	void AddTime(int nValue);
 	void SetTime(int nTime) { m_nContinue = nTime; }
 	int GetTime(void) { return m_nContinue; }
-
 	static CUi *GetUi(void) { return m_pUi; }
-
-
+	bool GetEnd(void);
 private:
 	LPDIRECT3DTEXTURE9		m_pTexture;		// テクスチャへのポインタ
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;		// 頂点バッファへのポインタ
@@ -57,9 +56,9 @@ private:
 	CNumber	*m_apContinue[MAX_CONTINUE];	// 数字の配置
 	int m_nContinue;						// タイム
 	int m_nContinueCount;					// タイムのカウンター
-
 	static CUi *m_pUi;							// uiのポインタ
-
+	CUiEnd *m_pUiEnd;			// コンティニュー
+	bool m_bEnd;
 };
 #endif // !_CONTINUE_H_
 

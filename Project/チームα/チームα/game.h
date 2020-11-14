@@ -36,6 +36,8 @@ class CBill;
 class CContinue;
 class CUiEnd;
 class CPause;
+class CSea;
+
 //***************************************************************************************
 // インクルードファイル
 //***************************************************************************************
@@ -77,10 +79,13 @@ private:	static CCamera *m_apCamera[MAX_PLAYER];		// カメラのポインタ
 	static CUiEnd *m_pUiEnd;					// uiendのポインタ
 	static CLockon *m_pLockon;					// ロックオンのポインタ
 	static CBill *m_pBill;						// ビルのポインタ
+	static CSea *m_pSea;						// 海のポインタ
 	static CContinue *m_pContinue;				// コンテニューのポインタ
 	static CPause *m_pPause;					// ポーズのポインタ
 	static int m_nRoundNum;						// 現在のラウンド数
 	static int m_aWinNum[MAX_PLAYER];			// 勝利した数
 	LPD3DXFONT m_pFont;
+	bool m_bGameEnd;
+
 };
 #endif

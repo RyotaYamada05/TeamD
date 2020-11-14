@@ -14,7 +14,6 @@
 #include "effect.h"
 #include "shock.h"
 
-
 //=================================================================================
 // マクロ定義
 //=================================================================================
@@ -46,6 +45,7 @@ CLaser * CLaser::Create(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXVECTOR3 rot, D3DX
 		pLaser->SetMove(move);					// 移動量
 		pLaser->SetLife(LASER_LIFE);			// ライフの情報
 		pLaser->SetRot(rot);					// 角度
+		pLaser->SetRot(D3DXVECTOR3(rot.x, rot.y + D3DXToRadian(180), rot.z));		// 角度
 	}
 
 	return pLaser;
@@ -90,7 +90,6 @@ HRESULT CLaser::Init(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXVECTOR3 size, BULLET
 	SetRot(D3DXVECTOR3(0.0f, 0.0f, 0.0f));				// 向き
 	m_fSizeZ = size.z;									// サイズの取得
 	SetType(BULLET2_TYPE_LASER);							// タイプの設定
-
 
 	return S_OK;
 }

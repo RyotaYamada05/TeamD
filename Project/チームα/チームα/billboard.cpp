@@ -341,7 +341,7 @@ D3DXVECTOR3 CBillboard::GetPos(void)
 //=====================================================
 D3DXVECTOR3 CBillboard::GetMove(void)
 {
-	return D3DXVECTOR3();
+	return m_move;
 }
 
 //=====================================================

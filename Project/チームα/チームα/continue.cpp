@@ -17,6 +17,9 @@
 #include "keyboard.h"
 #include "sound.h"
 #include "joypad.h"
+#include "uiend.h"
+#include "fade.h"
+
 //=============================================================================
 //静的メンバ変数宣言
 //=============================================================================
@@ -39,7 +42,9 @@ CContinue *CContinue::Create(D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 //=============================================================================
 CContinue::CContinue()
 {
-
+	memset(m_apContinue, 0, sizeof(m_apContinue));
+	m_pUiEnd = NULL;
+	m_bEnd = false;
 }
 
 //=============================================================================
@@ -55,16 +60,21 @@ CContinue::~CContinue()
 //=============================================================================
 HRESULT CContinue::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 {
-	// ナンバーテクスチャをロード
-	CNumber::Load();
-
 	m_nContinueCount = 0;
 
 	m_nContinue = CONTINUE_LIMIT;
 
 	for (int nCount = 0; nCount < MAX_CONTINUE; nCount++)
 	{
-		m_apContinue[nCount] = CNumber::Create(D3DXVECTOR3(pos.x + nCount*CONTINUE_INTERVAL, pos.y, 0.0f), D3DXVECTOR3(CONTINUE_SIZE_X, CONTINUE_SIZE_Y, 0.0f), CNumber::NUMBERTYPE_CONTINUE);
+		if (m_apContinue[nCount] == NULL)
+		{
+			m_apContinue[nCount] = CNumber::Create(D3DXVECTOR3(pos.x + nCount*CONTINUE_INTERVAL, pos.y, 0.0f), D3DXVECTOR3(CONTINUE_SIZE_X, CONTINUE_SIZE_Y, 0.0f), CNumber::NUMBERTYPE_CONTINUE);
+		}
+	}
+
+	if (m_pUiEnd == NULL)
+	{
+		m_pUiEnd = CUiEnd::Create(D3DXVECTOR3(UI_CONTINUE_POS_X, UI_CONTINUE_POS_Y, 0.0f), D3DXVECTOR3(UI_CONTINUE_SIZE_X, UI_CONTINUE_SIZE_Y, 0.0f), CUiEnd::UIENDTYPE_CONTINUE);
 	}
 
 	AddTime(0);
@@ -86,17 +96,8 @@ void CContinue::Uninit(void)
 		}
 	}
 
-	if (m_pUi != NULL)
-	{
-		m_pUi->Uninit();
-		m_pUi = NULL;
-	}
-
 	// リリース
 	Release();
-
-	// ナンバーテクスチャをアンロード
-	CNumber::Unload();
 }
 
 //=============================================================================
@@ -104,10 +105,9 @@ void CContinue::Uninit(void)
 //=============================================================================
 void CContinue::Update(void)
 {
-
 	// キーボード更新
 	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
-
+	CFade::FADE_MODE mode = CManager::GetFade()->GetFade();
 	CSound *pSound = CManager::GetSound();
 
 	m_nContinueCount++;
@@ -117,15 +117,37 @@ void CContinue::Update(void)
 		{
 			AddTime(1);
 		}
+		else
+		{
+			if (m_pUiEnd != NULL)
+			{
+				m_pUiEnd->Uninit();
+				m_pUiEnd = NULL;
+			}
+
+			CUiEnd::Create(D3DXVECTOR3(UI_CONTINUE_POS_X, 500.0f, 0.0f), D3DXVECTOR3(400, 40, 0.0f), CUiEnd::UIENDTYPE_THANKS);
+
+			// 終了処理
+			m_bEnd = true;
+			return;
+		}
 	}
 
-	if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_A, 0))
+	if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_START, 0) && mode == CFade::FADE_MODE_NONE
+		|| pKeyboard->GetTrigger(DIK_RETURN) && mode == CFade::FADE_MODE_NONE)
 	{
-		if (m_nContinue > 0)
+		m_bEnd = true;
+
+		if (m_pUiEnd != NULL)
 		{
-			AddTime(1);
-			pSound->Play(CSound::SOUND_LABEL_SE_COUNTDOWN);
+			m_pUiEnd->Uninit();
+			m_pUiEnd = NULL;
 		}
+
+		CFade *pFade = CManager::GetFade();
+		pFade->SetFade(CManager::MODE_TYPE_GAME);
+		pSound->Play(CSound::SOUND_LABEL_SE_START);
+		return;
 	}
 }
 
@@ -136,7 +158,10 @@ void CContinue::Draw(void)
 {
 	for (int nCount = 0; nCount < MAX_CONTINUE; nCount++)
 	{
-		m_apContinue[nCount]->Draw();
+		if (m_apContinue[nCount] != NULL)
+		{
+			m_apContinue[nCount]->Draw();
+		}
 	}
 }
 
@@ -149,6 +174,17 @@ void CContinue::AddTime(int nValue)
 
 	for (int nCount = 0; nCount < MAX_CONTINUE; nCount++)
 	{
-		m_apContinue[nCount]->SetNumber(m_nContinue % (int)powf(10, MAX_CONTINUE - nCount) / powf(10, MAX_CONTINUE - nCount - 1));
+		if (m_apContinue[nCount] != NULL)
+		{
+			m_apContinue[nCount]->SetNumber(m_nContinue % (int)powf(10, MAX_CONTINUE - nCount) / powf(10, MAX_CONTINUE - nCount - 1));
+		}
 	}
+}
+
+//=============================================================================
+// 終了情報
+//=============================================================================
+bool CContinue::GetEnd(void)
+{
+	return m_bEnd;
 }

@@ -158,7 +158,7 @@ void CFire::Draw(void)
 
 	D3DMATERIAL9 material, OldMaterial;
 	ZeroMemory(&material, sizeof(D3DMATERIAL9));
-	material.Ambient = D3DXCOLOR(1.0f, 0.4f, 0.05f, 1.0f);
+	material.Ambient = D3DXCOLOR(1.0f, 0.4f, 0.04f, 1.0f);
 	material.Diffuse = D3DXCOLOR(0.1f, 0.1f, 0.1f, 1.0f);
 	pDevice->GetMaterial(&OldMaterial);
 	pDevice->SetMaterial(&material);
