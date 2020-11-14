@@ -59,7 +59,7 @@ public:
 	//=========================================================================
 	//ƒƒ“ƒoŠÖ”éŒ¾
 	//=========================================================================
-	CMissile();
+	CMissile(int nPriority = PRIORITY_0);
 	~CMissile();
 
 	static CMissile *Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 size,

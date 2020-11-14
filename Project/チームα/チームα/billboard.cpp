@@ -15,7 +15,7 @@
 //=====================================================
 // コンストラクタ
 //=====================================================
-CBillboard::CBillboard()
+CBillboard::CBillboard(int nPriority) : CScene(nPriority)
 {
 	m_Pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 位置情報
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 移動量
@@ -110,7 +110,7 @@ void CBillboard::Uninit(void)
 	}
 
 	//オブジェクト破棄
-	Release();
+	SetDeathFlag();
 }
 
 //=====================================================

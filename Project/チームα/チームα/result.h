@@ -23,7 +23,7 @@ class CScene2d;
 class CResult : public CScene
 {
 public:
-	CResult();
+	CResult(int nPriority = PRIORITY_0);
 	~CResult();
 
 	static CResult* Create(void);

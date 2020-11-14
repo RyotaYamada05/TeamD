@@ -64,7 +64,7 @@ CSea *CGame::m_pSea = NULL;
 //=======================================================================================
 // コンストラクタ
 //=======================================================================================
-CGame::CGame()
+CGame::CGame(int nPriority) : CScene(nPriority)
 {
 	m_bGameEnd = false;
 }
@@ -284,8 +284,11 @@ void CGame::Uninit(void)
 	// プレイヤー終了処理
 	for (int nCount = 0; nCount < MAX_PLAYER; nCount++)
 	{
-		m_apPlayer[nCount]->Uninit();
-		m_apPlayer[nCount] = NULL;
+		if (m_apPlayer[nCount] != NULL)
+		{
+			m_apPlayer[nCount]->Uninit();
+			m_apPlayer[nCount] = NULL;
+		}
 	}
 
 	// タイム
@@ -336,7 +339,7 @@ void CGame::Uninit(void)
 	CManager::GetConection()->Uninit();
 
 	//オブジェクトの破棄
-	Release();
+	SetDeathFlag();
 }
 
 //=======================================================================================
@@ -388,17 +391,11 @@ void CGame::Update(void)
 			m_pContinue = NULL;
 		}
 	}
-
 	CInputKeyboard* pKey = CManager::GetKeyboard();
-	CScene* pScene = CManager::GetScene();
 
 	if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_START, 0) || pKey->GetTrigger(DIK_I))
 	{
-		if (m_bGameEnd == false)
-		{
-			pScene->GetPause(true);
-			m_pPause = CPause::Create();
-		}
+		m_pPause = CPause::Create();
 	}
 
 	// ゲームの設定

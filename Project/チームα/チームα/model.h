@@ -38,7 +38,7 @@ public:
 	//=========================================================================
 	//ÉÅÉìÉoä÷êîêÈåæ
 	//=========================================================================
-	CModel();
+	CModel(int nPriority = PRIORITY_0);
 	~CModel();
 
 	static CModel *Create(D3DXVECTOR3 pos, const D3DXVECTOR3 size);

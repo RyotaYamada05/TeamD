@@ -33,7 +33,7 @@ CTime *CTime::Create(D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 //=============================================================================
 // コンストラクタ
 //=============================================================================
-CTime::CTime()
+CTime::CTime(int nPriority) : CScene(nPriority)
 {
 	m_pTexture = NULL;	// テクスチャへのポインタ
 	m_pVtxBuff = NULL;	// 頂点バッファへのポインタ
@@ -97,7 +97,7 @@ void CTime::Uninit(void)
 	}
 
 	// リリース
-	Release();
+	SetDeathFlag();
 
 
 	

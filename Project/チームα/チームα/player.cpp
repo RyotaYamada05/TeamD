@@ -90,7 +90,7 @@ CPlayer * CPlayer::Create(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 //=============================================================================
 // コンストラクタ
 //=============================================================================
-CPlayer::CPlayer()
+CPlayer::CPlayer(int nPriority) : CScene(nPriority)
 {
 	pScore = NULL;
 	memset(m_pLife, 0, sizeof(m_pLife));
@@ -322,7 +322,7 @@ void CPlayer::Uninit(void)
 	}
 
 	//オブジェクトの破棄
-	Release();
+	SetDeathFlag();
 }
 
 //=============================================================================
@@ -527,21 +527,23 @@ void CPlayer::UpdateMotion(void)
 			if (m_nMotionInterval == 10)
 			{
 				m_bMotionPlaing = false;
-				
-				//着地・攻撃・左右ブーストモーションの時かつ入力がtrue・ジャンプがfalse
-				if ((m_MotionState == MOTION_LANDING || m_MotionState == MOTION_ATTACK ||
-					m_MotionState == MOTION_LEFTBOOST || m_MotionState == MOTION_RIGHTBOOST)
-					&& m_bEntered == true && m_bJump == false)
+
+				if (m_MotionState != MOTION_WIN && m_MotionState != MOTION_LOSE)
 				{
-					SetMotion(MOTION_WALK);
-				}
-				else if (m_bJump == false)
-				{
-					SetMotion(MOTION_IDOL);
+					//着地・攻撃・左右ブースト・ビームモーションの時かつ入力がtrue・ジャンプがfalse
+					if ((m_MotionState == MOTION_LANDING || m_MotionState == MOTION_ATTACK ||
+						m_MotionState == MOTION_LEFTBOOST || m_MotionState == MOTION_RIGHTBOOST ||
+						m_MotionState == MOTION_BEAM)
+						&& m_bEntered == true && m_bJump == false)
+					{
+						SetMotion(MOTION_WALK);
+					}
+					else if (m_bJump == false)
+					{
+						SetMotion(MOTION_IDOL);
+					}
 				}
 			}
-			
-			return;
 		}
 	}
 }
@@ -591,11 +593,13 @@ void CPlayer::Draw(void)
 //=============================================================================
 void CPlayer::SetMotion(MOTION_STATE motion)
 {
-
-	if (m_Motion[m_MotionState].bLoop == false && 
-		m_bMotionPlaing == true)
+	if (motion != MOTION_WIN && motion != MOTION_LOSE)
 	{
+		if (m_Motion[m_MotionState].bLoop == false &&
+			m_bMotionPlaing == true && m_MotionState != MOTION_LANDING)
+		{
 			return;
+		}
 	}
 
 	m_nKey = 0;
@@ -681,6 +685,7 @@ void CPlayer::PlayerState(void)
 		// 爆発状態
 		m_nStateCounter++;
 
+		SetMotion(MOTION_LOSE);
 		// 勝ち負けロゴの出現
 		if (m_bWinLose == false)
 		{
@@ -1165,7 +1170,7 @@ void CPlayer::Walk(void)
 		}
 	}
 	//入力が存在する
-	if ((js.lX != 0.0f || js.lY != 0.0f) && m_bAttack == false)
+	if ((js.lX != 0.0f || js.lY != 0.0f )&& m_bAttack == false)
 	{
 		//入力ありにする
 		m_bEntered = true;
@@ -1209,13 +1214,17 @@ void CPlayer::Walk(void)
 
 				if (js.lX < -STICK_SENSITIVITY)
 				{
+
 					m_rotDest.y = m_fAngle + D3DXToRadian(315.0f);
 				}
 				else if (js.lX > STICK_SENSITIVITY)
 				{
+
 					m_rotDest.y = m_fAngle + D3DXToRadian(45.0f);
 				}
+
 			}
+
 
 			else if (js.lY > STICK_SENSITIVITY)
 			{
@@ -1227,8 +1236,10 @@ void CPlayer::Walk(void)
 				{
 					m_rotDest.y = m_fAngle + D3DXToRadian(225.0f);
 				}
+
 				else if (js.lX > STICK_SENSITIVITY)
 				{
+
 					m_rotDest.y = m_fAngle + D3DXToRadian(135.0f);
 				}
 			}
@@ -1267,8 +1278,6 @@ void CPlayer::Walk(void)
 			m_bWalk = false;
 		}
 	}
-
-
 }
 //=============================================================================
 // ジャンプ処理
@@ -1557,9 +1566,11 @@ void CPlayer::beam(void)
 	// Lキーを押したとき・コントローラのR1を押したとき
 	if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_R_TRIGGER, m_nPlayerNum) && m_bJump == false || pKeyboard->GetTrigger(DIK_L) && m_bJump == false )
 	{
+		SetMotion(MOTION_BEAM);
 		switch (m_nPlayerNum)
 		{
 		case 0:
+
 			if (CCharge::GetCharge(0) > PLAYER_LASER)
 			{
 

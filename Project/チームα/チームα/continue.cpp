@@ -40,7 +40,7 @@ CContinue *CContinue::Create(D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 //=============================================================================
 // コンストラクタ
 //=============================================================================
-CContinue::CContinue()
+CContinue::CContinue(int nPriority) : CScene(nPriority)
 {
 	memset(m_apContinue, 0, sizeof(m_apContinue));
 	m_pUiEnd = NULL;
@@ -97,7 +97,7 @@ void CContinue::Uninit(void)
 	}
 
 	// リリース
-	Release();
+	SetDeathFlag();
 }
 
 //=============================================================================

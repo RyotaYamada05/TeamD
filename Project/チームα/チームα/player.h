@@ -69,6 +69,8 @@ typedef enum
 	MOTION_RIGHTBOOST,	//右ブースト
 	MOTION_LEFTBOOST,	//左ブースト
 	MOTION_DAMAGE,	//やられ
+	MOTION_BEAM,	//ビーム攻撃
+	MOTION_LOSE,	//負けモーション
 	MOTION_MAX,		//モーション最大数
 }MOTION_STATE;
 
@@ -132,7 +134,7 @@ public:
 		PLAYER_STATE_MAX
 	}PLAYER_STATE;
 
-	CPlayer();						// コンストラクタ
+	CPlayer(int nPriority = PRIORITY_0);						// コンストラクタ
 	~CPlayer();						// デストラクタ
 
 	static CPlayer*Create(D3DXVECTOR3 pos, D3DXVECTOR3 size);		// クリエイト

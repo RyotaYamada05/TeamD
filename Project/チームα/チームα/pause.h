@@ -29,7 +29,7 @@ class CUiPause;
 class CPause :public CScene
 {
 public:
-	CPause();
+	CPause(int nPriority = PRIORITY_1);
 	~CPause();
 	static CPause* Create(void);
 	static HRESULT Load(void);
