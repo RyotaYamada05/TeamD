@@ -525,21 +525,23 @@ void CPlayer::UpdateMotion(void)
 			if (m_nMotionInterval == 10)
 			{
 				m_bMotionPlaing = false;
-				
-				//着地・攻撃・左右ブーストモーションの時かつ入力がtrue・ジャンプがfalse
-				if ((m_MotionState == MOTION_LANDING || m_MotionState == MOTION_ATTACK ||
-					m_MotionState == MOTION_LEFTBOOST || m_MotionState == MOTION_RIGHTBOOST)
-					&& m_bEntered == true && m_bJump == false)
+
+				if (m_MotionState != MOTION_WIN && m_MotionState != MOTION_LOSE)
 				{
-					SetMotion(MOTION_WALK);
-				}
-				else if (m_bJump == false)
-				{
-					SetMotion(MOTION_IDOL);
+					//着地・攻撃・左右ブースト・ビームモーションの時かつ入力がtrue・ジャンプがfalse
+					if ((m_MotionState == MOTION_LANDING || m_MotionState == MOTION_ATTACK ||
+						m_MotionState == MOTION_LEFTBOOST || m_MotionState == MOTION_RIGHTBOOST ||
+						m_MotionState == MOTION_BEAM)
+						&& m_bEntered == true && m_bJump == false)
+					{
+						SetMotion(MOTION_WALK);
+					}
+					else if (m_bJump == false)
+					{
+						SetMotion(MOTION_IDOL);
+					}
 				}
 			}
-			
-			return;
 		}
 	}
 }
@@ -589,11 +591,13 @@ void CPlayer::Draw(void)
 //=============================================================================
 void CPlayer::SetMotion(MOTION_STATE motion)
 {
-
-	if (m_Motion[m_MotionState].bLoop == false && 
-		m_bMotionPlaing == true)
+	if (motion != MOTION_WIN && motion != MOTION_LOSE)
 	{
+		if (m_Motion[m_MotionState].bLoop == false &&
+			m_bMotionPlaing == true && m_MotionState != MOTION_LANDING)
+		{
 			return;
+		}
 	}
 
 	m_nKey = 0;
@@ -680,6 +684,7 @@ void CPlayer::PlayerState(void)
 		// 爆発状態
 		m_nStateCounter++;
 
+		SetMotion(MOTION_LOSE);
 		// 勝ち負けロゴの出現
 		if (m_bWinLose == false)
 		{
@@ -1114,111 +1119,111 @@ void CPlayer::Walk(void)
 			//攻撃モーションを再生
 			SetMotion(MOTION_ATTACK);
 		}
-		//入力が存在する
-		if (js.lX != 0.0f || js.lY != 0.0f)
-		{
-			//入力ありにする
-			m_bEntered = true;
+	}
+	//入力が存在する
+	if ((js.lX != 0.0f || js.lY != 0.0f )&& m_bAttack == false)
+	{
+		//入力ありにする
+		m_bEntered = true;
 
-			//ダメージを受けていないときのみ移動する
-			if (m_MotionState != MOTION_DAMAGE)
+		//ダメージを受けていないときのみ移動する
+		if (m_MotionState != MOTION_DAMAGE)
+		{
+			//ジャンプしていないとき
+			if (m_bJump == false && m_bWalk == false)
 			{
-				//ジャンプしていないとき
-				if (m_bJump == false && m_bWalk == false)
-				{
-					m_bWalk = true;
-					//歩行モーションの再生
-					SetMotion(MOTION_WALK);
-				}
-				//スティックXの入力が感度超えている
+				m_bWalk = true;
+				//歩行モーションの再生
+				SetMotion(MOTION_WALK);
+			}
+			//スティックXの入力が感度超えている
+			if (js.lX < -STICK_SENSITIVITY)
+			{
+				m_rotDest.y = m_fAngle + D3DXToRadian(270.0f);
+
+				m_pos.x += cosf(m_fAngle)* PLAYER_SPEED;
+				m_pos.z -= sinf(m_fAngle)* PLAYER_SPEED;
+			}
+
+			else if (js.lX > STICK_SENSITIVITY)
+			{
+				m_rotDest.y = m_fAngle + D3DXToRadian(90.0f);
+
+				m_pos.x -= cosf(m_fAngle)* PLAYER_SPEED;
+				m_pos.z += sinf(m_fAngle)* PLAYER_SPEED;
+			}
+			else
+			{
+			}
+			//スティックYの入力が感度を超えている
+			if (js.lY < -STICK_SENSITIVITY)
+			{
+				m_rotDest.y = m_fAngle;
+
+				m_pos.x -= sinf(m_fAngle)* PLAYER_SPEED;
+				m_pos.z -= cosf(m_fAngle)* PLAYER_SPEED;
+
 				if (js.lX < -STICK_SENSITIVITY)
 				{
-					m_rotDest.y = m_fAngle + D3DXToRadian(270.0f);
-
-					m_pos.x += cosf(m_fAngle)* PLAYER_SPEED;
-					m_pos.z -= sinf(m_fAngle)* PLAYER_SPEED;
+					m_rotDest.y = m_fAngle + D3DXToRadian(315.0f);
 				}
-
 				else if (js.lX > STICK_SENSITIVITY)
 				{
-					m_rotDest.y = m_fAngle + D3DXToRadian(90.0f);
-
-					m_pos.x -= cosf(m_fAngle)* PLAYER_SPEED;
-					m_pos.z += sinf(m_fAngle)* PLAYER_SPEED;
+					m_rotDest.y = m_fAngle + D3DXToRadian(45.0f);
 				}
-				else
+			}
+
+			else if (js.lY > STICK_SENSITIVITY)
+			{
+				m_rotDest.y = m_fAngle + D3DXToRadian(180.0f);
+				m_pos.x += sinf(m_fAngle)* PLAYER_SPEED;
+				m_pos.z += cosf(m_fAngle)* PLAYER_SPEED;
+
+				if (js.lX < -STICK_SENSITIVITY)
 				{
+					m_rotDest.y = m_fAngle + D3DXToRadian(225.0f);
 				}
-				//スティックYの入力が感度を超えている
-				if (js.lY < -STICK_SENSITIVITY)
+				else if (js.lX > STICK_SENSITIVITY)
 				{
-					m_rotDest.y = m_fAngle;
-
-					m_pos.x -= sinf(m_fAngle)* PLAYER_SPEED;
-					m_pos.z -= cosf(m_fAngle)* PLAYER_SPEED;
-
-					if (js.lX < -STICK_SENSITIVITY)
-					{
-						m_rotDest.y = m_fAngle + D3DXToRadian(315.0f);
-					}
-					else if (js.lX > STICK_SENSITIVITY)
-					{
-						m_rotDest.y = m_fAngle + D3DXToRadian(45.0f);
-					}
+					m_rotDest.y = m_fAngle + D3DXToRadian(135.0f);
 				}
+			}
 
-				else if (js.lY > STICK_SENSITIVITY)
-				{
-					m_rotDest.y = m_fAngle + D3DXToRadian(180.0f);
-					m_pos.x += sinf(m_fAngle)* PLAYER_SPEED;
-					m_pos.z += cosf(m_fAngle)* PLAYER_SPEED;
-
-					if (js.lX < -STICK_SENSITIVITY)
-					{
-						m_rotDest.y = m_fAngle + D3DXToRadian(225.0f);
-					}
-					else if (js.lX > STICK_SENSITIVITY)
-					{
-						m_rotDest.y = m_fAngle + D3DXToRadian(135.0f);
-					}
-				}
-
-			}
-			// Wキーを押したとき
-			if (pKeyboard->GetPress(DIK_W))
-			{
-				m_rotDest.y = D3DXToDegree(m_fAngle);
-				m_pos.z += cosf(0)*PLAYER_SPEED;
-			}
-			// Sキーを押したとき
-			if (pKeyboard->GetPress(DIK_S))
-			{
-				m_rotDest.y = sin(m_fAngle);
-				m_pos.z += cosf(D3DX_PI)*PLAYER_SPEED;
-			}
-			// Aキーを押したとき
-			if (pKeyboard->GetPress(DIK_A))
-			{
-				m_pos.x += sinf(-D3DX_PI / 2)*PLAYER_SPEED;
-			}
-			// Dキーを押したとき
-			if (pKeyboard->GetPress(DIK_D))
-			{
-				m_pos.x += sinf(D3DX_PI / 2)*PLAYER_SPEED;
-			}
 		}
-		else
+		// Wキーを押したとき
+		if (pKeyboard->GetPress(DIK_W))
 		{
-			m_bEntered = false;
-			if (m_bWalk == true)
-			{
-				//待機モーションを再生
-				SetMotion(MOTION_IDOL);
-				m_bWalk = false;
-			}
+			m_rotDest.y = D3DXToDegree(m_fAngle);
+			m_pos.z += cosf(0)*PLAYER_SPEED;
 		}
-
+		// Sキーを押したとき
+		if (pKeyboard->GetPress(DIK_S))
+		{
+			m_rotDest.y = sin(m_fAngle);
+			m_pos.z += cosf(D3DX_PI)*PLAYER_SPEED;
+		}
+		// Aキーを押したとき
+		if (pKeyboard->GetPress(DIK_A))
+		{
+			m_pos.x += sinf(-D3DX_PI / 2)*PLAYER_SPEED;
+		}
+		// Dキーを押したとき
+		if (pKeyboard->GetPress(DIK_D))
+		{
+			m_pos.x += sinf(D3DX_PI / 2)*PLAYER_SPEED;
+		}
 	}
+	else
+	{
+		m_bEntered = false;
+		if (m_bWalk == true)
+		{
+			//待機モーションを再生
+			SetMotion(MOTION_IDOL);
+			m_bWalk = false;
+		}
+	}
+
 }
 //=============================================================================
 // ジャンプ処理
@@ -1508,6 +1513,7 @@ void CPlayer::beam(void)
 	// Lキーを押したとき・コントローラのR1を押したとき
 	if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_R_TRIGGER, m_nPlayerNum) && m_bJump == false || pKeyboard->GetTrigger(DIK_L) && m_bJump == false )
 	{
+		SetMotion(MOTION_BEAM);
 		switch (m_nPlayerNum)
 		{
 		case 0:
@@ -1579,8 +1585,6 @@ void CPlayer::bomb(void)
 {
 	if (m_nBombInter >= PLAYER_BOMB_INTER)
 	{
-
-
 		// キーボード更新
 		CInputKeyboard *pKeyboard = CManager::GetKeyboard();
 		CSound *pSound = CManager::GetSound();

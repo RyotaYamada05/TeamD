@@ -113,7 +113,7 @@ void CPause::Uninit(void)
 		m_pScene = NULL;
 	}
 
-	for (int nCount = 0; nCount < UISTART_TYPE; nCount++)
+	for (int nCount = 0; nCount < MAX_PAUSE; nCount++)
 	{
 		if (m_apPauselogo[nCount] != NULL)
 		{

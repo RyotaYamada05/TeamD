@@ -398,14 +398,14 @@ void CGame::Update(void)
 		}
 	}
 
-	//CInputKeyboard* pKey = CManager::GetKeyboard();
-	//CScene* pScene = CManager::GetScene();
+	CInputKeyboard* pKey = CManager::GetKeyboard();
+	CScene* pScene = CManager::GetScene();
 
-	//if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_START, 0) || pKey->GetTrigger(DIK_I))
-	//{
-	//	pScene->GetPause(true);
-	//	m_pPause = CPause::Create();
-	//}
+	if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_START, 0) || pKey->GetTrigger(DIK_I))
+	{
+		pScene->GetPause(true);
+		m_pPause = CPause::Create();
+	}
 
 	// ƒQ[ƒ€‚Ìİ’è
 	SetGame();
