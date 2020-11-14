@@ -96,6 +96,7 @@ CGame* CGame::Create(void)
 //=======================================================================================
 HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 {
+	m_nRoundNum = 0;
 
 	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
 
@@ -141,15 +142,6 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 		//標準生成
 		m_pUi = CUi::Create(D3DXVECTOR3(UI_LOCKON_POS_LEFT_X, UI_LOCKON_POS_Y, 0.0f), D3DXVECTOR3(UI_LOCKON_SIZE_SMALL_X, UI_LOCKON_SIZE_SMALL_Y, 0.0f), CUi::UITYPE_STANDARD);
 		m_pUi = CUi::Create(D3DXVECTOR3(UI_LOCKON_POS_RIGHT_X, UI_LOCKON_POS_Y, 0.0f), D3DXVECTOR3(UI_LOCKON_SIZE_SMALL_X, UI_LOCKON_SIZE_SMALL_Y, 0.0f), CUi::UITYPE_STANDARD);
-
-		//勝った時の枠
-		//m_pUi = CUi::Create(D3DXVECTOR3(UI_WINMARK_POS_LEFT1_X, UI_WINMARK_POS_Y, 0.0f), D3DXVECTOR3(UI_WINMARK_SIZE_X, UI_WINMARK_SIZE_Y, 0.0f), CUi::UYTYPE_WINMARKFRAME);
-		//m_pUi = CUi::Create(D3DXVECTOR3(UI_WINMARK_POS_LEFT2_X, UI_WINMARK_POS_Y, 0.0f), D3DXVECTOR3(UI_WINMARK_SIZE_X, UI_WINMARK_SIZE_Y, 0.0f), CUi::UYTYPE_WINMARKFRAME);
-		//m_pUi = CUi::Create(D3DXVECTOR3(UI_WINMARK_POS_RIGHT1_X, UI_WINMARK_POS_Y, 0.0f), D3DXVECTOR3(UI_WINMARK_SIZE_X, UI_WINMARK_SIZE_Y, 0.0f), CUi::UYTYPE_WINMARKFRAME);
-		//m_pUi = CUi::Create(D3DXVECTOR3(UI_WINMARK_POS_RIGHT2_X, UI_WINMARK_POS_Y, 0.0f), D3DXVECTOR3(UI_WINMARK_SIZE_X, UI_WINMARK_SIZE_Y, 0.0f), CUi::UYTYPE_WINMARKFRAME);
-
-		
-
 	}
 
 	//startのUI
@@ -184,7 +176,6 @@ HRESULT CGame::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 		m_pBill = CBill::Create(D3DXVECTOR3(-BILL_POS_X_2, 0.0f, .0f), D3DXVECTOR3(BILL_SIZE_X, BILL_SIZE_Y, BILL_SIZE_Z));
 	}
 
-	CMissile::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 	
 	// メッシュフィールド
 	if (m_pMeshField == NULL)
@@ -398,14 +389,17 @@ void CGame::Update(void)
 		}
 	}
 
-	//CInputKeyboard* pKey = CManager::GetKeyboard();
-	//CScene* pScene = CManager::GetScene();
+	CInputKeyboard* pKey = CManager::GetKeyboard();
+	CScene* pScene = CManager::GetScene();
 
-	//if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_START, 0) || pKey->GetTrigger(DIK_I))
-	//{
-	//	pScene->GetPause(true);
-	//	m_pPause = CPause::Create();
-	//}
+	if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_START, 0) || pKey->GetTrigger(DIK_I))
+	{
+		if (m_bGameEnd == false)
+		{
+			pScene->GetPause(true);
+			m_pPause = CPause::Create();
+		}
+	}
 
 	// ゲームの設定
 	SetGame();

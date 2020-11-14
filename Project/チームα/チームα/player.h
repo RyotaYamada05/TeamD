@@ -153,7 +153,7 @@ public:
 	void Dush(void);												// ダッシュ
 	void Locus(void);												// 軌跡
 	void beam(void);												// ビーム
-	D3DXVECTOR3 GetRot(void);										// 角度情報
+	void Missile(void);												// ミサイル
 	void bomb(void);												// ボム
 	void MapLimit(void);
 	void Laser(void);												// レーザー
@@ -163,10 +163,11 @@ public:
 	void MotionState(void);											// モーション状態
 	void WeaponCollision(void);										// 武器の当たり判定
 	void TimeLimit(void);											// タイムリミット
-	void SetState(PLAYER_STATE state);									// プレイヤー情報の設定
+	void SetState(PLAYER_STATE state);								// プレイヤー情報の設定
 	bool GetSetWinLose(void);
 	D3DXVECTOR3 GetPos(void);										// 現在の座標情報
 	D3DXVECTOR3 GetOldPos(void);									// 古い座標情報
+	D3DXVECTOR3 GetRot(void);										// 角度情報
 	void SetMove(D3DXVECTOR3 move);										// 移動量の設定
 	D3DXVECTOR3 GetMove(void);
 	CLife *GetLife(int nNumber);									// ライフの情報
@@ -177,7 +178,7 @@ public:
 	bool GetJump(void);
 	bool GetDraw(void);												// 引き分けのフラグ
 	bool GetArmor(void);											// 無敵フラグの情報
-	bool GetWin(void);													// 勝ちの情報
+	bool GetWin(void);												// 勝ちの情報
 private:
 	CScore *pScore;							// スコアの情報
 	CLife *m_pLife[LIFE_NUM];				// ライフのポインタ
@@ -201,6 +202,7 @@ private:
 	int m_nCountMotion;							//モーションカウンター
 	int m_nMotionInterval;						//モーションのインターバル
 	int m_nBombInter;							// ボムのインターバル
+	int m_nMissileInter;							// ミサイルのインターバル
 	int m_nLaserInter;							// レーザーのインターバル
 	bool m_bJump;								// ジャンプのフラグ
 	bool m_bDush;								// ダッシュの処理

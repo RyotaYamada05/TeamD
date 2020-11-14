@@ -113,7 +113,7 @@ void CPause::Uninit(void)
 		m_pScene = NULL;
 	}
 
-	for (int nCount = 0; nCount < UISTART_TYPE; nCount++)
+	for (int nCount = 0; nCount < MAX_PAUSE; nCount++)
 	{
 		if (m_apPauselogo[nCount] != NULL)
 		{
@@ -170,7 +170,7 @@ void CPause::Select(void)
 
 	if (m_SelectPos.y == UIPAUSE_START_POS_Y)
 	{
-		if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_B, 0))
+		if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_A, 0))
 		{
 			m_pScene->GetPause(false);
 			Uninit();
@@ -179,7 +179,7 @@ void CPause::Select(void)
 
 	if (m_SelectPos.y == UIPAUSE_TITLE_POS_Y)
 	{
-		if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_B, 0))
+		if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_A, 0))
 		{
 			m_pScene->GetPause(false);
 			CFade *pFade = CManager::GetFade();

@@ -38,7 +38,6 @@ public:
 	D3DXVECTOR3 GetPos(void)const { return m_pos; }
 	D3DXVECTOR3 GetSize(void) { return m_size; }
 	D3DXCOLOR   GetCol(void) { return m_col; }
-
 private:
 
 	LPDIRECT3DTEXTURE9 m_pTextuer;       // テクスチャへのポインタ

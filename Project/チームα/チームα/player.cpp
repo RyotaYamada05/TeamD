@@ -33,6 +33,7 @@
 #include "sound.h"
 #include "ui.h"
 #include "time.h"
+#include "missile.h"
 
 //=============================================================================
 // マクロ定義
@@ -40,7 +41,7 @@
 #define PLAYER_SPEED			(15.0f)				// プレイヤーの移動量
 #define PLAYER_DUSH				(30.0f)				// プレイヤーのダッシュ
 #define PLAYER_DUSH_INTER		(80)				// ダッシュができる長さ
-#define DUSH_NONE_TIME			(100)				// ダッシュできない時間
+#define DUSH_NONE_TIME			(50)				// ダッシュできない時間
 #define PLAYER_JUMP				(9.0f)				// ジャンプの処理
 #define GRAVITY_POWAR			(0.1f)				// 重力の強さ
 #define PLAYER_FALL				(-12.0f)			// 急降下の処理
@@ -54,6 +55,7 @@
 #define STATE_EXPLOSION_TIME	(30)				// 爆発状態のカウント
 #define STATE_EXPLOSION_END		(500)				// 爆発状態の終了フレーム
 #define PLAYER_BOMB_INTER		(150)				// ボムの待機フレーム
+#define PLAYER_MISSILE			(150)				// ミサイルの待機フレーム
 #define PLAYER_LASER_INTER		(300)				// レーザーの待機フレーム
 #define LBX_XFAILE_NAME "data/Text/motion_LBX.txt"	//LBXのファイルパス
 #define GANDAMU_XFAILE_NAME "data/Text/motion_gandamu.txt"	//ガンダムのファイルパス
@@ -126,10 +128,13 @@ CPlayer::CPlayer()
 	m_bWinLose = false;
 	m_bDraw = false;
 	m_bArmor = false;
-	m_nBombInter = 0;							// ボムのインターバル
-	m_nLaserInter = 0;;							// レーザーのインターバル
+	m_nBombInter = 0;
+	m_nMissileInter = 0;
+	m_nLaserInter = 0;
 	m_bAttack = false;
 	m_bWin = false;
+	m_pDraw = NULL;
+
 }
 
 //=============================================================================
@@ -172,11 +177,12 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 	memset(m_pBoost, 0, sizeof(m_pBoost));
 	m_bWinLose = false;
 	m_bDraw = false;
-	CLife::SetReady(true);
+	//CLife::SetReady(true);
 	m_nBombInter = 0;							// ボムのインターバル
 	m_nLaserInter = 0;;							// レーザーのインターバル
 	m_bAttack = false;
 	m_bWin = true;
+	m_pDraw = NULL;
 
 	for (int nCount = 0; nCount < MAX_PLAYER; nCount++)
 	{
@@ -330,6 +336,7 @@ void CPlayer::Update(void)
 	// ボムとレーザーのフレーム加算
 	m_nBombInter++;
 	m_nLaserInter++;
+	m_nMissileInter++;
 
 	// 古い座標取得
 	m_OldPos = m_pos;
@@ -349,6 +356,9 @@ void CPlayer::Update(void)
 
 	// モーション状態
 	MotionState();
+
+	//アニメーションの更新処理
+	UpdateMotion();
 	// 終了フラグ
 	switch (m_nPlayerNum)
 	{
@@ -356,12 +366,11 @@ void CPlayer::Update(void)
 	{
 		PLAYER_STATE state = CGame::GetPlayer(1)->GetState();
 
-		if (state == PLAYER_STATE_EXPLOSION)
+		if (state == PLAYER_STATE_EXPLOSION || state == PLAYER_STATE_DRAW)
 		{
 			m_bWin = true;
 			return;
 		}
-
 	}
 	break;
 
@@ -369,12 +378,11 @@ void CPlayer::Update(void)
 	{
 		PLAYER_STATE state = CGame::GetPlayer(0)->GetState();
 
-		if (state == PLAYER_STATE_EXPLOSION)
+		if (state == PLAYER_STATE_EXPLOSION || state == PLAYER_STATE_DRAW)
 		{
 			m_bWin = true;
 			return;
 		}
-
 	}
 	break;
 
@@ -384,10 +392,9 @@ void CPlayer::Update(void)
 
 	if (m_pLife[0] != NULL)	
 	{
-		D3DXVECTOR3 size = m_pLife[0]->GetSize();
-
+		float fLife = m_pLife[0]->GetLife();
 		// 終了処理
-		if (size.x <= 0 && CLife::GetReadey() == false)
+		if (fLife <= 0.0f && m_pLife[0]->GetReadey() == false)
 		{
 			// 爆発状態
 			m_state = PLAYER_STATE_EXPLOSION;
@@ -402,8 +409,6 @@ void CPlayer::Update(void)
 
 	// プレイヤーの制御
 	PlayerControl();
-
-
 
 	//位置へ移動量を加算
 	m_pos += m_move;
@@ -432,9 +437,6 @@ void CPlayer::Update(void)
 
 	//範囲外に行かないようにする処理
 	MapLimit();
-
-	//アニメーションの更新処理
-	UpdateMotion();
 
 	// 軌跡
 	Locus();
@@ -668,7 +670,6 @@ void CPlayer::PlayerState(void)
 		m_nStateCounter++;
 
 		// 一定以上で
-
 		if (m_MotionState == MOTION_DAMAGE && m_bMotionPlaing == false)
 		{
 			m_nStateCounter = 0;
@@ -783,6 +784,12 @@ void CPlayer::PlayerState(void)
 			case 1:
 			{
 				CPlayer *pPlayer = CGame::GetPlayer(0);
+				// ライフの消去
+				if (m_pLife[1] != NULL)
+				{
+					m_pLife[1]->Uninit();
+					m_pLife[1] = NULL;
+				}
 
 				if (pPlayer != NULL)
 				{
@@ -857,8 +864,6 @@ void CPlayer::PlayerState(void)
 
 				if (pPlayer != NULL)
 				{
-
-
 					for (int nCount = 0; nCount < MAX_PLAYER; nCount++)
 					{
 						// ライフの消去
@@ -985,23 +990,57 @@ void CPlayer::WeaponCollision(void)
 		//位置の取得
 		D3DXVECTOR3 targetPos = pPlayer->GetPos();
 
-		D3DXVECTOR3 Top = D3DXVECTOR3(
-			m_apModelAnime[20]->GetMtxWorld()._41,
-			m_apModelAnime[20]->GetMtxWorld()._42,
-			m_apModelAnime[20]->GetMtxWorld()._43);
-
-		// 当たり判定
-		if (targetPos.x - PLAYER_COLLISION_X / 2 <= Top.x + WEAPON_COLLISION_X / 2 &&
-			targetPos.x + PLAYER_COLLISION_X / 2 >= Top.x - WEAPON_COLLISION_X / 2 &&
-			targetPos.y -0.0f <= Top.y + WEAPON_COLLISION_Y / 2 &&
-			targetPos.y + PLAYER_COLLISION_Y  >= Top.y - WEAPON_COLLISION_Y / 2 &&
-			targetPos.z - PLAYER_COLLISION_Z / 2 <= Top.z + WEAPON_COLLISION_Z / 2 &&
-			targetPos.z + PLAYER_COLLISION_Z / 2 >= Top.z - WEAPON_COLLISION_Z / 2)
+		if (pPlayer->GetArmor() == false)
 		{
-			// 爆発の生成
-			C2dExplosion::Create(targetPos,
-				D3DXVECTOR3(EXPLOSION_SIZE_X_2D, EXPLOSION_SIZE_Y_2D, EXPLOSION_SIZE_Z_2D));
+			D3DXVECTOR3 Top = D3DXVECTOR3(
+				m_apModelAnime[20]->GetMtxWorld()._41,
+				m_apModelAnime[20]->GetMtxWorld()._42,
+				m_apModelAnime[20]->GetMtxWorld()._43);
+
+			// 当たり判定
+			if (targetPos.x - PLAYER_COLLISION_X / 2 <= Top.x + WEAPON_COLLISION_X / 2 &&
+				targetPos.x + PLAYER_COLLISION_X / 2 >= Top.x - WEAPON_COLLISION_X / 2 &&
+				targetPos.y - 0.0f <= Top.y + WEAPON_COLLISION_Y / 2 &&
+				targetPos.y + PLAYER_COLLISION_Y >= Top.y - WEAPON_COLLISION_Y / 2 &&
+				targetPos.z - PLAYER_COLLISION_Z / 2 <= Top.z + WEAPON_COLLISION_Z / 2 &&
+				targetPos.z + PLAYER_COLLISION_Z / 2 >= Top.z - WEAPON_COLLISION_Z / 2)
+			{
+				// 爆発の生成
+				C2dExplosion::Create(D3DXVECTOR3(targetPos.x, 250.0f, targetPos.z),
+					D3DXVECTOR3(EXPLOSION_SIZE_X_2D, EXPLOSION_SIZE_Y_2D, EXPLOSION_SIZE_Z_2D));
+
+				// プレイヤー情報の取得
+				switch (m_nPlayerNum)
+				{
+				case 0:
+
+					CGame::GetCamera(1)->SetTarget(false);
+
+					for (int nCount = 0; nCount < MAX_PLAYER; nCount++)
+					{
+						CGame::GetPlayer(1)->GetLife(nCount)->Decrease(100, m_nPlayerNum, true);
+
+					}
+
+					CGame::GetPlayer(1)->SetMotion(MOTION_DAMAGE);
+
+					break;
+				case 1:
+					CGame::GetCamera(0)->SetTarget(false);
+
+					for (int nCount = 0; nCount < MAX_PLAYER; nCount++)
+					{
+						CGame::GetPlayer(0)->GetLife(nCount)->Decrease(100, m_nPlayerNum, true);
+
+					}
+
+					CGame::GetPlayer(0)->SetMotion(MOTION_DAMAGE);
+
+					break;
+				}
+			}
 		}
+
 	}
 }
 
@@ -1064,7 +1103,7 @@ void CPlayer::TimeLimit(void)
 //=============================================================================
 void CPlayer::PlayerControl()
 {
-	if (CLife::GetReadey() == false)
+	if (m_pLife[0]->GetReadey() == false)
 	{
 		// ダッシュしていないとき
 		if (m_bDush == false)
@@ -1085,8 +1124,18 @@ void CPlayer::PlayerControl()
 		// ビームの処理
 		beam();
 
-		// ボムの処理
-		bomb();
+		switch (m_nPlayerNum)
+		{
+		case 0:
+			// ボムの処理
+			bomb();
+			break;
+
+		case 1:
+			// ミサイルの処理
+			Missile();
+			break;
+		}
 
 		// レーザーの処理
 		Laser();
@@ -1114,111 +1163,112 @@ void CPlayer::Walk(void)
 			//攻撃モーションを再生
 			SetMotion(MOTION_ATTACK);
 		}
-		//入力が存在する
-		if (js.lX != 0.0f || js.lY != 0.0f)
-		{
-			//入力ありにする
-			m_bEntered = true;
+	}
+	//入力が存在する
+	if ((js.lX != 0.0f || js.lY != 0.0f) && m_bAttack == false)
+	{
+		//入力ありにする
+		m_bEntered = true;
 
-			//ダメージを受けていないときのみ移動する
-			if (m_MotionState != MOTION_DAMAGE)
+		//ダメージを受けていないときのみ移動する
+		if (m_MotionState != MOTION_DAMAGE)
+		{
+			//ジャンプしていないとき
+			if (m_bJump == false && m_bWalk == false)
 			{
-				//ジャンプしていないとき
-				if (m_bJump == false && m_bWalk == false)
-				{
-					m_bWalk = true;
-					//歩行モーションの再生
-					SetMotion(MOTION_WALK);
-				}
-				//スティックXの入力が感度超えている
+				m_bWalk = true;
+				//歩行モーションの再生
+				SetMotion(MOTION_WALK);
+			}
+			//スティックXの入力が感度超えている
+			if (js.lX < -STICK_SENSITIVITY)
+			{
+				m_rotDest.y = m_fAngle + D3DXToRadian(270.0f);
+
+				m_pos.x += cosf(m_fAngle)* PLAYER_SPEED;
+				m_pos.z -= sinf(m_fAngle)* PLAYER_SPEED;
+			}
+
+			else if (js.lX > STICK_SENSITIVITY)
+			{
+				m_rotDest.y = m_fAngle + D3DXToRadian(90.0f);
+
+				m_pos.x -= cosf(m_fAngle)* PLAYER_SPEED;
+				m_pos.z += sinf(m_fAngle)* PLAYER_SPEED;
+			}
+			else
+			{
+			}
+			//スティックYの入力が感度を超えている
+			if (js.lY < -STICK_SENSITIVITY)
+			{
+				m_rotDest.y = m_fAngle;
+
+				m_pos.x -= sinf(m_fAngle)* PLAYER_SPEED;
+				m_pos.z -= cosf(m_fAngle)* PLAYER_SPEED;
+
 				if (js.lX < -STICK_SENSITIVITY)
 				{
-					m_rotDest.y = m_fAngle + D3DXToRadian(270.0f);
-
-					m_pos.x += cosf(m_fAngle)* PLAYER_SPEED;
-					m_pos.z -= sinf(m_fAngle)* PLAYER_SPEED;
+					m_rotDest.y = m_fAngle + D3DXToRadian(315.0f);
 				}
-
 				else if (js.lX > STICK_SENSITIVITY)
 				{
-					m_rotDest.y = m_fAngle + D3DXToRadian(90.0f);
-
-					m_pos.x -= cosf(m_fAngle)* PLAYER_SPEED;
-					m_pos.z += sinf(m_fAngle)* PLAYER_SPEED;
+					m_rotDest.y = m_fAngle + D3DXToRadian(45.0f);
 				}
-				else
+			}
+
+			else if (js.lY > STICK_SENSITIVITY)
+			{
+				m_rotDest.y = m_fAngle + D3DXToRadian(180.0f);
+				m_pos.x += sinf(m_fAngle)* PLAYER_SPEED;
+				m_pos.z += cosf(m_fAngle)* PLAYER_SPEED;
+
+				if (js.lX < -STICK_SENSITIVITY)
 				{
+					m_rotDest.y = m_fAngle + D3DXToRadian(225.0f);
 				}
-				//スティックYの入力が感度を超えている
-				if (js.lY < -STICK_SENSITIVITY)
+				else if (js.lX > STICK_SENSITIVITY)
 				{
-					m_rotDest.y = m_fAngle;
-
-					m_pos.x -= sinf(m_fAngle)* PLAYER_SPEED;
-					m_pos.z -= cosf(m_fAngle)* PLAYER_SPEED;
-
-					if (js.lX < -STICK_SENSITIVITY)
-					{
-						m_rotDest.y = m_fAngle + D3DXToRadian(315.0f);
-					}
-					else if (js.lX > STICK_SENSITIVITY)
-					{
-						m_rotDest.y = m_fAngle + D3DXToRadian(45.0f);
-					}
+					m_rotDest.y = m_fAngle + D3DXToRadian(135.0f);
 				}
+			}
 
-				else if (js.lY > STICK_SENSITIVITY)
-				{
-					m_rotDest.y = m_fAngle + D3DXToRadian(180.0f);
-					m_pos.x += sinf(m_fAngle)* PLAYER_SPEED;
-					m_pos.z += cosf(m_fAngle)* PLAYER_SPEED;
-
-					if (js.lX < -STICK_SENSITIVITY)
-					{
-						m_rotDest.y = m_fAngle + D3DXToRadian(225.0f);
-					}
-					else if (js.lX > STICK_SENSITIVITY)
-					{
-						m_rotDest.y = m_fAngle + D3DXToRadian(135.0f);
-					}
-				}
-
-			}
-			// Wキーを押したとき
-			if (pKeyboard->GetPress(DIK_W))
-			{
-				m_rotDest.y = D3DXToDegree(m_fAngle);
-				m_pos.z += cosf(0)*PLAYER_SPEED;
-			}
-			// Sキーを押したとき
-			if (pKeyboard->GetPress(DIK_S))
-			{
-				m_rotDest.y = sin(m_fAngle);
-				m_pos.z += cosf(D3DX_PI)*PLAYER_SPEED;
-			}
-			// Aキーを押したとき
-			if (pKeyboard->GetPress(DIK_A))
-			{
-				m_pos.x += sinf(-D3DX_PI / 2)*PLAYER_SPEED;
-			}
-			// Dキーを押したとき
-			if (pKeyboard->GetPress(DIK_D))
-			{
-				m_pos.x += sinf(D3DX_PI / 2)*PLAYER_SPEED;
-			}
 		}
-		else
+		// Wキーを押したとき
+		if (pKeyboard->GetPress(DIK_W))
 		{
-			m_bEntered = false;
-			if (m_bWalk == true)
-			{
-				//待機モーションを再生
-				SetMotion(MOTION_IDOL);
-				m_bWalk = false;
-			}
+			m_rotDest.y = D3DXToDegree(m_fAngle);
+			m_pos.z += cosf(0)*PLAYER_SPEED;
 		}
-
+		// Sキーを押したとき
+		if (pKeyboard->GetPress(DIK_S))
+		{
+			m_rotDest.y = sin(m_fAngle);
+			m_pos.z += cosf(D3DX_PI)*PLAYER_SPEED;
+		}
+		// Aキーを押したとき
+		if (pKeyboard->GetPress(DIK_A))
+		{
+			m_pos.x += sinf(-D3DX_PI / 2)*PLAYER_SPEED;
+		}
+		// Dキーを押したとき
+		if (pKeyboard->GetPress(DIK_D))
+		{
+			m_pos.x += sinf(D3DX_PI / 2)*PLAYER_SPEED;
+		}
 	}
+	else
+	{
+		m_bEntered = false;
+		if (m_bWalk == true)
+		{
+			//待機モーションを再生
+			SetMotion(MOTION_IDOL);
+			m_bWalk = false;
+		}
+	}
+
+
 }
 //=============================================================================
 // ジャンプ処理
@@ -1230,7 +1280,6 @@ void CPlayer::Jump(void)
 	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
 
 	// SPACEキーを押したとき・コントローラのYを押したとき
-
 		if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_Y, m_nPlayerNum) && m_bJump == false	
 			|| pKeyboard->GetTrigger(DIK_SPACE) && m_bJump == false)
 	{
@@ -1511,13 +1560,11 @@ void CPlayer::beam(void)
 		switch (m_nPlayerNum)
 		{
 		case 0:
-
-			
 			if (CCharge::GetCharge(0) > PLAYER_LASER)
 			{
 
 				//バレットの生成
-				CBeam::Create(m_pos, D3DXVECTOR3(0.0f, 0.0f, -BEAM_SPEED), D3DXVECTOR3(BEAM_SIZE_X, BEAM_SIZE_Y, BEAM_SIZE_Z), CBullet2::BULLET2_USER_PL1);
+				CBeam::Create(D3DXVECTOR3(m_pos.x, 200.0f, m_pos.z), D3DXVECTOR3(0.0f, 100.0f, -BEAM_SPEED), D3DXVECTOR3(BEAM_SIZE_X, BEAM_SIZE_Y, BEAM_SIZE_Z), CBullet2::BULLET2_USER_PL1);
 				//弾うったらゲージを減らす
 				m_pCharge->Reduce(PLAYER_LASER, true, 0);
 				pSound->Play(CSound::SOUND_LABEL_SE_BULLET);
@@ -1529,7 +1576,7 @@ void CPlayer::beam(void)
 			if (CCharge::GetCharge(1) > PLAYER_LASER)
 			{
 				//バレットの生成
-				CBeam::Create(m_pos, D3DXVECTOR3(0.0f, 0.0f, BEAM_SPEED), D3DXVECTOR3(BEAM_SIZE_X, BEAM_SIZE_Y, BEAM_SIZE_Z), CBullet2::BULLET2_USER_PL2);
+				CBeam::Create(D3DXVECTOR3(m_pos.x, 200.0f, m_pos.z), D3DXVECTOR3(0.0f, 100.0f, BEAM_SPEED), D3DXVECTOR3(BEAM_SIZE_X, BEAM_SIZE_Y, BEAM_SIZE_Z), CBullet2::BULLET2_USER_PL2);
 				//弾うったらゲージを減らす
 				m_pCharge->Reduce(PLAYER_LASER, true, 1);
 				pSound->Play(CSound::SOUND_LABEL_SE_BULLET);
@@ -1573,14 +1620,74 @@ void CPlayer::Locus(void)
 }
 
 //=============================================================================
+// ミサイル
+//=============================================================================
+void CPlayer::Missile(void)
+{
+	if (m_nMissileInter >= PLAYER_BOMB_INTER)
+	{
+		// キーボード更新
+		CInputKeyboard *pKeyboard = CManager::GetKeyboard();
+		CSound *pSound = CManager::GetSound();
+
+		// Lキーを押したとき・コントローラのR1を押したとき
+		if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_R2_TRIGGER, m_nPlayerNum) && m_bJump == false
+			|| pKeyboard->GetTrigger(DIK_V) && m_bJump == false)
+		{
+			m_nMissileInter = 0;
+			switch (m_nPlayerNum)
+			{
+			case 0:
+				if (CCharge::GetCharge(0) > PLAYER_BOMB)
+				{
+					//バレットの生成
+					CMissile::Create(D3DXVECTOR3(m_pos.x, m_pos.y + 50.0f, m_pos.z),
+						D3DXVECTOR3(MISSILE_SIZE_X, MISSILE_SIZE_Y, MISSILE_SIZE_Z),
+						CMissile::MISSILE_USER_PL1, MISSILE_SPPED);
+
+					//発射音
+					pSound->Play(CSound::SOUND_LABEL_SE_BULLET2);
+					//弾うったらゲージを減らす
+
+					if (m_pCharge != NULL)
+					{
+						m_pCharge->Reduce(PLAYER_BOMB, true, 0);
+					}
+				}
+				break;
+
+			case 1:
+
+				if (CCharge::GetCharge(1) > PLAYER_BOMB)
+				{
+					//バレットの生成
+					CMissile::Create(D3DXVECTOR3(m_pos.x, m_pos.y + 50.0f, m_pos.z),
+						D3DXVECTOR3(MISSILE_SIZE_X, MISSILE_SIZE_Y, MISSILE_SIZE_Z),
+						CMissile::MISSILE_USER_PL2, MISSILE_SPPED);
+
+					//発射音
+					pSound->Play(CSound::SOUND_LABEL_SE_BULLET2);
+
+					if (m_pCharge != NULL)
+					{
+						//弾うったらゲージを減らす
+						m_pCharge->Reduce(PLAYER_BOMB, true, 1);
+					}
+				}
+				break;
+			}
+		}
+	}
+
+}
+
+//=============================================================================
 // ボムの処理
 //=============================================================================
 void CPlayer::bomb(void)
 {
 	if (m_nBombInter >= PLAYER_BOMB_INTER)
 	{
-
-
 		// キーボード更新
 		CInputKeyboard *pKeyboard = CManager::GetKeyboard();
 		CSound *pSound = CManager::GetSound();
@@ -1595,7 +1702,6 @@ void CPlayer::bomb(void)
 			case 0:
 				if (CCharge::GetCharge(0) > PLAYER_BOMB)
 				{
-
 					//バレットの生成
 					CBomb::Create(D3DXVECTOR3(m_pos.x, m_pos.y + 50.0f, m_pos.z),
 						D3DXVECTOR3(0.0f, BOMB_MOVE_Y, 0.0f),

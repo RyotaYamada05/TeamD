@@ -342,9 +342,13 @@ void CCamera::NomalUpdate(D3DXVECTOR3 PlayerPos[], D3DXVECTOR3 PlayerRot[])
 
 	if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_Y, m_nCameraNum) || pKeyInput->GetTrigger(DIK_TAB) && !m_bTarget&&CGame::GetPlayer(m_nCameraNum)->GetJump() == false)
 	{
-		//ターゲット機能OFF
-		m_fθ = CAMERA_DEFAULT_Fθ;	//縦回転角固定
-		m_bTarget = true;			//ターゲットON
+		
+		if (CGame::GetPlayer(m_nCameraNum)->GetJump() == false)
+		{
+			//ターゲット機能OFF
+			m_fθ = CAMERA_DEFAULT_Fθ;	//縦回転角固定
+			m_bTarget = true;			//ターゲットON
+		}
 	}
 
 	//入力処理
@@ -427,7 +431,7 @@ void CCamera::NomalUpdate(D3DXVECTOR3 PlayerPos[], D3DXVECTOR3 PlayerRot[])
 
 		m_posRDest = D3DXVECTOR3(PlayerPos[m_nCameraNum].x, PlayerPos[m_nCameraNum].y + PLAYER_HEIGHT, PlayerPos[m_nCameraNum].z);	//注視点設定
 
-																																	//カメラPOSYの下限
+		//カメラPOSYの下限
 		if (m_posVDest.y <= CAMERA_MIN_HIGHT)
 		{
 			m_posVDest.y = CAMERA_MIN_HIGHT;	//限界値に戻す
@@ -490,6 +494,14 @@ void CCamera::SetCamera(void)
 	//プロジェクションマトリックスの設定
 	pDevice->SetTransform(D3DTS_PROJECTION,
 		&m_mtxProjection);
+}
+
+//=============================================================================
+// ターゲットの設定
+//=============================================================================
+void CCamera::SetTarget(bool Target)
+{
+	m_bTarget = Target;
 }
 
 //=============================================================================

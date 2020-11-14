@@ -46,6 +46,7 @@ public:
 	D3DXVECTOR3 GetposV(void);
 	D3DXVECTOR3 GetposR(void);
 	D3DXMATRIX GetMtxView(void);
+	void SetTarget(bool Target);
 private:
 	//=========================================================================
 	//プライベートメンバ関数宣言

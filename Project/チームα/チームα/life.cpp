@@ -82,6 +82,8 @@ CLife::CLife()
 	m_type = LIFETYPE_NONE;		//タイプ
 	m_bEnd= false;
 	m_bStart = true;
+	m_fLife = MAX_LIFE;
+	m_bArmor = false;
 }
 
 //================================================
@@ -101,6 +103,8 @@ HRESULT CLife::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size, const D3DXCOL
 	m_size = size;		//サイズ
 	m_col = col;		//カラー
 	m_type = type;		//タイプ
+	m_fLife = MAX_LIFE;
+	m_bArmor = false;
 
 	CGauge::Init(pos, size);	//CGaugeの初期化
 
@@ -161,6 +165,11 @@ void CLife::Draw(void)
 //================================================
 void CLife::Decrease(int Reduce, int PlayerNamber, bool Life)
 {
+	if (m_bArmor == false)
+	{
+		m_fLife -= (float)Reduce;
+		m_bArmor = true;
+	}
 	m_nReduce = Reduce;
 	m_bLife = Life;
 	m_nPlayerNum = PlayerNamber;
@@ -192,6 +201,7 @@ void CLife::Lifereduce(void)
 	//ライフを減らす処理
 	if (0 < size.x)
 	{
+
 		if (m_bLife == true)
 		{
 			pSound->Play(CSound::SOUND_LABEL_SE_BOMB);
@@ -217,6 +227,8 @@ void CLife::Lifereduce(void)
 				m_bLife = false;
 				m_nCounterLife = 0;
 
+				m_bArmor = false;
+
 				//自分のライフの色を元に戻す
 				if (m_type == LIFETYPE_FAST_PLAYER)
 				{
@@ -228,12 +240,12 @@ void CLife::Lifereduce(void)
 					col = D3DCOLOR_RGBA(255, 255, 255, 255);
 				}
 			}
-
 		}
 	}
 	else
 	{
 		m_bStart = true;
+		size.x = 0.0f;
 	}
 
 
@@ -313,4 +325,9 @@ void CLife::SetReady(bool bReady)
 bool CLife::GetReadey(void)
 {
 	return m_bStart;
+}
+
+float CLife::GetLife(void)
+{
+	return m_fLife;
 }

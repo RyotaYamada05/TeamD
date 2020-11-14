@@ -190,6 +190,10 @@ void CCharge::GaugeRedce(void)
 			m_nCounterCharge = 0;
 		}
 	}
+	else
+	{
+		m_bCharge = false;
+	}
 
 	//サイズの設定
 	SetSize(size);
@@ -208,7 +212,8 @@ void CCharge::GaugeReturn(void)
 	D3DXCOLOR col = GetCol();
 
 	//最大数よりゲージが減ってたら最大数まで戻す処理
-	if (size.x < MAX_CHARGE && m_bCharge == false || size.x <= 0)
+//	if (size.x < MAX_CHARGE && m_bCharge == false || size.x < 0)
+	if (size.x < MAX_CHARGE&& m_bCharge == false && size.x > -1500.0f)
 	{
 		m_nBlue = size.x / 4 * 0.01f;
 		m_nRed = 1.0f - m_nBlue;

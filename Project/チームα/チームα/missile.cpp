@@ -9,11 +9,23 @@
 #include "manager.h"
 #include "renderer.h"
 #include "effect.h"
+#include "game.h"
+#include "player.h"
+#include "life.h"
+#include "camera.h"
+#include "2d_explosion.h"
+#include "shock.h"
+#include "model.h"
+#include "bill.h"
+#include "splash.h"
+#include "missile.h"
 
 //=============================================================================
 //マクロ定義
 //=============================================================================
 #define MISSILE_XFAILE_NAME "data/Text/motionMissile.txt"	//ミサイルのデータファイルパス
+#define FOLLOW_TIME_MISSILE		(30)						// ミサイルの追従
+#define MISSILE_LIFE			(1000)						// ミサイルのライフ
 
 //=============================================================================
 //グローバル変数宣言
@@ -30,8 +42,14 @@ CMissile::CMissile()
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_size = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_nLife = 0;
+	m_nLife = MISSILE_LIFE;
 	memset(m_apModelAnime, 0, sizeof(m_apModelAnime));
+	m_nCounter = 0;
+	m_user = MISSILE_USER_NONE;
+	m_pTargetPL = NULL;
+	m_nDamage = 0;
+	m_fSpeed = 0.0f;
+	m_fHeight = 0.0f;
 }
 
 //=============================================================================
@@ -44,7 +62,8 @@ CMissile::~CMissile()
 //=============================================================================
 //ミサイルクラスのクリエイト処理
 //=============================================================================
-CMissile * CMissile::Create(D3DXVECTOR3 pos, D3DXVECTOR3 size, D3DXVECTOR3 rot, D3DXVECTOR3 move)
+CMissile * CMissile::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 size,
+	const MISSILE_USER user, float fSpeed)
 {
 	//ミサイルクラスのポインタ変数
 	CMissile *pMissile = NULL;
@@ -55,10 +74,13 @@ CMissile * CMissile::Create(D3DXVECTOR3 pos, D3DXVECTOR3 size, D3DXVECTOR3 rot, 
 	//メモリが確保できていたら
 	if (pMissile != NULL)
 	{
+		pMissile->m_fSpeed = fSpeed;
+		pMissile->m_user = user;
+
 		//初期化処理呼び出し
 		pMissile->Init(pos, size);
-		pMissile->SetRot(rot);
-		pMissile->SetMove(move);
+		//pMissile->SetRot(rot);
+		//pMissile->SetMove(move);
 	}
 	else
 	{
@@ -77,7 +99,7 @@ HRESULT CMissile::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 	m_pos = pos;
 
 	//向きの設定
-	m_rot = size;
+	m_size = size;
 
 	//ファイル読み込み
 	if (FAILED(ReadFile()))
@@ -108,6 +130,21 @@ HRESULT CMissile::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 			}
 		}
 	}
+
+	switch (m_user)
+	{
+	case MISSILE_USER_PL1:
+		//2Pの情報取得
+		m_pTargetPL = CGame::GetPlayer(1);
+
+		break;
+	case MISSILE_USER_PL2:
+		//1Pの情報取得
+		m_pTargetPL = CGame::GetPlayer(0);
+
+		break;
+	}
+
 	return S_OK;
 }
 
@@ -141,11 +178,50 @@ void CMissile::Uninit(void)
 //=============================================================================
 void CMissile::Update(void)
 {
+	//位置の取得
+	m_nCounter++;
+
+	// 通常の場合
+	if (m_nCounter <= FOLLOW_TIME_MISSILE)
+	{
+		if (m_pTargetPL != NULL)
+		{
+			//移動量の計算
+			m_move = VectorMath(D3DXVECTOR3(
+				m_pTargetPL->GetPos().x, m_pTargetPL->GetPos().y + 200.0f, m_pTargetPL->GetPos().z), m_fSpeed);
+		}
+	}
+
+
+	//移動量を位置に与える
+	m_pos += m_move;
+
+	//ライフの設定
+	m_nLife--;
+
+	if (Collision() == true)
+	{
+		// 体力を0
+		m_nLife = 0;
+	}
+
 	m_pos.y += 0.05f;
 
 	// エフェクト生成
 	CEffect::Create(m_pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f),
 		D3DXVECTOR3(EFFECT_SIZE_X, EFFECT_SIZE_Y, 0.0f), D3DXCOLOR(0.3f, 0.3f, 1.0f, 1.0f), EFFECT_LIFE);
+
+	//ライフが0以下の時
+	if (m_nLife <= 0)
+	{
+		// 衝撃を生成
+		CShock::Create(D3DXVECTOR3(m_pos.x, 0.0f, m_pos.z), D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+			D3DXVECTOR3(SHOCK_SIZE_X, SHOCK_SIZE_Y, SHOCK_SIZE_Z));
+
+		//終了処理呼び出し
+		Uninit();
+		return;
+	}
 }
 
 //=============================================================================
@@ -160,6 +236,10 @@ void CMissile::Draw(void)
 
 	//ワールドマトリックスの初期化
 	D3DXMatrixIdentity(&m_mtxWorld);
+
+	// サイズを反映
+	D3DXMatrixScaling(&mtxScale, m_size.x, m_size.y, m_size.z);
+	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxScale);
 
 	//向きを反映
 	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);
@@ -181,6 +261,138 @@ void CMissile::Draw(void)
 		}
 	}
 }
+
+//=============================================================================
+//バレットクラスの当たり判定
+//=============================================================================
+bool CMissile::Collision(void)
+{
+
+	if (m_pTargetPL != NULL)
+	{
+		//位置の取得
+		D3DXVECTOR3 targetPos = m_pTargetPL->GetPos();
+
+
+		// 当たり判定
+		if (targetPos.x + PLAYER_COLLISION_X / 2 >= m_pos.x - 50.0f &&
+			targetPos.x - PLAYER_COLLISION_X / 2 <= m_pos.x + 50.0f &&
+			targetPos.y + PLAYER_COLLISION_Y >= m_pos.y - 50.0f &&
+			targetPos.y - 0.0f <= m_pos.y + 50.0f &&
+			targetPos.z + PLAYER_COLLISION_Z / 2 >= m_pos.z - 50.0f &&
+			targetPos.z - PLAYER_COLLISION_Z / 2 <= m_pos.z + 50.0f)
+		{
+			for (int nCount = 0; nCount < LIFE_NUM; nCount++)
+			{
+				//　プレイヤーのライフを減らす
+				if (m_pTargetPL != NULL)
+				{
+					if (m_pTargetPL->GetArmor() == false)
+					{
+						m_pTargetPL->GetLife(nCount)->Decrease(m_nDamage, m_user, true);
+						m_pTargetPL->GetLife(1)->Decrease(m_nDamage, m_user, true);
+
+
+						m_pTargetPL->SetMotion(MOTION_DAMAGE);
+					}
+
+					// プレイヤー情報の取得
+					switch (m_user)
+					{
+					case MISSILE_USER_PL1:
+						CGame::GetCamera(1)->SetTarget(false);
+						break;
+					case MISSILE_USER_PL2:
+						CGame::GetCamera(0)->SetTarget(false);
+						break;
+					}
+
+					// 爆発生成
+					C2dExplosion::Create(D3DXVECTOR3(m_pTargetPL->GetPos().x, m_pos.y, m_pTargetPL->GetPos().z),
+						D3DXVECTOR3(EXPLOSION_SIZE_X_2D, EXPLOSION_SIZE_Y_2D, EXPLOSION_SIZE_Z_2D));
+
+
+				}
+			}
+
+			m_nLife = 0;
+			return true;
+		}
+	}
+
+	for (int nCount = 0; nCount < MAX_NUM; nCount++)
+	{
+		CScene *pScene = NULL;
+
+		// 取得
+		pScene = CScene::GetScene(nCount);
+
+		if (pScene != NULL)
+		{
+			// オブジェクトタイプを取得
+			OBJTYPE type = pScene->GetObjType();
+
+			// モデルなら
+			if (type == OBJTYPE_MODEL)
+			{
+				// キャスト
+				CModel *pModel = (CModel*)pScene;
+				CModel::MODEL_TYPE type = pModel->GetType();
+
+				// 建物なら
+				if (type == CModel::MODEL_TYPE_OBJECT)
+				{
+					//位置の取得
+					D3DXVECTOR3 targetPos = pModel->GetPos();
+
+					// 当たり判定
+					if (targetPos.x >= m_pos.x - BILL_COLLISION_SIZE_X / 2 &&
+						targetPos.x <= m_pos.x + BILL_COLLISION_SIZE_X / 2 &&
+						targetPos.y >= m_pos.y - BILL_COLLISION_SIZE_Y / 2 &&
+						targetPos.y <= m_pos.y + BILL_COLLISION_SIZE_Y / 2 &&
+						targetPos.z >= m_pos.z - BILL_COLLISION_SIZE_Z / 2 &&
+						targetPos.z <= m_pos.z + BILL_COLLISION_SIZE_Z / 2)
+					{
+						for (int nCount = 0; nCount < LIFE_NUM; nCount++)
+						{
+							// 爆発生成
+							CSplash::Create(m_pos,
+								D3DXVECTOR3(EXPLOSION_SIZE_X_2D, EXPLOSION_SIZE_Y_2D, EXPLOSION_SIZE_Z_2D));
+						}
+
+						m_nLife = 0;
+						return true;
+					}
+				}
+			}
+
+		}
+	}
+	return false;
+}
+
+//=============================================================================
+//バレットクラスののベクトル計算処理
+//=============================================================================
+D3DXVECTOR3 CMissile::VectorMath(D3DXVECTOR3 TargetPos, float fSpeed)
+{
+
+	//2点間のベクトルを求める（終点[目標地点] - 始点[自身の位置]）
+	D3DXVECTOR3 Vector = TargetPos - m_pos;
+
+	//ベクトルの大きさを求める(√c^2 = a^2 * b^2)
+	float fVectorSize = D3DXVec3Length(&Vector);
+
+	//単位ベクトル用変数
+	D3DXVECTOR3 UnitVector;
+
+	//単位ベクトルを求める(元のベクトル / ベクトルの大きさ)
+	D3DXVec3Normalize(&UnitVector, &Vector);
+
+	//単位ベクトルを速度倍にして返す(UnitVector * fSpeed)
+	return	UnitVector * fSpeed;
+}
+
 
 //=============================================================================
 //ミサイルクラスの向きの設定処理

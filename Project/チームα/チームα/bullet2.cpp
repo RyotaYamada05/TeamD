@@ -17,6 +17,7 @@
 #include "explosion.h"
 #include "bill.h"
 #include "splash.h"
+#include "camera.h"
 
 //=============================================================================
 //マクロ定義
@@ -147,7 +148,8 @@ void CBullet2::Update(void)
 		if (m_nCounter <= FOLLOW_TIME_NONE)
 		{
 			//移動量の計算
-			m_move = VectorMath(m_pTargetPL->GetPos(), m_fSpeed);
+			m_move = VectorMath(D3DXVECTOR3(
+				m_pTargetPL->GetPos().x, m_pTargetPL->GetPos().y + 200.0f, m_pTargetPL->GetPos().z), m_fSpeed);
 		}
 		break;
 
@@ -156,7 +158,7 @@ void CBullet2::Update(void)
 		if (m_nCounter <= FOLLOW_TIME_BOMB)
 		{
 			m_move = VectorMath(D3DXVECTOR3(
-				m_pTargetPL->GetPos().x, m_pTargetPL->GetPos().y, m_pTargetPL->GetPos().z),
+				m_pTargetPL->GetPos().x, m_pTargetPL->GetPos().y + 200.0f, m_pTargetPL->GetPos().z),
 				m_fSpeed);
 		}
 
@@ -193,9 +195,18 @@ void CBullet2::Update(void)
 	//ライフが0以下の時
 	if (m_nLife <= 0)
 	{
-		// 衝撃を生成
-		CShock::Create(D3DXVECTOR3(m_pos.x, 0.0f, m_pos.z), D3DXVECTOR3(0.0f, 0.0f, 0.0f),
-			D3DXVECTOR3(SHOCK_SIZE_X, SHOCK_SIZE_Y, SHOCK_SIZE_Z));
+		switch (m_type)
+		{
+		case BULLET2_TYPE_NONE:
+			break;
+		case BULLET2_TYPE_BOMB:
+			CExplosion::Create(D3DXVECTOR3(m_pos.x, 0.0f, m_pos.z), D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+				D3DXVECTOR3(EXPLOSION_SIZE_X, EXPLOSION_SIZE_Y, EXPLOSION_SIZE_Z));
+			break;
+		default:
+
+			break;
+		}
 
 		//終了処理呼び出し
 		Uninit();
@@ -240,12 +251,12 @@ bool CBullet2::Collision(void)
 
 
 	// 当たり判定
-	if (targetPos.x >= m_pos.x - PLAYER_COLLISION_X / 2 &&
-		targetPos.x <= m_pos.x + PLAYER_COLLISION_X / 2 &&
-		targetPos.y >= m_pos.y - PLAYER_COLLISION_Y / 2 &&
-		targetPos.y <= m_pos.y + PLAYER_COLLISION_Y / 2 &&
-		targetPos.z >= m_pos.z - PLAYER_COLLISION_Z / 2 &&
-		targetPos.z <= m_pos.z + PLAYER_COLLISION_Z / 2)
+	if (targetPos.x +PLAYER_COLLISION_X / 2 >= m_pos.x - 50.0f &&
+		targetPos.x -PLAYER_COLLISION_X / 2 <= m_pos.x + 50.0f &&
+		targetPos.y +PLAYER_COLLISION_Y >= m_pos.y - 50.0f &&
+		targetPos.y -0.0f <= m_pos.y + 50.0f &&
+		targetPos.z +PLAYER_COLLISION_Z / 2 >= m_pos.z - 50.0f &&
+		targetPos.z -PLAYER_COLLISION_Z / 2 <= m_pos.z + 50.0f )
 	{
 		for (int nCount = 0; nCount < LIFE_NUM; nCount++)
 		{
@@ -278,12 +289,21 @@ bool CBullet2::Collision(void)
 					}
 				}
 
+				// プレイヤー情報の取得
+				switch (m_user)
+				{
+				case BULLET2_USER_PL1:
+					CGame::GetCamera(1)->SetTarget(false);
+					break;
+				case BULLET2_USER_PL2:
+					CGame::GetCamera(0)->SetTarget(false);
+					break;
+				}
+
 					// 爆発生成
-					C2dExplosion::Create(m_pos,
+					C2dExplosion::Create(D3DXVECTOR3(m_pTargetPL->GetPos().x, m_pos.y, m_pTargetPL->GetPos().z),
 						D3DXVECTOR3(EXPLOSION_SIZE_X_2D, EXPLOSION_SIZE_Y_2D, EXPLOSION_SIZE_Z_2D));
 
-					CExplosion::Create(D3DXVECTOR3(m_pos.x, 0.0f, m_pos.z), D3DXVECTOR3(0.0f, 0.0f, 0.0f),
-						D3DXVECTOR3(EXPLOSION_SIZE_X, EXPLOSION_SIZE_Y, EXPLOSION_SIZE_Z));
 		
 			}
 		}

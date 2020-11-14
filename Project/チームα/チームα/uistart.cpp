@@ -13,6 +13,8 @@
 #include "renderer.h"
 #include "game.h"
 #include "life.h"
+#include "player.h"
+
 //================================================
 //Ã“Iƒƒ“ƒo•Ï”éŒ¾
 //================================================
@@ -141,9 +143,13 @@ void CUiStart::Update(void)
 {
 	CScene2d::Update();
 
-	if (CLife::GetReadey() == false)
+	for (int nCount = 0; nCount < MAX_PLAYER; nCount++)
 	{
-		Uninit();
+		if (CGame::GetPlayer(nCount)->GetLife(nCount)->GetReadey() == false)
+		{
+			Uninit();
+			return;
+		}
 	}
 }
 
