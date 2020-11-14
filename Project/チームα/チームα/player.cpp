@@ -129,6 +129,7 @@ CPlayer::CPlayer()
 	m_nBombInter = 0;							// ボムのインターバル
 	m_nLaserInter = 0;;							// レーザーのインターバル
 	m_bAttack = false;
+	m_bWin = false;
 }
 
 //=============================================================================
@@ -175,6 +176,7 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 	m_nBombInter = 0;							// ボムのインターバル
 	m_nLaserInter = 0;;							// レーザーのインターバル
 	m_bAttack = false;
+	m_bWin = true;
 
 	for (int nCount = 0; nCount < MAX_PLAYER; nCount++)
 	{
@@ -356,6 +358,7 @@ void CPlayer::Update(void)
 
 		if (state == PLAYER_STATE_EXPLOSION)
 		{
+			m_bWin = true;
 			return;
 		}
 
@@ -368,6 +371,7 @@ void CPlayer::Update(void)
 
 		if (state == PLAYER_STATE_EXPLOSION)
 		{
+			m_bWin = true;
 			return;
 		}
 
@@ -2032,3 +2036,10 @@ bool CPlayer::GetArmor(void)
 	return m_bArmor;
 }
 
+//=============================================================================
+// 勝ちのフラグ
+//=============================================================================
+bool CPlayer::GetWin(void)
+{
+	return m_bWin;
+}

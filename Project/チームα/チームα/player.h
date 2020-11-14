@@ -177,6 +177,7 @@ public:
 	bool GetJump(void);
 	bool GetDraw(void);												// 引き分けのフラグ
 	bool GetArmor(void);											// 無敵フラグの情報
+	bool GetWin(void);													// 勝ちの情報
 private:
 	CScore *pScore;							// スコアの情報
 	CLife *m_pLife[LIFE_NUM];				// ライフのポインタ
@@ -213,6 +214,7 @@ private:
 	bool m_bDraw;								// 引き分けフラグ
 	bool m_bArmor;								// 無敵時間フラグ
 	bool m_bAttack;								// 攻撃フラグ
+	bool m_bWin;								// 勝利のフラグ
 	static int m_nPlayerAll;					// プレイヤーの数
 	D3DXMATRIX m_mtxWorld;						// ワールドマトリックス
 	CModelAnime *m_apModelAnime[MAX_MODEL_PARTS];	//モデルパーツ用のポインタ
