@@ -31,6 +31,7 @@ public:
 	{
 		PRIORITY_0 = 0,
 		PRIORITY_1,
+		PRIORITY_PLAYER,
 		PRIORITY_MAX	//�D�揇�ʂ̍ő吔
 	}PRIORITY;
 	//=========================================================================

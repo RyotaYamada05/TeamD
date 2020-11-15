@@ -29,6 +29,8 @@ CModel::CModel(int nPriority) : CScene(nPriority)
 	m_size = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
 	m_type = MODEL_TYPE_NONE;
 	m_pTexture = NULL;
+	//memset(m_apTexture, 0, sizeof(m_apTexture));
+	m_apTexture = NULL;
 }
 
 //=============================================================================
@@ -144,7 +146,7 @@ void CModel::Draw(void)
 	//現在のマテリアルを取得する
 	pDevice->GetMaterial(&matDef);
 
-	pDevice->SetTexture(0, m_pTexture);
+	
 
 	//マテリアルデータへのポインタを取得
 	pMat = (D3DXMATERIAL*)m_pBuffMat->GetBufferPointer();
@@ -157,9 +159,28 @@ void CModel::Draw(void)
 		//マテリアルの設定
 		pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
 
+		//建物オブジェクトの場合
+		if (m_type == MODEL_TYPE_OBJECT)
+		{
+			pDevice->SetTexture(0, m_apTexture[nCntMat]);
+		}
+		else
+		{
+			pDevice->SetTexture(0, m_pTexture);
+		}
+		
+
 		//モデルパーツの描画
 		m_pMesh->DrawSubset(nCntMat);
 
+		if (m_type == MODEL_TYPE_OBJECT)
+		{
+			pDevice->SetTexture(0, NULL);
+		}
+		else
+		{
+			pDevice->SetTexture(0, NULL);
+		}
 		// 透明度戻す
 		pMat[nCntMat].MatD3D.Diffuse.a = 1.0f;
 	}
@@ -167,7 +188,6 @@ void CModel::Draw(void)
 	//保持していたマテリアルを戻す
 	pDevice->SetMaterial(&matDef);
 
-	pDevice->SetTexture(0, NULL);
 }
 
 void CModel::BindModel(MODEL model)
@@ -183,6 +203,11 @@ void CModel::BindModel(MODEL model)
 void CModel::BindTexture(LPDIRECT3DTEXTURE9 pTexture)
 {
 	m_pTexture = pTexture;
+}
+
+void CModel::BindTexturePointer(LPDIRECT3DTEXTURE9 *ppTexture)
+{
+	m_apTexture = ppTexture;
 }
 
 //=============================================================================

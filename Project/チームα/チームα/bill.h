@@ -25,8 +25,8 @@
 #define BILL_POS_Z		(4000.0f)		// Z座標
 
 #define BILL_COLLISION_SIZE_X	(780)			// サイズ
-#define BILL_COLLISION_SIZE_Y	(480)			// サイズ
-#define BILL_COLLISION_SIZE_Z	(780)			// サイズ
+#define BILL_COLLISION_SIZE_Y	(400)			// サイズ
+#define BILL_COLLISION_SIZE_Z	(1000)			// サイズ
 
 //=============================================================================
 // クラス宣言
@@ -55,6 +55,7 @@ private:
 	static LPD3DXMESH m_pMesh;				// メッシュ情報へのポインタ
 	static LPD3DXBUFFER m_pBuffMat;			// マテリアル情報へのポインタ
 	static DWORD m_nNumMat;					// マテリアル情報の数
+	static LPDIRECT3DTEXTURE9 m_apTexture[10];	//テクスチャへのポインタ
 
 };
 #endif // ! _BILL_H_

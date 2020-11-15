@@ -24,6 +24,7 @@ CSound::PARAM CSound::m_aParam[SOUND_LABEL_MAX] =
 	{ "data/SE/bullet001.wav", 0 },				// 弾発射
 	{ "data/SE/turbo001.wav", 0 },				// ターボ発射
 	{ "data/SE/countdown.wav", 0 },				// カウントダウン音
+	{ "data/SE/Slash.wav", 0 },					// 斬撃音
 
 };
 //================================================
