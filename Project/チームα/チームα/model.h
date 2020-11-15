@@ -49,7 +49,7 @@ public:
 	void Draw(void);
 	void BindModel(MODEL model);
 	void BindTexture(LPDIRECT3DTEXTURE9 pTexture);
-
+	void BindTexturePointer(LPDIRECT3DTEXTURE9 *ppTexture);
 	LPD3DXMESH GetMesh(void)const;
 	LPD3DXBUFFER GetBuffMat(void)const;	//
 
@@ -70,6 +70,7 @@ private:
 	//=========================================================================
 
 	LPDIRECT3DTEXTURE9 m_pTexture;
+	LPDIRECT3DTEXTURE9 *m_apTexture;
 	LPD3DXMESH m_pMesh;			// メッシュ情報へのポインタ
 	LPD3DXBUFFER m_pBuffMat;	// マテリアル情報へのポインタ
 	DWORD m_nNumMat;			// マテリアル情報の数

@@ -25,6 +25,7 @@
 LPD3DXMESH CBill::m_pMesh = NULL;			// メッシュ情報へのポインタ
 LPD3DXBUFFER CBill::m_pBuffMat = NULL;	// マテリアル情報へのポインタ
 DWORD CBill::m_nNumMat = 0;				// マテリアル情報の数
+LPDIRECT3DTEXTURE9 CBill::m_apTexture[10] = {};
 
 //=============================================================================
 // クリエイト
@@ -49,7 +50,7 @@ HRESULT CBill::LoadModel(void)
 	LPDIRECT3DDEVICE9 pD3DDevice = CManager::GetRenderer()->GetDevice();
 
 	// モデルの生成
-	D3DXLoadMeshFromX("data/model/bill.x", D3DXMESH_SYSTEMMEM,
+	D3DXLoadMeshFromX("data/model/Building.x", D3DXMESH_SYSTEMMEM,
 		pD3DDevice,
 		NULL,
 		&m_pBuffMat,
@@ -57,6 +58,17 @@ HRESULT CBill::LoadModel(void)
 		&m_nNumMat,
 		&m_pMesh);
 
+	//マテリアル情報の解析
+	D3DXMATERIAL *materials = (D3DXMATERIAL*)m_pBuffMat->GetBufferPointer();
+
+	for (int nCntMat = 0; nCntMat < (int)m_nNumMat; nCntMat++)
+	{
+		//ファイルネームの取得
+		char *aXfileName = materials[nCntMat].pTextureFilename;
+
+		//テクスチャの読み込み
+		D3DXCreateTextureFromFile(pD3DDevice, aXfileName, &m_apTexture[nCntMat]);
+	}
 	// 正常終了
 	return S_OK;
 }
@@ -77,6 +89,15 @@ void CBill::Unload(void)
 	{
 		m_pBuffMat->Release();
 		m_pBuffMat = NULL;
+	}
+
+	for (int nCntTexture = 0; nCntTexture < 10; nCntTexture++)
+	{
+		if (m_apTexture[nCntTexture] != NULL)
+		{
+			m_apTexture[nCntTexture]->Release();
+			m_apTexture[nCntTexture] = NULL;
+		}
 	}
 }
 
@@ -113,6 +134,7 @@ HRESULT CBill::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 	//モデル情報を設定
 	CModel::BindModel(model);
 
+	BindTexturePointer(m_apTexture);
 	//位置の設定
 	m_pos = pos;
 

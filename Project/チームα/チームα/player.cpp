@@ -358,6 +358,7 @@ void CPlayer::Update(void)
 
 	//アニメーションの更新処理
 	UpdateMotion();
+
 	// 終了フラグ
 	switch (m_nPlayerNum)
 	{
@@ -367,7 +368,13 @@ void CPlayer::Update(void)
 
 		if (state == PLAYER_STATE_EXPLOSION || state == PLAYER_STATE_DRAW)
 		{
-			m_bWin = true;
+			if (m_bWin == false)
+			{
+				m_bWin = true;
+
+				SetMotion(MOTION_WIN);
+			}
+			
 			return;
 		}
 	}
@@ -403,7 +410,12 @@ void CPlayer::Update(void)
 		if (fLife <= 0.0f && m_pLife[0]->GetReadey() == false)
 		{
 			// 爆発状態
-			m_state = PLAYER_STATE_EXPLOSION;
+			if (m_state != PLAYER_STATE_EXPLOSION)
+			{
+				m_state = PLAYER_STATE_EXPLOSION;
+				SetMotion(MOTION_LOSE);
+			}
+			
 
 			//Uninit();
 			return;
@@ -549,6 +561,10 @@ void CPlayer::UpdateMotion(void)
 						SetMotion(MOTION_IDOL);
 					}
 				}
+				else
+				{
+					return;
+				}
 			}
 		}
 	}
@@ -691,7 +707,7 @@ void CPlayer::PlayerState(void)
 		// 爆発状態
 		m_nStateCounter++;
 
-		SetMotion(MOTION_LOSE);
+		
 		// 勝ち負けロゴの出現
 		if (m_bWinLose == false)
 		{
@@ -858,8 +874,10 @@ void CPlayer::PlayerState(void)
 			}
 			break;
 	case PLAYER_STATE_DRAW:
+		
 		if (m_bDraw == false)
 		{
+			SetMotion(MOTION_WIN);
 			m_bDraw = true;
 		}
 		switch (m_nPlayerNum)
@@ -1104,16 +1122,35 @@ void CPlayer::TimeLimit(void)
 				{
 					// 1Pが買ったら
 					CPlayer *pPlayer = CGame::GetPlayer(1);
-					pPlayer->SetState(PLAYER_STATE_EXPLOSION);
 
+					if (pPlayer->GetState() != PLAYER_STATE_EXPLOSION)
+					{
+						pPlayer->SetState(PLAYER_STATE_EXPLOSION);
+
+						//相手は負けモーションを再生
+						pPlayer->SetMotion(MOTION_LOSE);
+
+						//自分は勝利モーションを再生
+						SetMotion(MOTION_WIN);
+					}
+					
 					return;
 				}
 				else if (fSizeX[0] < fSizeX[1])
 				{
 					// 2Pが買ったら
 					CPlayer *pPlayer = CGame::GetPlayer(0);
-					pPlayer->SetState(PLAYER_STATE_EXPLOSION);
 
+					if (pPlayer->GetState() != PLAYER_STATE_EXPLOSION)
+					{
+						pPlayer->SetState(PLAYER_STATE_EXPLOSION);
+
+						//相手は負けモーションを再生
+						pPlayer->SetMotion(MOTION_LOSE);
+
+						//自分は勝利モーションを再生
+						SetMotion(MOTION_WIN);
+					}
 					return;
 				}
 				else
@@ -1198,6 +1235,7 @@ void CPlayer::Walk(void)
 		{
 			//攻撃モーションを再生
 			SetMotion(MOTION_ATTACK);
+			pSound->Play(CSound::SOUND_LABEL_SE_SLASH);
 		}
 	}
 	//入力が存在する
@@ -1595,7 +1633,6 @@ void CPlayer::beam(void)
 	// Lキーを押したとき・コントローラのR1を押したとき
 	if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_R_TRIGGER, m_nPlayerNum) && m_bJump == false || pKeyboard->GetTrigger(DIK_L) && m_bJump == false )
 	{
-		SetMotion(MOTION_BEAM);
 		switch (m_nPlayerNum)
 		{
 		case 0:
@@ -1800,6 +1837,8 @@ void CPlayer::Laser(void)
 			if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_L2_TRIGGER, m_nPlayerNum) && m_bJump == false
 				|| pKeyboard->GetTrigger(DIK_M) && m_bJump == false)
 			{
+				SetMotion(MOTION_BEAM);
+
 				m_nLaserInter = 0;
 
 				switch (m_nPlayerNum)
