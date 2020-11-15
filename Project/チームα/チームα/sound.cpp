@@ -167,7 +167,7 @@ HRESULT CSound::Init(HWND hWnd)
 		m_apSourceVoice[nCntSound]->SubmitSourceBuffer(&buffer);
 
 		// オーディオバッファの登録
-		m_apSourceVoice[nCntSound]->SetVolume(0.01f);
+	//	m_apSourceVoice[nCntSound]->SetVolume(0.01f);
 
 		// ファイルをクローズ
 		CloseHandle(hFile);

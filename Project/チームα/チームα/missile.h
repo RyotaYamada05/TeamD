@@ -16,7 +16,7 @@
 //É}ÉNÉçíËã`
 //=============================================================================
 #define MAX_MODEL_MISSILE_PARTS 2
-#define MISSILE_SPPED			(50)
+#define MISSILE_SPPED			(45)
 
 #define MISSILE_SIZE_X			(3.0f)
 #define MISSILE_SIZE_Y			(3.0f)

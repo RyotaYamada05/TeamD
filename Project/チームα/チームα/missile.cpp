@@ -24,8 +24,8 @@
 //マクロ定義
 //=============================================================================
 #define MISSILE_XFAILE_NAME "data/Text/motionMissile.txt"	//ミサイルのデータファイルパス
-#define FOLLOW_TIME_MISSILE		(30)						// ミサイルの追従
-#define MISSILE_LIFE			(1000)						// ミサイルのライフ
+#define FOLLOW_TIME_MISSILE		(110)						// ミサイルの追従
+#define MISSILE_LIFE			(300)						// ミサイルのライフ
 #define MISSILE_ATTACK			(100)
 
 //=============================================================================
@@ -197,6 +197,9 @@ void CMissile::Update(void)
 			//移動量の計算
 			m_move = VectorMath(D3DXVECTOR3(
 				m_pTargetPL->GetPos().x, m_pTargetPL->GetPos().y + 200.0f, m_pTargetPL->GetPos().z), m_fSpeed);
+		
+			// 高さの調整
+			m_move.y = m_fHeight;
 		}
 	}
 

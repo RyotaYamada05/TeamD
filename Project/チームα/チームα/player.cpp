@@ -39,7 +39,7 @@
 // マクロ定義
 //=============================================================================
 #define PLAYER_SPEED			(20.0f)				// プレイヤーの移動量
-#define PLAYER_DUSH				(35.0f)				// プレイヤーのダッシュ
+#define PLAYER_DUSH				(37.5f)				// プレイヤーのダッシュ
 #define PLAYER_DUSH_INTER		(80)				// ダッシュができる長さ
 #define DUSH_NONE_TIME			(50)				// ダッシュできない時間
 #define PLAYER_JUMP				(10.0f)				// ジャンプの処理
@@ -1173,44 +1173,47 @@ void CPlayer::TimeLimit(void)
 //=============================================================================
 void CPlayer::PlayerControl()
 {
-	if (m_pLife[0]->GetReadey() == false)
+	if (m_MotionState != MOTION_DAMAGE)
 	{
-		// ダッシュしていないとき
-		if (m_bDush == false)
+		if (m_pLife[0]->GetReadey() == false)
 		{
-			// プレイヤーの移動処理
-			Walk();
-		}
+			// ダッシュしていないとき
+			if (m_bDush == false)
+			{
+				// プレイヤーの移動処理
+				Walk();
+			}
 
-		// ジャンプの処理
-		Jump();
+			// ジャンプの処理
+			Jump();
 
-		// 急降下の処理
-		Fall();
+			// 急降下の処理
+			Fall();
 
-		// 回避の処理
-		Dush();
+			// 回避の処理
+			Dush();
 
-		// ビームの処理
-		beam();
+			// ビームの処理
+			beam();
 
-		switch (m_nPlayerNum)
-		{
-		case 0:
-			// ボムの処理
-			bomb();
-			break;
+			switch (m_nPlayerNum)
+			{
+			case 0:
+				// ボムの処理
+				bomb();
+				break;
 
-		case 1:
-			// ミサイルの処理
-			Missile();
-			break;
-		}
+			case 1:
+				// ミサイルの処理
+				Missile();
+				break;
+			}
 
-		if (CGame::GetCamera(m_nPlayerNum)->GetTargetBool() == true)
-		{
-			// レーザーの処理
-			Laser();
+			if (CGame::GetCamera(m_nPlayerNum)->GetTargetBool() == true)
+			{
+				// レーザーの処理
+				Laser();
+			}
 		}
 	}
 }
