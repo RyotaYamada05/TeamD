@@ -37,6 +37,7 @@ CUiEnd* CUiEnd::Create(D3DXVECTOR3 pos, D3DXVECTOR3 size, UIENDTYPE type)
 	pUiStart->Init(pos, size, type);
 
 	return pUiStart;
+
 }
 
 //================================================

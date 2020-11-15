@@ -13,11 +13,18 @@ CSound::PARAM CSound::m_aParam[SOUND_LABEL_MAX] =
 	//BGM
 	{ "data/BGM/title001.wav", -1 },			// タイトルBGM
 	{ "data/BGM/game001.wav", -1 },				// ゲームBGM
-	//{ "data/BGM/game001.wav", -1 },				// BGM2
-	//												//SE
-	{ "data/SE/PressEntre.wav", 0 },				// 弾発射音
-	{ "data/SE/walk.wav", 0 },			// ヒット音
-	//{ "data/SE/PressEntre.wav", 0 },			// 爆発音
+	//{ "data/BGM/game001.wav", -1 },			// リザルト
+	{ "data/SE/playerdeath.wav", -1 },			// 爆発音												//SE
+	{ "data/SE/PressEntre.wav", 0 },			// PressEnter
+	{ "data/SE/walk.wav", 0 },					//足音音
+	{ "data/SE/bomb.wav", 0 },					// 弾があたったときの音
+	{ "data/SE/Fall.wav", 0 },					// 着地音
+	{ "data/SE/jump.wav", 0 },					// ジャンプ
+	{ "data/SE/bullet.wav", 0 },				// 弾発射
+	{ "data/SE/bullet001.wav", 0 },				// 弾発射
+	{ "data/SE/turbo001.wav", 0 },				// ターボ発射
+	{ "data/SE/countdown.wav", 0 },				// カウントダウン音
+
 };
 //================================================
 //コンストラクタ
@@ -155,7 +162,9 @@ HRESULT CSound::Init(HWND hWnd)
 		// オーディオバッファの登録
 		m_apSourceVoice[nCntSound]->SubmitSourceBuffer(&buffer);
 
+		// オーディオバッファの登録
 		m_apSourceVoice[nCntSound]->SetVolume(0.01f);
+
 		// ファイルをクローズ
 		CloseHandle(hFile);
 	}

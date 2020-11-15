@@ -56,10 +56,10 @@ public:
 	void LifeStart(void);
 	static void SetReady(bool bReady);
 	static bool GetReadey(void);
-
+	float GetLife(void);
+	bool GetbLife(void);
 	//bool GetLife(void);
 private:
-
 	static LPDIRECT3DTEXTURE9 m_apTexture[LIFE_TYPE];	// テクスチャーのポインタ
 	D3DXVECTOR3 m_pos;									// 位置
 	D3DXVECTOR3 m_size;									// サイズ
@@ -73,6 +73,7 @@ private:
 	bool m_bLife;										// 減らす処理を使用するかしないか
 	static bool m_bStart;								// スタートの処理を使用するかしないか
 	bool m_bEnd;
-
+	float m_fLife;										// ライフ
+	bool m_bArmor;
 };
 #endif // ! _LIFE_H_

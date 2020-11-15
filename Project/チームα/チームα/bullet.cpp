@@ -10,12 +10,12 @@
 #include "life.h"
 #include "2d_explosion.h"
 #include "shock.h"
-
+#include "manager.h"
 //=============================================================================
 //マクロ定義
 //=============================================================================
 #define BULLET_LIFE 100	//バレットライフ 
-#define BULLET_ATK 20	//攻撃力
+#define BULLET_ATK 50	//攻撃力
 #define BULLET_SPEED 50.0f	//速度
 
 //=============================================================================
@@ -186,6 +186,7 @@ bool CBullet::Collision(void)
 
 			m_pTargetPL->GetLife(nCount)->Decrease(50, m_user, true);
 		}
+
 		C2dExplosion::Create(m_pos,
 			D3DXVECTOR3(EXPLOSION_SIZE_X_2D, EXPLOSION_SIZE_Y_2D, EXPLOSION_SIZE_Z_2D));
 		return true;

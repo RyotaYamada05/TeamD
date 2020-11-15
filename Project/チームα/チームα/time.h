@@ -21,7 +21,7 @@ class CNumber;
 //=============================================================================
 // マクロ定義
 //=============================================================================
-#define TIME_LIMIT		(1500.0f)	// 制限時間 8000
+#define TIME_LIMIT		(8000.0f)	// 制限時間	8000
 #define MAX_TIME		(4)			// 桁数
 #define TIME_S_SIZE_X	(50.0f)		// 数字のＸサイズ
 #define TIME_S_SIZE_Y	(50.0f)		// 数字のＹサイズ
@@ -40,7 +40,7 @@ class CNumber;
 class CTime : public CScene
 {
 public:
-	CTime();
+	CTime(int nPriority = PRIORITY_0);
 	~CTime();
 	static CTime *Create(D3DXVECTOR3 pos, const D3DXVECTOR3 size);
 	HRESULT Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size);

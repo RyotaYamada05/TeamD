@@ -22,6 +22,7 @@
 //================================================
 LPDIRECT3DTEXTURE9 CLockon::m_pTexture = 0;
 int CLockon::m_nLockon = 0;
+
 //================================================
 //クリエイト処理
 //================================================
@@ -149,35 +150,25 @@ void CLockon::Update(void)
 	//ロックオン
 	if (m_type == LOCKONTYPE_FAST_PLAYER)
 	{
-		CCamera *pCamera = CGame::GetCamera(0);
-
-		if (pCamera != NULL)
+		if ((CGame::GetCamera(0)->GetTargetBool() == true))
 		{
-			if ((pCamera->GetTargetBool() == true))
-			{
-				col.a = 1.0f;
-			}
-			else
-			{
-				col.a = 0.0f;
-			}
+			col.a = 1.0f;
+		}
+		else
+		{
+			col.a = 0.0f;
 		}
 	}
 
 	if (m_type == LOCKONTYPE_SECOND_PLAYER)
 	{
-		CCamera *pCamera = CGame::GetCamera(1);
-
-		if (pCamera != NULL)
+		if ((CGame::GetCamera(1)->GetTargetBool() == true))
 		{
-			if ((pCamera->GetTargetBool() == true))
-			{
-				col.a = 1.0f;
-			}
-			else
-			{
-				col.a = 0.0f;
-			}
+			col.a = 1.0f;
+		}
+		else
+		{
+			col.a = 0.0f;
 		}
 	}
 	//色の設定

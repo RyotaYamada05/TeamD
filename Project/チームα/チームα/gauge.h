@@ -23,7 +23,7 @@
 class CGauge : public CScene
 {
 public:
-	CGauge();
+	CGauge(int nPriority = PRIORITY_0);
 	~CGauge();
 	static CGauge* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 size);
 	HRESULT Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size);
@@ -38,7 +38,6 @@ public:
 	D3DXVECTOR3 GetPos(void)const { return m_pos; }
 	D3DXVECTOR3 GetSize(void) { return m_size; }
 	D3DXCOLOR   GetCol(void) { return m_col; }
-
 private:
 
 	LPDIRECT3DTEXTURE9 m_pTextuer;       // テクスチャへのポインタ

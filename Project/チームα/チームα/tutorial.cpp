@@ -26,7 +26,7 @@ LPDIRECT3DTEXTURE9 CTutorial::m_pTexture[1] = {};
 //=======================================================================================
 // タイトルクラスのコンストラクタ
 //=======================================================================================
-CTutorial::CTutorial()
+CTutorial::CTutorial(int nPriority) : CScene(nPriority)
 {
 	m_pScene = NULL;
 }
@@ -59,7 +59,7 @@ HRESULT CTutorial::Load(void)
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
 	//テクスチャの読み込み
-	D3DXCreateTextureFromFile(pDevice, "data/Texture/bg001.png", &m_pTexture[0]);
+	D3DXCreateTextureFromFile(pDevice, "data/Texture/tutorial.png", &m_pTexture[0]);
 	return S_OK;
 }
 
@@ -94,7 +94,7 @@ void CTutorial::Uninit(void)
 
 
 	//オブジェクトの破棄
-	Release();
+	SetDeathFlag();
 }
 
 //=======================================================================================
@@ -118,6 +118,7 @@ void CTutorial::Update(void)
 		CFade *pFade = CManager::GetFade();
 		pFade->SetFade(CManager::MODE_TYPE_GAME);
 	}
+
 }
 
 //=======================================================================================

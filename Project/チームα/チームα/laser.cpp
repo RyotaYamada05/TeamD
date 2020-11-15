@@ -44,6 +44,7 @@ CLaser * CLaser::Create(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXVECTOR3 rot, D3DX
 		pLaser->Init(pos, move, size, user);	// 初期化情報
 		pLaser->SetMove(move);					// 移動量
 		pLaser->SetLife(LASER_LIFE);			// ライフの情報
+		pLaser->SetRot(rot);					// 角度
 		pLaser->SetRot(D3DXVECTOR3(rot.x, rot.y + D3DXToRadian(180), rot.z));		// 角度
 	}
 
@@ -88,6 +89,8 @@ HRESULT CLaser::Init(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXVECTOR3 size, BULLET
 	CBullet2::Init(pos, size, user, LASER_SPEED);		// 初期化情報
 	SetRot(D3DXVECTOR3(0.0f, 0.0f, 0.0f));				// 向き
 	m_fSizeZ = size.z;									// サイズの取得
+	SetType(BULLET2_TYPE_LASER);							// タイプの設定
+
 	return S_OK;
 }
 

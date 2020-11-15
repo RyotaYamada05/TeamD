@@ -1651,7 +1651,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Pictures\\Saved Pictures\\Saved Pictures\\ipad-2592x2592-wallpaper_01601.jpg";
+    "Buildings/01_biru jimen.jpg";
    }
   }
   Material {
@@ -1660,7 +1660,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Pictures\\Saved Pictures\\Saved Pictures\\ipad-2592x2592-wallpaper_01601.jpg";
+    "Buildings/01_biru jimen.jpg";
    }
   }
   Material {
@@ -1669,7 +1669,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Pictures\\Saved Pictures\\Saved Pictures\\ipad-2592x2592-wallpaper_01601.jpg";
+    "Buildings/01_biru jimen.jpg";
    }
   }
   Material {
@@ -1678,7 +1678,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Pictures\\Saved Pictures\\Saved Pictures\\28345366_164512861000_2.jpg";
+    "Buildings/01_biru jimen.jpg";
    }
   }
   Material {
@@ -1687,7 +1687,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Pictures\\Saved Pictures\\Saved Pictures\\28345366_164512861000_2.jpg";
+    "Buildings/01_biru jimen.jpg";
    }
   }
   Material {
@@ -1696,7 +1696,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Pictures\\Saved Pictures\\Saved Pictures\\OIP (5).jpg";
+    "Buildings/01_biru jimen.jpg";
    }
   }
   Material {
@@ -1705,7 +1705,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Pictures\\Saved Pictures\\Saved Pictures\\Fuller.jpg";
+    "Buildings/01_biru jimen.jpg";
    }
   }
   Material {
@@ -1714,7 +1714,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Pictures\\Saved Pictures\\Saved Pictures\\Fuller.jpg";
+    "Buildings/01_biru jimen.jpg";
    }
   }
   Material {
@@ -1723,7 +1723,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Pictures\\Saved Pictures\\Saved Pictures\\Fuller.jpg";
+    "Buildings/01_biru jimen.jpg";
    }
   }
   Material {
@@ -1732,7 +1732,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Pictures\\Saved Pictures\\Saved Pictures\\Fuller.jpg";
+    "Buildings/01_biru jimen.jpg";
    }
   }
   Material {
@@ -1741,7 +1741,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Pictures\\Saved Pictures\\Saved Pictures\\Fuller.jpg";
+    "Buildings/01_biru jimen.jpg";
    }
   }
   Material {
@@ -1750,7 +1750,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Pictures\\Saved Pictures\\Saved Pictures\\Fuller.jpg";
+    "Buildings/01_biru jimen.jpg";
    }
   }
   Material {
@@ -1759,7 +1759,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Pictures\\Saved Pictures\\Saved Pictures\\Fuller.jpg";
+    "Buildings/01_biru jimen.jpg";
    }
   }
   Material {
@@ -1768,7 +1768,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Pictures\\Saved Pictures\\Saved Pictures\\Fuller.jpg";
+    "Buildings/01_biru jimen.jpg";
    }
   }
   Material {
@@ -1777,7 +1777,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Pictures\\Saved Pictures\\Saved Pictures\\Fuller.jpg";
+    "Buildings/01_biru jimen.jpg";
    }
   }
   Material {
@@ -1786,7 +1786,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Pictures\\Saved Pictures\\Saved Pictures\\Fuller.jpg";
+    "Buildings/01_biru jimen.jpg";
    }
   }
   Material {
@@ -1795,7 +1795,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Pictures\\Saved Pictures\\Saved Pictures\\Fuller.jpg";
+    "Buildings/01_biru jimen.jpg";
    }
   }
  }

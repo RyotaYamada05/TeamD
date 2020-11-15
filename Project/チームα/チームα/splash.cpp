@@ -106,7 +106,7 @@ void CSplash::Draw(void)
 	pDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_CURRENT);
 
 	// かぶさらないようにする　(Zバッファ)
-	//pDevice->SetRenderState(D3DRS_ZENABLE, false);
+//	pDevice->SetRenderState(D3DRS_ZENABLE, false);
 
 	// 加算合成を行う
 	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);			// aデスティネーションカラー
@@ -125,19 +125,25 @@ void CSplash::Draw(void)
 	pDevice->SetRenderState(D3DRS_AMBIENT, 0xffffffff);
 	pDevice->LightEnable(0, FALSE);
 
+	// アルファテストを有力化
+	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+
 	// アルファテスト基準値の設定
-	pDevice->SetRenderState(D3DRS_ALPHAREF, 100);
+	pDevice->SetRenderState(D3DRS_ALPHAREF, 75);
 
 	// 2Dポリゴン描画処理
 	CBillboard::Draw();
 
-	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);	// aデスティネーションカラー
+	// アルファテストを有力化
+	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
 
 	// アルファテスト基準値の設定
 	pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
 
+	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);	// aデスティネーションカラー
+
 	// Zバッファ戻す
-	//pDevice->SetRenderState(D3DRS_ZENABLE, true);
+//	pDevice->SetRenderState(D3DRS_ZENABLE, true);
 
 	pDevice->SetRenderState(D3DRS_AMBIENT, ambient);
 	pDevice->LightEnable(0, TRUE);

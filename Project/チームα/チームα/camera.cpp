@@ -30,12 +30,14 @@
 #define WIN_END_ROT_VERTICAL		(D3DXToRadian(360.0f+180.0f))	//勝利時縦軸回転の終了角
 #define WIN_END_ROT_HORIZONTAL		(D3DXToRadian(100.0f))	//勝利時横軸回転の終了角
 #define WIN_END_DISTANCE			(500.0f)				//勝利時の終了距離
-#define WIN_ROT_MOVE_SUBTRACTION	(0.1f)					//勝利時の横軸回転角度変化量
+#define WIN_ROT_MOVE_SUBTRACTION	(0.2f)					//勝利時の横軸回転角度変化量
 
-#define LOSE_START_ROT_VERTICAL		(D3DXToRadian(0.0f))	//敗北時縦軸回転の開始角
+#define LOSE_START_ROT_VERTICAL		(D3DXToRadian(180.0f))	//敗北時縦軸回転の開始角
 #define LOSE_START_ROT_HORIZONTAL	(D3DXToRadian(60.0f))	//敗北時横軸回転の開始角
 #define LOSE_START_DISTANCE			(500.0f)				//敗北時の開始距離
 #define LOSE_END_DISTANCE			(1000.0f)				//敗北時の終了距離
+#define LOSE_MOVE_SUBTRACTION		(0.2f)					//敗北時の横軸回転角度変化量
+
 #define CAMERA_MIN_Fφ				(D3DXToRadian(10.0f))	//カメラの最小角
 #define CAMERA_MAX_Fφ				(D3DXToRadian(170.0f))	//カメラの最大角
 #define CAMERA_MIN_HIGHT			(2.0f)					//カメラの最低高度
@@ -78,7 +80,10 @@ CCamera::CCamera()
 	m_nCameraNum = m_nCameraAll++;				// カメラの番号
 	m_bTarget = false;							//ターゲットoff
 	m_state = CAMERASTATE_NONE;					//ステータス初期化
-	memset(m_pLockon, 0, sizeof(m_pLockon)); 
+	memset(m_pLockon, 0, sizeof(m_pLockon));
+	m_nWinPlayer = -1;							//Winプレイヤー番号
+	m_fDifference = 0;	//勝利カメラ回転開始角から終了角の差
+	m_fEndVertical = 0;	//勝利カメラ終了角度
 }
 
 //=============================================================================
@@ -151,7 +156,6 @@ void CCamera::Uninit(void)
 			m_pLockon[nCount] = NULL;
 		}
 	}
-
 }
 
 //=============================================================================
@@ -165,56 +169,98 @@ void CCamera::Update(void)
 	//キーボードクラス情報の取得
 	CInputKeyboard *pKeyInput = CManager::GetKeyboard();
 
-	D3DXVECTOR3 pPlayerPos[MAX_PLAYER];	//プレイヤー位置
+	D3DXVECTOR3 PlayerPos[MAX_PLAYER];	//プレイヤー位置
 	D3DXVECTOR3 PlayerRot[MAX_PLAYER];	//プレイヤー角度
-
-	if (pKeyInput->GetTrigger(DIK_P))
-	{
-		//勝敗決定時
-		m_bTarget = false;					//ターゲット機能off
-		NomalUpdate(pPlayerPos, PlayerRot);	//変更の反映
-		m_state = CAMERASTATE_END;			//ステータス変更
-		m_fφ = 0;							//初期化
-		m_fθ = 0;
-		m_fDistance = 0;
-		bPlayerWin = true;					//勝敗決定
-	}
+	CPlayer::PLAYER_STATE PlayerState[MAX_PLAYER];
+	bool PlayerWin[MAX_PLAYER];
 
 	if (CGame::GetPlayer(m_nCameraNum) != NULL)
 	{
 		//プレイヤー1位置取得
-
-		pPlayerPos[m_nCameraNum] = CGame::GetPlayer(m_nCameraNum)->GetPos();
+		PlayerPos[m_nCameraNum] = CGame::GetPlayer(m_nCameraNum)->GetPos();
 		//プレイヤー1角度取得
 		PlayerRot[m_nCameraNum] = CGame::GetPlayer(m_nCameraNum)->GetRot();
 
+		PlayerState[m_nCameraNum] = CGame::GetPlayer(m_nCameraNum)->GetState();
+
+		PlayerWin[m_nCameraNum] = CGame::GetPlayer(m_nCameraNum)->GetWin();
+
 		int nCameraSecond = 0;	//プレイヤー2カメラ保存用
 
-		//カメラ番号から敵のカメラ番号の設定
+								//カメラ番号から敵のカメラ番号の設定
 		if (m_nCameraNum == 0)
 		{
-
 			nCameraSecond = 1;
 		}
 		else
 		{
 			nCameraSecond = 0;
 		}
-		//プレイヤー2角度取得
 
-		pPlayerPos[nCameraSecond] = CGame::GetPlayer(nCameraSecond)->GetPos();
+		//プレイヤー2角度取得
+		PlayerPos[nCameraSecond] = CGame::GetPlayer(nCameraSecond)->GetPos();
 		//プレイヤー2角度取得
 		PlayerRot[nCameraSecond] = CGame::GetPlayer(nCameraSecond)->GetRot();
 
+		PlayerState[nCameraSecond] = CGame::GetPlayer(nCameraSecond)->GetState();
 
-		if (m_state == CAMERASTATE_NORMAL)	//試合中		{
-			NomalUpdate(pPlayerPos, PlayerRot);
-	}
-	else if (m_state == CAMERASTATE_END)	//試合終了時
-	{
+		switch (m_state)
+		{
+		case CAMERASTATE_NONE:
+			break;
+		case CAMERASTATE_NORMAL://通常
 
-		nWinPlayer = 0;
-		EndUpdate(pPlayerPos, PlayerRot, nWinPlayer);
+			if (PlayerWin[m_nCameraNum] == true)
+			{
+				//勝敗決定時
+				m_bTarget = false;					//ターゲット機能off
+				m_fφ = 0;							//初期化
+				m_fθ = 0;
+				m_fDistance = 0;
+				m_nWinPlayer = m_nCameraNum;
+				m_state = CAMERASTATE_END;			//ステータス変更
+			}
+
+			if (PlayerState[m_nCameraNum] == CPlayer::PLAYER_STATE_EXPLOSION)
+			{
+				//勝敗決定時
+				m_bTarget = false;					//ターゲット機能off
+				m_fφ = 0;							//初期化
+				m_fθ = 0;
+				m_fDistance = 0;
+				m_state = CAMERASTATE_END;			//ステータス変更
+			}
+
+			NomalUpdate(PlayerPos, PlayerRot);
+			break;
+		case CAMERASTATE_END://終了
+
+			EndUpdate(PlayerPos, PlayerRot, m_nWinPlayer);
+
+			if (PlayerState[m_nCameraNum] == CPlayer::PLAYER_STATE_NONE && PlayerWin[m_nCameraNum] == false)
+			{
+				m_fDistance = DISTANCE;
+				m_fθ = CAMERA_DEFAULT_Fθ;
+				m_fφ = PlayerRot[m_nCameraNum].y;
+				m_state = CAMERASTATE_NORMAL;			//ステータス変更
+
+				m_posVDest.x = PlayerPos[m_nCameraNum].x + m_fDistance * sinf(m_fθ) * sinf(m_fφ);	//カメラ位置X設定
+				m_posVDest.y = PlayerPos[m_nCameraNum].y + PLAYER_HEIGHT + m_fDistance * cosf(m_fθ);				//カメラ位置Y設定
+				m_posVDest.z = PlayerPos[m_nCameraNum].z + m_fDistance * sinf(m_fθ) * cosf(m_fφ);	//カメラ位置Z設定
+
+				m_posRDest = D3DXVECTOR3(PlayerPos[m_nCameraNum].x, PlayerPos[m_nCameraNum].y + PLAYER_HEIGHT, PlayerPos[m_nCameraNum].z);	//注視点設定
+
+				m_nWinPlayer = -1;
+																																			//設定値の反映
+				m_posV += (m_posVDest - m_posV);
+				m_posR += (m_posRDest - m_posR);
+			}
+			break;
+		case CAMERASTATE_MAX://STATEの最大数
+			break;
+		default:
+			break;
+		}
 	}
 }
 
@@ -223,16 +269,6 @@ void CCamera::Update(void)
 //=============================================================================
 void CCamera::EndUpdate(D3DXVECTOR3 PlayerPos[], D3DXVECTOR3 PlayerRot[], int nWinPlayer)
 {
-	//キーボードクラス情報の取得
-	CInputKeyboard *pKeyInput = CManager::GetKeyboard();
-
-	// ジョイパッドの取得
-	DIJOYSTATE js = CInputJoypad::GetStick(m_nCameraNum);
-
-	static float fDifference = 0;	//勝利カメラ回転開始角から終了角の差
-	static float fEndVertical = 0;	//勝利カメラ終了角度
-
-
 	if (nWinPlayer == m_nCameraNum)	//勝利カメラ処理
 	{
 		//初期化後なら
@@ -241,95 +277,87 @@ void CCamera::EndUpdate(D3DXVECTOR3 PlayerPos[], D3DXVECTOR3 PlayerRot[], int nW
 			m_fφ = PlayerRot[m_nCameraNum].y + WIN_START_ROT_VERTICAL;												//プレイヤーの角度から横回転開始角度設定
 			m_fθ = WIN_START_ROT_HORIZONTAL;																		//縦回転開始角度設定
 			m_fDistance = WIN_START_DISTANCE;																		//距離の開始位置設定
-			fDifference = WIN_END_ROT_VERTICAL - WIN_START_ROT_VERTICAL;				//プレイヤーの角度プラス開始終了角度の差
-			fEndVertical = PlayerRot[m_nCameraNum].y + WIN_END_ROT_VERTICAL;										//終了角度
+			m_fDifference = WIN_END_ROT_VERTICAL - WIN_START_ROT_VERTICAL;				//プレイヤーの角度プラス開始終了角度の差
+			m_fEndVertical = PlayerRot[m_nCameraNum].y + WIN_END_ROT_VERTICAL;										//終了角度
 		}
 
 		//変化量プラス処理
-		m_fφ += fDifference / 100.0f * WIN_ROT_MOVE_SUBTRACTION;
+		m_fφ += m_fDifference / 100.0f * WIN_ROT_MOVE_SUBTRACTION;
 		m_fθ += (WIN_END_ROT_HORIZONTAL - WIN_START_ROT_HORIZONTAL) / 100.0f * WIN_ROT_MOVE_SUBTRACTION;
 		m_fDistance -= (WIN_START_DISTANCE - WIN_END_DISTANCE) / 100.0f * WIN_ROT_MOVE_SUBTRACTION;
 
-
 		//下限上限設定
-		if (m_fφ >= fEndVertical) {
-			m_fφ = fEndVertical;			//限界値に戻す		}
-
-			if (m_fθ >= WIN_END_ROT_HORIZONTAL)
-			{
-
-				m_fθ = WIN_END_ROT_HORIZONTAL;	//限界値に戻す
-			}
-
-			if (m_fDistance <= WIN_END_DISTANCE) {
-
-				m_fDistance = WIN_END_DISTANCE;	//限界値に戻す
-			}
-
-			m_posVDest.x = PlayerPos[m_nCameraNum].x + m_fDistance * sinf(m_fθ) * sinf(m_fφ);	//カメラ位置X設定
-			m_posVDest.y = PlayerPos[m_nCameraNum].y + m_fDistance * cosf(m_fθ);				//カメラ位置Y設定
-			m_posVDest.z = PlayerPos[m_nCameraNum].z + m_fDistance * sinf(m_fθ) * cosf(m_fφ);	//カメラ位置Z設定
-
-			m_posRDest = D3DXVECTOR3(PlayerPos[m_nCameraNum].x, PlayerPos[m_nCameraNum].y + PLAYER_HEIGHT, PlayerPos[m_nCameraNum].z);	//注視点設定
-
-			//カメラPOSYの下限
-			if (m_posVDest.y <= CAMERA_MIN_HIGHT)
-			{
-				m_posVDest.y = CAMERA_MIN_HIGHT;	//限界値に戻す
-			}
-
-			m_posV += (m_posVDest - m_posV); //カメラフロー
-			m_posR += (m_posRDest - m_posR); //カメラフロー
+		if (m_fφ >= m_fEndVertical)
+		{
+			m_fφ = m_fEndVertical;			//限界値に戻す		
 		}
-
-		else //敗北カメラ処理
+		if (m_fθ >= WIN_END_ROT_HORIZONTAL)
+		{
+			m_fθ = WIN_END_ROT_HORIZONTAL;	//限界値に戻す
+		}
+		if (m_fDistance <= WIN_END_DISTANCE)
 		{
 
-			//初期化後なら
-			if (m_fDistance <= 0)
-			{
-				m_fφ = PlayerRot[m_nCameraNum].y + LOSE_START_ROT_VERTICAL;	//プレイヤーの角度から横回転開始角設定
-				m_fθ = LOSE_START_ROT_HORIZONTAL;								//縦回転開始角設定
-				m_fDistance = LOSE_START_DISTANCE;								//距離の設定
-			}
-
-			//変化量プラス処理
-			m_fDistance++;
-
-			//下限上限設定
-			if (m_fDistance >= LOSE_END_DISTANCE)
-			{
-				m_fDistance = LOSE_END_DISTANCE;	//限界値に戻す
-			}
-
-
-			m_posVDest.x = PlayerPos[m_nCameraNum].x + m_fDistance * sinf(m_fθ) * sinf(m_fφ);	//カメラ位置X設定
-			m_posVDest.y = PlayerPos[m_nCameraNum].y + m_fDistance * cosf(m_fθ);				//カメラ位置Y設定
-			m_posVDest.z = PlayerPos[m_nCameraNum].z + m_fDistance * sinf(m_fθ) * cosf(m_fφ);	//カメラ位置Z設定
-
-
-			m_posRDest = D3DXVECTOR3(PlayerPos[m_nCameraNum].x, PlayerPos[m_nCameraNum].y + PLAYER_HEIGHT, PlayerPos[m_nCameraNum].z);	//注視点設定
-
-
-			//カメラPOSYの下限
-			if (m_posVDest.y <= CAMERA_MIN_HIGHT)
-			{
-
-				m_posVDest.y = CAMERA_MIN_HIGHT;	//限界値に戻す
-			}
-
-			//設定値の反映
-			m_posV += (m_posVDest - m_posV); //カメラフロー
-			m_posR += (m_posRDest - m_posR); //カメラフロー
+			m_fDistance = WIN_END_DISTANCE;	//限界値に戻す
 		}
+
+		m_posVDest.x = PlayerPos[m_nCameraNum].x + m_fDistance * sinf(m_fθ) * sinf(m_fφ);	//カメラ位置X設定
+		m_posVDest.y = PlayerPos[m_nCameraNum].y + m_fDistance * cosf(m_fθ);				//カメラ位置Y設定
+		m_posVDest.z = PlayerPos[m_nCameraNum].z + m_fDistance * sinf(m_fθ) * cosf(m_fφ);	//カメラ位置Z設定
+
+		m_posRDest = D3DXVECTOR3(PlayerPos[m_nCameraNum].x, PlayerPos[m_nCameraNum].y + PLAYER_HEIGHT, PlayerPos[m_nCameraNum].z);	//注視点設定
+
+		//カメラPOSYの下限
+		if (m_posVDest.y <= CAMERA_MIN_HIGHT)
+		{
+			m_posVDest.y = CAMERA_MIN_HIGHT;	//限界値に戻す
+		}
+
+		m_posV += (m_posVDest - m_posV); //カメラフロー
+		m_posR += (m_posRDest - m_posR); //カメラフロー
+	}
+	else //敗北カメラ処理
+	{
+		//初期化後なら
+		if (m_fDistance <= 0)
+		{
+			m_fφ = PlayerRot[m_nCameraNum].y + LOSE_START_ROT_VERTICAL;	//プレイヤーの角度から横回転開始角設定
+			m_fθ = LOSE_START_ROT_HORIZONTAL;								//縦回転開始角設定
+			m_fDistance = LOSE_START_DISTANCE;								//距離の設定
+		}
+
+		//変化量プラス処理
+		m_fDistance -= (LOSE_START_DISTANCE - LOSE_END_DISTANCE) / 100.0f * LOSE_MOVE_SUBTRACTION;
+
+		//下限上限設定
+		if (m_fDistance >= LOSE_END_DISTANCE)
+		{
+			m_fDistance = LOSE_END_DISTANCE;	//限界値に戻す
+		}
+
+		m_posVDest.x = PlayerPos[m_nCameraNum].x + m_fDistance * sinf(m_fθ) * sinf(m_fφ);	//カメラ位置X設定
+		m_posVDest.y = PlayerPos[m_nCameraNum].y + m_fDistance * cosf(m_fθ);				//カメラ位置Y設定
+		m_posVDest.z = PlayerPos[m_nCameraNum].z + m_fDistance * sinf(m_fθ) * cosf(m_fφ);	//カメラ位置Z設定
+
+		m_posRDest = D3DXVECTOR3(PlayerPos[m_nCameraNum].x, PlayerPos[m_nCameraNum].y + PLAYER_HEIGHT, PlayerPos[m_nCameraNum].z);	//注視点設定
+
+																																	//カメラPOSYの下限
+		if (m_posVDest.y <= CAMERA_MIN_HIGHT)
+		{
+			m_posVDest.y = CAMERA_MIN_HIGHT;	//限界値に戻す
+		}
+
+		//設定値の反映
+		m_posV += (m_posVDest - m_posV); //カメラフロー
+		m_posR += (m_posRDest - m_posR); //カメラフロー
 	}
 }
+
 //=============================================================================
 //カメラクラスの試合中更新処理
 //=============================================================================
 void CCamera::NomalUpdate(D3DXVECTOR3 PlayerPos[], D3DXVECTOR3 PlayerRot[])
 {
-
 
 	int nCameraSecond = 0;	//プレイヤー2カメラ保存用
 	//カメラ番号から敵のカメラ番号の設定
@@ -348,21 +376,27 @@ void CCamera::NomalUpdate(D3DXVECTOR3 PlayerPos[], D3DXVECTOR3 PlayerRot[])
 	// ジョイパッドの取得
 	DIJOYSTATE js = CInputJoypad::GetStick(m_nCameraNum);
 
+	// ゲーム開始後
+	if (CLife::GetReadey() == false)
+	{
+		//入力処理
+		if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_Y, m_nCameraNum) || pKeyInput->GetTrigger(DIK_TAB) && !m_bTarget&&CGame::GetPlayer(m_nCameraNum)->GetJump() == false)
+		{
+			if (CGame::GetPlayer(m_nCameraNum)->GetJump() == false)
+			{
+				//ターゲット機能OFF
+				m_fθ = CAMERA_DEFAULT_Fθ;	//縦回転角固定
+				m_bTarget = true;			//ターゲットON
+			}
+		}
+	}
 
 	//入力処理
-	if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_R3, m_nCameraNum) || pKeyInput->GetTrigger(DIK_TAB))
+	if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_R3, m_nCameraNum) || pKeyInput->GetTrigger(DIK_TAB) && m_bTarget)
 	{
-		//ターゲット機能OFF
-		if (m_bTarget == false)
-		{
-			m_fθ = CAMERA_DEFAULT_Fθ;	//縦回転角固定
-			m_bTarget = true;			//ターゲットON
-		}
-		else //ターゲット機能ON
-		{
-			m_fφ = PlayerRot[m_nCameraNum].y + PLAYE_ROT_VERTICAL_FRONT;	//横回転初期値
-			m_bTarget = false;												//ターゲットOFF
-		}
+		//ターゲット機能ON
+		m_fφ = PlayerRot[m_nCameraNum].y + PLAYE_ROT_VERTICAL_FRONT;	//横回転初期値
+		m_bTarget = false;												//ターゲットOFF
 	}
 
 	//ターゲット機能ON
@@ -388,8 +422,8 @@ void CCamera::NomalUpdate(D3DXVECTOR3 PlayerPos[], D3DXVECTOR3 PlayerRot[])
 
 		m_posRDest = D3DXVECTOR3(PlayerPos[nCameraSecond].x, PlayerPos[nCameraSecond].y + PLAYER_HEIGHT, PlayerPos[nCameraSecond].z);	//注視点設定
 
-		m_posV += (m_posVDest - m_posV); //カメラフロー
-		m_posR += (m_posRDest - m_posR); //カメラフロー
+		m_posV += (m_posVDest - m_posV) *0.9; //カメラフロー
+		m_posR += (m_posRDest - m_posR) *0.9; //カメラフロー
 
 		if (m_nCameraNum == 0)
 		{
@@ -409,7 +443,6 @@ void CCamera::NomalUpdate(D3DXVECTOR3 PlayerPos[], D3DXVECTOR3 PlayerRot[])
 	}
 	else //ターゲット機能OFF
 	{
-
 
 		//視点（カメラ座標）の左旋回
 		if (pKeyInput->GetPress(DIK_LEFT) || js.lZ > STICK_SENSITIVITY)
@@ -432,25 +465,21 @@ void CCamera::NomalUpdate(D3DXVECTOR3 PlayerPos[], D3DXVECTOR3 PlayerRot[])
 			m_fθ += STICK_INPUT_CONVERSION;
 		}
 
-
 		m_posVDest.x = PlayerPos[m_nCameraNum].x + m_fDistance * sinf(m_fθ) * sinf(m_fφ);	//カメラ位置X設定
 		m_posVDest.y = PlayerPos[m_nCameraNum].y + PLAYER_HEIGHT + m_fDistance * cosf(m_fθ);				//カメラ位置Y設定
 		m_posVDest.z = PlayerPos[m_nCameraNum].z + m_fDistance * sinf(m_fθ) * cosf(m_fφ);	//カメラ位置Z設定
 
-
 		m_posRDest = D3DXVECTOR3(PlayerPos[m_nCameraNum].x, PlayerPos[m_nCameraNum].y + PLAYER_HEIGHT, PlayerPos[m_nCameraNum].z);	//注視点設定
 
-																																	//カメラPOSYの下限
+		//カメラPOSYの下限
 		if (m_posVDest.y <= CAMERA_MIN_HIGHT)
 		{
-
 			m_posVDest.y = CAMERA_MIN_HIGHT;	//限界値に戻す
 		}
 
-
 		//設定値の反映
-		m_posV += (m_posVDest - m_posV);
-		m_posR += (m_posRDest - m_posR);
+		m_posV += (m_posVDest - m_posV)*0.1;
+		m_posR += (m_posRDest - m_posR)*0.9;
 
 		if (m_nCameraNum == 0)
 		{
@@ -469,7 +498,6 @@ void CCamera::NomalUpdate(D3DXVECTOR3 PlayerPos[], D3DXVECTOR3 PlayerRot[])
 				m_pLockon[1] = NULL;
 			}
 		}
-		
 	}
 }
 
@@ -506,6 +534,14 @@ void CCamera::SetCamera(void)
 	//プロジェクションマトリックスの設定
 	pDevice->SetTransform(D3DTS_PROJECTION,
 		&m_mtxProjection);
+}
+
+//=============================================================================
+// ターゲットの設定
+//=============================================================================
+void CCamera::SetTarget(bool Target)
+{
+	m_bTarget = Target;
 }
 
 //=============================================================================
@@ -554,5 +590,4 @@ float CCamera::Getθ(void)
 float CCamera::Getφ(void)
 {
 	return m_fφ;
-
 }

@@ -46,14 +46,14 @@ CSea::~CSea()
 //=============================================================================
 CSea * CSea::Create(void)
 {
-	CSea *pMeshField = new CSea;
+	CSea *pSea = new CSea;
 
-	if (pMeshField != NULL)
+	if (pSea != NULL)
 	{
-		pMeshField->Init();
+		pSea->Init();
 	}
 
-	return pMeshField;
+	return pSea;
 }
 
 //=============================================================================
@@ -65,6 +65,7 @@ HRESULT CSea::Load(void)
 	CRenderer *pRenderer = NULL;
 	pRenderer = CManager::GetRenderer();
 	LPDIRECT3DDEVICE9 pDevice = pRenderer->GetDevice();
+
 
 	// テクスチャの読み込み
 	D3DXCreateTextureFromFile(pDevice, "data/Texture/sea000.jpeg",
@@ -262,8 +263,6 @@ void CSea::Draw(void)
 	// インデックスバッファをデータストリームにバインド
 	pDevice->SetIndices(m_pIdxBuff);
 
-	// テクスチャの設定
-	pDevice->SetTexture(0, NULL);
 
 	// 頂点フォーマットの設定
 	pDevice->SetFVF(FVF_VERTEX_3D);
@@ -274,7 +273,6 @@ void CSea::Draw(void)
 	// ポリゴンの描画
 	pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP, 0, 0, m_nNumVertex, 0, m_nNumPolygon);
 
-	// 頂点フォーマットの設定
 	pDevice->SetTexture(0, NULL);
 
 }

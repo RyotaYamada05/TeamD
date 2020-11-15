@@ -51,11 +51,13 @@ public:
 
 private:
 	static LPDIRECT3DTEXTURE9 m_apTexture[UIEND_TYPE];
+
 	D3DXVECTOR3		m_pos;		// ポリゴンの位置
 	D3DXVECTOR3		m_move;		// ポリゴンの移動量
 	D3DXVECTOR3		m_size;		// ポリゴンのサイズ
 	D3DXCOLOR		m_col;		// カラー
 	UIENDTYPE		m_type;		// ポリゴンのタイプ
 	int m_nCount;				// フレームカウント
+
 };
 #endif // !_UI_H_

@@ -19,7 +19,7 @@
 //=============================================================================
 //モデルクラスのコンストラクタ
 //=============================================================================
-CModel::CModel()
+CModel::CModel(int nPriority) : CScene(nPriority)
 {
 	m_pBuffMat = NULL;
 	m_pMesh = NULL;
@@ -86,7 +86,6 @@ HRESULT CModel::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 //=============================================================================
 void CModel::Uninit(void)
 {
-
 	////メッシュの破棄
 	//if (m_pMesh != NULL)
 	//{
@@ -101,7 +100,7 @@ void CModel::Uninit(void)
 	//}
 
 	//オブジェクトの破棄
-	Release();
+	SetDeathFlag();
 }
 
 //=============================================================================
@@ -165,13 +164,10 @@ void CModel::Draw(void)
 		pMat[nCntMat].MatD3D.Diffuse.a = 1.0f;
 	}
 
-
 	//保持していたマテリアルを戻す
 	pDevice->SetMaterial(&matDef);
 
 	pDevice->SetTexture(0, NULL);
-
-
 }
 
 void CModel::BindModel(MODEL model)

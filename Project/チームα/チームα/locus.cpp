@@ -176,7 +176,7 @@ void CLocus::Uninit(void)
 	}
 
 	//オブジェクト破棄
-	Release();
+	SetDeathFlag();
 }
 
 //=============================================================================
@@ -211,7 +211,7 @@ void CLocus::Draw(void)
 	pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);//透明度を使うか
 	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);//ディスティネーションカラーの指定
 
-	// アルファテスト基準値の設定
+																   // アルファテスト基準値の設定
 	pDevice->SetRenderState(D3DRS_ALPHAREF, 100);
 
 	D3DMATERIAL9 material, OldMaterial;
@@ -250,6 +250,4 @@ void CLocus::Draw(void)
 	pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
 
 	pDevice->SetTexture(0, NULL);
-
 }
-

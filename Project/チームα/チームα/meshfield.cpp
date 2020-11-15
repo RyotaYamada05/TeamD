@@ -84,6 +84,7 @@ void CMeshField::UnLoad(void)
 		if (m_apTexture[nCount] != NULL)
 		{
 			m_apTexture[nCount]->Release();
+
 			m_apTexture[nCount] = NULL;
 		}
 	}
@@ -261,6 +262,9 @@ void CMeshField::Draw(void)
 
 	// インデックスバッファをデータストリームにバインド
 	pDevice->SetIndices(m_pIdxBuff);
+
+	// テクスチャの設定
+	pDevice->SetTexture(0, NULL);
 
 	// 頂点フォーマットの設定
 	pDevice->SetFVF(FVF_VERTEX_3D);

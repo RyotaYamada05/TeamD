@@ -16,6 +16,8 @@
 #include "player.h"
 #include "game.h"
 #include "life.h"
+#include "player.h"
+
 //=============================================================================
 // クリエイト関数
 //=============================================================================
@@ -31,9 +33,14 @@ CTime *CTime::Create(D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 //=============================================================================
 // コンストラクタ
 //=============================================================================
-CTime::CTime()
+CTime::CTime(int nPriority) : CScene(nPriority)
 {
-
+	m_pTexture = NULL;	// テクスチャへのポインタ
+	m_pVtxBuff = NULL;	// 頂点バッファへのポインタ
+	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);					// ポリゴンの位置
+	memset(m_apNumber, 0, sizeof(m_apNumber));		// 数字の配置
+	m_nTime = 0;						// タイム
+	m_nTimeCount = 0;					// タイムのカウンター
 }
 
 //=============================================================================
@@ -90,7 +97,7 @@ void CTime::Uninit(void)
 	}
 
 	// リリース
-	Release();
+	SetDeathFlag();
 
 
 	
@@ -128,7 +135,7 @@ void CTime::Update(void)
 		m_nTimeCount++;
 
 		//Readyが消えたら時間が動き出す
-		if (CLife::GetReadey() == false)
+		if (CGame::GetPlayer(0)->GetLife(0)->GetReadey() == false)
 		{
 			if (m_nTimeCount % 1 == 0)
 			{
@@ -139,8 +146,6 @@ void CTime::Update(void)
 			}
 		}
 	}
-
-
 }
 
 //=============================================================================

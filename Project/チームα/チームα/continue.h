@@ -37,7 +37,7 @@ class CUiEnd;
 class CContinue :public CScene
 {
 public:
-	CContinue();
+	CContinue(int nPriority = PRIORITY_0);
 	~CContinue();
 	static CContinue *Create(D3DXVECTOR3 pos, const D3DXVECTOR3 size);
 	HRESULT Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size);
@@ -56,9 +56,10 @@ private:
 	CNumber	*m_apContinue[MAX_CONTINUE];	// 数字の配置
 	int m_nContinue;						// タイム
 	int m_nContinueCount;					// タイムのカウンター
-	CUiEnd *m_pUiEnd;			// コンティニュー
 	static CUi *m_pUi;							// uiのポインタ
+	CUiEnd *m_pUiEnd;			// コンティニュー
 	bool m_bEnd;
+	bool m_bTimeUp;
 };
 #endif // !_CONTINUE_H_
 

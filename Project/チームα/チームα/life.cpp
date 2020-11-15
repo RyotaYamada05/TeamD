@@ -4,12 +4,12 @@
 // Author : 佐藤颯紀
 //
 //=============================================================================
-
 #include "main.h"
 #include "Life.h"
 #include "manager.h"
 #include "renderer.h"
 #include "ui.h"
+#include "sound.h"
 
 //================================================
 //静的メンバ変数宣言
@@ -79,10 +79,11 @@ CLife::CLife()
 	m_bLife = false;
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);		//カラー
-	m_size = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_type = LIFETYPE_NONE;		//タイプ
 	m_bEnd= false;
 	m_bStart = true;
+	m_fLife = MAX_LIFE;
+	m_bArmor = false;
 }
 
 //================================================
@@ -102,6 +103,8 @@ HRESULT CLife::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size, const D3DXCOL
 	m_size = size;		//サイズ
 	m_col = col;		//カラー
 	m_type = type;		//タイプ
+	m_fLife = MAX_LIFE;
+	m_bArmor = false;
 
 	CGauge::Init(pos, size);	//CGaugeの初期化
 
@@ -162,6 +165,11 @@ void CLife::Draw(void)
 //================================================
 void CLife::Decrease(int Reduce, int PlayerNamber, bool Life)
 {
+	if (m_bArmor == false)
+	{
+		m_fLife -= (float)Reduce;
+		m_bArmor = true;
+	}
 	m_nReduce = Reduce;
 	m_bLife = Life;
 	m_nPlayerNum = PlayerNamber;
@@ -183,6 +191,8 @@ void CLife::Decrease(int Reduce, int PlayerNamber, bool Life)
 //================================================
 void CLife::Lifereduce(void)
 {
+	CSound *pSound = CManager::GetSound();
+
 	//サイズの取得
 	D3DXVECTOR3 size = GetSize();
 	//色の取得
@@ -191,8 +201,11 @@ void CLife::Lifereduce(void)
 	//ライフを減らす処理
 	if (0 < size.x)
 	{
+
 		if (m_bLife == true)
 		{
+			pSound->Play(CSound::SOUND_LABEL_SE_BOMB);
+
 			m_nCounterLife++;
 
 			size.x--;
@@ -214,6 +227,8 @@ void CLife::Lifereduce(void)
 				m_bLife = false;
 				m_nCounterLife = 0;
 
+				m_bArmor = false;
+
 				//自分のライフの色を元に戻す
 				if (m_type == LIFETYPE_FAST_PLAYER)
 				{
@@ -226,6 +241,11 @@ void CLife::Lifereduce(void)
 				}
 			}
 		}
+	}
+	else
+	{
+		m_bStart = true;
+		size.x = 0.0f;
 	}
 
 
@@ -305,4 +325,14 @@ void CLife::SetReady(bool bReady)
 bool CLife::GetReadey(void)
 {
 	return m_bStart;
+}
+
+float CLife::GetLife(void)
+{
+	return m_fLife;
+}
+
+bool CLife::GetbLife(void)
+{
+	return m_bLife;
 }

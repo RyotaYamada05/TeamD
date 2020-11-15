@@ -25,6 +25,15 @@ class CScene
 {
 public:
 	//=========================================================================
+	//描画の優先順位の列挙型
+	//=========================================================================
+	typedef enum
+	{
+		PRIORITY_0 = 0,
+		PRIORITY_1,
+		PRIORITY_MAX	//優先順位の最大数
+	}PRIORITY;
+	//=========================================================================
 	//列挙型
 	//=========================================================================
 	typedef enum
@@ -34,13 +43,14 @@ public:
 		OBJTYPE_SPHERE,	//球タイプ
 		OBJTYPE_BULLET,	//バレットタイプ
 		OBJTYPE_MODEL,	// モデル
+		OBJTYPE_PAUSE,
 		OBJTYPE_MAX	//オブジェクトタイプの最大数
 	}OBJTYPE;	//オブジェクトタイプ
 
 	//=========================================================================
 	//メンバ関数宣言
 	//=========================================================================
-	CScene();
+	CScene(int nPriority = PRIORITY_0);
 	virtual ~CScene();
 	static void ReleaseAll(void);
 	static void AllUpdate(void);
@@ -53,18 +63,27 @@ public:
 
 	void SetObjType(const OBJTYPE objtype);
 	OBJTYPE GetObjType(void)const;
-	static CScene *GetScene(int nNum);
-protected:
-	void Release(void);
+	CScene *GetNext(void);
+	static CScene *GetTop(int nNum);
+	static void SetPause(bool Pause);
 
+protected:
+
+	void SetDeathFlag(void);
 private:
+	void ReConnectList(void);
 	//=========================================================================
 	//メンバ変数宣言
 	//=========================================================================
-	static CScene *m_apScene[MAX_NUM];	//オブジェクトクラスのポインタ配列
-	static int m_nNumAll;	//総数
-	int m_nID;	//ナンバーの保存
+	static CScene *m_pTop[PRIORITY_MAX];	//先頭のオブジェクトへのポインタ
+	static CScene *m_pCur[PRIORITY_MAX];	//現在のオブジェクトへのポインタ
+	CScene *m_pPrev;	//前のオブジェクトへのポインタ
+	CScene *m_pNext;	//次のオブジェクトへのポインタ
+	int m_nPriority;	//描画の優先順位
+	bool m_bDeath;	//死亡フラグ
+
 	OBJTYPE m_ObjType;	//オブジェクトの種類
+	static bool m_bPause;
 };
 
 #endif

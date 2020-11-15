@@ -52,6 +52,8 @@
 #include "fire.h"
 #include "sea.h"
 #include "boost.h"
+#include "pause.h"
+#include "uipause.h"
 #include "locus.h"
 
 //=============================================================================
@@ -68,6 +70,7 @@ CGame *CManager::m_pGame = NULL;
 CResult *CManager::m_pResult = NULL;
 CInputJoypad *CManager::m_pJoypad = NULL;
 CSound *CManager::m_pSound = NULL;			//サウンドクラスのポインタ
+CScene *CManager::m_pScene = NULL;
 //=============================================================================
 //コンストラクタ
 //=============================================================================
@@ -140,7 +143,6 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindow)
 			return -1;
 		}
 	}
-
 
 	//タイトルクラスのクリエイト
 	//m_pTitle = CTitle::Create();
@@ -239,6 +241,21 @@ void CManager::Update(void)
 		//フェードクラスの更新処理呼び出し
 		m_pFade->Update();
 	}
+
+	/*switch (m_mode)
+	{
+	case MODE_TYPE_GAME:
+		if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_START, 0))
+		{
+			m_pScene->GetPause(false);
+		}
+
+		else if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_B, 0))
+		{
+			m_pScene->GetPause(true);
+		}
+		break;
+	}*/
 }
 
 //=============================================================================
@@ -287,11 +304,12 @@ void CManager::LoadAll(void)
 	CBill::LoadModel();
 	CSplash::Load();
 	CLaser::Load();
-	CMissile::Load();
+	CLocus::Load();
 	CFire::Load();
 	CBoost::Load();
 	CSea::Load();
-	CLocus::Load();
+	CPause::Load();
+	CUiPause::Load();
 }
 
 //=============================================================================
@@ -320,10 +338,10 @@ void CManager::UnLoadAll(void)
 	CSand::UnLoad();
 	CSplash::UnLoad();
 	CLaser::UnLoad();
-	CMissile::UnLoad();
+
 	CFire::UnLoad();
 	CBoost::UnLoad();
-
+	CUiPause::UnLoad();
 	CLockon::Unload();
 	CNumber::Unload();
 	CUiEnd::Unload();
@@ -336,6 +354,8 @@ void CManager::UnLoadAll(void)
 //=============================================================================
 void CManager::SetMode(MODE_TYPE mode)
 {
+	CSound *pSound = CManager::GetSound();
+
 	//現在モードの終了
 	switch (m_mode)
 	{
@@ -352,7 +372,7 @@ void CManager::SetMode(MODE_TYPE mode)
 		if (m_pTutorial != NULL)
 		{
 			m_pTutorial->Uninit();
-
+			pSound->Stop(CSound::SOUND_LABEL_BGM_TITLE);
 			m_pTutorial = NULL;
 		}
 		break;
@@ -361,6 +381,7 @@ void CManager::SetMode(MODE_TYPE mode)
 		if (m_pGame != NULL)
 		{
 			m_pGame->Uninit();
+			pSound->Stop(CSound::SOUND_LABEL_BGM_GAME);
 			m_pGame = NULL;
 		}
 		break;
@@ -375,6 +396,8 @@ void CManager::SetMode(MODE_TYPE mode)
 		break;
 
 	}
+
+	CScene::ReleaseAll();
 
 	//モードを設定
 	m_mode = mode;
@@ -403,7 +426,7 @@ void CManager::SetMode(MODE_TYPE mode)
 		{
 			m_pGame = CGame::Create();
 		}
-		
+
 		break;
 
 	case MODE_TYPE_RESULT:

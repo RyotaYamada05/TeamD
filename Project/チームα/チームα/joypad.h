@@ -18,7 +18,15 @@
 //マクロ定義
 //===============================
 #define MAX_JOYSTICK_NUM 4// JOYPAD接続上限
-#define	NUM_JOY_MAX 256   // ボタンの最大数
+#define	NUM_JOY_MAX 32   // ボタンの最大数
+#define CROSS_KEY_UP	0				//十字キー上
+#define CROSS_KEY_TOP_RIGHT 4500		//十字キー右上
+#define CROSS_KEY_RIGHT	9000			//十字キー右
+#define CROSS_KEY_BOTTOM_RIGHT 13500	//十字キー右下
+#define CROSS_KEY_DOWN	18000			//十字キー下
+#define CROSS_KEY_BOTTOM_LEFT 22500		//十字キー左下
+#define CROSS_KEY_LEFT	27000			//十字キー左
+#define CROSS_KEY_TOP_LEFT	31500		//十字キー左上
 
 //===============================
 //ジョイパッドクラス
@@ -27,7 +35,7 @@ class CInputJoypad : public CInput
 {
 public:
 	//=============================================================================
-	//ジョイスティックのボタン用の列挙型定義
+	//ジョイパッドボタン用の列挙型定義
 	//=============================================================================
 	typedef enum
 	{
@@ -47,6 +55,17 @@ public:
 		JOY_BUTTON_MAX,			//最大ボタン数
 	}JOY_BUTTON;
 
+	//=============================================================================
+	//ジョイパッド状態判別用の構造体定義
+	//=============================================================================
+	typedef struct
+	{
+		DIJOYSTATE	Old;		//パッドボタンの前回情報
+		DIJOYSTATE	Press;		//パッドボタンのプレス情報
+		DIJOYSTATE	Trigger;	//パッドボタンのトリガー情報
+		DIJOYSTATE	Release;	//パッドボタンのリリース情報
+	}JoyStickState;
+
 	//メンバ関数
 	CInputJoypad();
 	virtual ~CInputJoypad();
@@ -56,6 +75,8 @@ public:
 	bool GetJoystickPress(int nKey, int nId);
 	bool GetJoystickTrigger(int nKey, int nId);
 	bool GetJoystickRelease(int nKey, int nId);
+	bool GetPushCross(int nButton, int nId);
+	bool GetPushRelease(int nButton, int nId);
 	static LPDIRECTINPUTDEVICE8 GetController(int nNumber);
 
 	static BOOL CALLBACK EnumJoysticksCallback(const DIDEVICEINSTANCE *pdidInstance, VOID *pContext);
@@ -70,6 +91,7 @@ public:
 
 private:
 	static LPDIRECTINPUTDEVICE8 m_apDevice[MAX_JOYSTICK_NUM];
+	JoyStickState m_JoyPadState[MAX_JOYSTICK_NUM];		//ジョイパッドの状態
 	DIDEVCAPS   m_diDevCaps;
 	static int m_nJoyStickCont;
 };

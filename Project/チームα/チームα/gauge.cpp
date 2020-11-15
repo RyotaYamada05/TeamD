@@ -30,7 +30,7 @@ CGauge* CGauge::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 //=======================================================================================
 // コンストラクタ
 //=======================================================================================
-CGauge::CGauge()
+CGauge::CGauge(int nPriority) : CScene(nPriority)
 {
 	m_pTextuer = NULL;
 	m_pVetxBuff = NULL;
@@ -107,7 +107,7 @@ void CGauge::Uninit(void)
 		m_pVetxBuff->Release();
 		m_pVetxBuff = NULL;
 	}
-	CScene::Release();
+	CScene::SetDeathFlag();
 }
 
 //=======================================================================================

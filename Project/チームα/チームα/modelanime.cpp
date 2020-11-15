@@ -17,6 +17,8 @@ CModelAnime::CModelAnime()
 	memset(&m_model, 0, sizeof(m_model));
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_posAnime = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_rotAnime = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_pParent = NULL;
 }
 
@@ -126,9 +128,6 @@ void CModelAnime::Draw(void)
 	m_OldMtxWorld1[0] = m_OldMtxWorld;	//2
 	m_OldMtxWorld = m_mtxWorld;
 
-	////ワールドマトリクスの設定
-	//pDevice->GetTransform(D3DTS_WORLD, &m_OldMtxWorld);
-
 	//ワールドマトリックスの初期化
 	D3DXMatrixIdentity(&m_mtxWorld);
 
@@ -178,6 +177,7 @@ void CModelAnime::Draw(void)
 		//マテリアルのアンビエントにディフューズカラーを設定
 		pMat[nCntMat].MatD3D.Ambient = pMat[nCntMat].MatD3D.Diffuse;
 
+		//pMat[nCntMat].MatD3D.Emissive = D3DXCOLOR(0.2f, 0.2f, 0.2f, 1.0f);
 		//マテリアルの設定
 		pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
 
@@ -258,5 +258,5 @@ D3DXMATRIX CModelAnime::GetMtxWorld(void)
 
 D3DXMATRIX CModelAnime::GetOldMtxWorld(void)
 {
-	return m_OldMtxWorld1[2];
+	return m_OldMtxWorld1[1];
 }

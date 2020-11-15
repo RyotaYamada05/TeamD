@@ -16,15 +16,15 @@
 //=============================================================================
 // マクロ定義
 //=============================================================================
-#define FIELD_WIDTH					(4)
-#define FIELD_HEIGHT				(4)
-#define FIELD_WIDTH_SIZE			(10000.0f)
-#define FIELD_HEIGHT_SIZE			(10000.0f)
-
-#define FIELD_WIDTH_SIZE_TUTORIAL	(300.0f)
-#define FIELD_HEIGHT_SIZE_TUTORIAL	(300.0f)
-
-#define MAX_MESHFIELD_TEXTURE		(1)				// テクスチャの数
+//#define FIELD_WIDTH					(4)
+//#define FIELD_HEIGHT				(4)
+//#define FIELD_WIDTH_SIZE			(10000.0f)
+//#define FIELD_HEIGHT_SIZE			(10000.0f)
+//
+//#define FIELD_WIDTH_SIZE_TUTORIAL	(300.0f)
+//#define FIELD_HEIGHT_SIZE_TUTORIAL	(300.0f)
+//
+//#define MAX_MESHFIELD_TEXTURE		(1)				// テクスチャの数
 
 //=============================================================================
 // メッシュフィールドクラス

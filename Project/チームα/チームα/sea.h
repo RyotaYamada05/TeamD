@@ -16,10 +16,11 @@
 //=============================================================================
 // マクロ定義
 //=============================================================================
-#define SEA_WIDTH				(4)
+#define SEA_WIDTH					(4)
 #define SEA_HEIGHT				(4)
 #define SEA_WIDTH_SIZE			(50000.0f)
 #define SEA_HEIGHT_SIZE			(50000.0f)
+#define SEA_HEIGHT_POS_Y		(-500.0f)
 
 #define MAX_SEA_TEXTURE		(1)				// テクスチャの数
 

@@ -17,16 +17,16 @@
 #include "explosion.h"
 #include "bill.h"
 #include "splash.h"
+#include "camera.h"
 
 //=============================================================================
 //マクロ定義
 //=============================================================================
 #define BULLET2_ATK			(20)		// 攻撃力
-#define FOLLOW_TIME_NONE	(5)			// 通常弾の追従タイム
-#define FOLLOW_TIME_BOMB	(50)		// ボムの追従タイム
+#define FOLLOW_TIME_NONE	(50)		// 通常弾の追従タイム
+#define FOLLOW_TIME_BOMB	(200)		// ボムの追従タイム
 
 //=============================================================================
-
 // コンストラクタ
 //=============================================================================
 CBullet2::CBullet2()
@@ -43,6 +43,7 @@ CBullet2::CBullet2()
 	m_pTargetPL = NULL;							//敵プレイヤーのポインタ
 	m_fSpeed = 0.0f;
 	m_fHeight = 0.0f;
+	m_nDamage = 20;
 }
 
 //=============================================================================
@@ -146,7 +147,8 @@ void CBullet2::Update(void)
 		if (m_nCounter <= FOLLOW_TIME_NONE)
 		{
 			//移動量の計算
-			m_move = VectorMath(m_pTargetPL->GetPos(), m_fSpeed);
+			m_move = VectorMath(D3DXVECTOR3(
+				m_pTargetPL->GetPos().x, m_pTargetPL->GetPos().y + 200.0f, m_pTargetPL->GetPos().z), m_fSpeed);
 		}
 		break;
 
@@ -155,12 +157,21 @@ void CBullet2::Update(void)
 		if (m_nCounter <= FOLLOW_TIME_BOMB)
 		{
 			m_move = VectorMath(D3DXVECTOR3(
-				m_pTargetPL->GetPos().x, m_pTargetPL->GetPos().y, m_pTargetPL->GetPos().z),
+				m_pTargetPL->GetPos().x, m_pTargetPL->GetPos().y + 200.0f, m_pTargetPL->GetPos().z),
 				m_fSpeed);
 		}
 
 		// 高さの調整
 		m_move.y = m_fHeight;
+		break;
+
+	case BULLET2_TYPE_LASER:
+		// 通常の場合
+		if (m_nCounter <= FOLLOW_TIME_NONE)
+		{
+			//移動量の計算
+			m_move = VectorMath(m_pTargetPL->GetPos(), m_fSpeed);
+		}
 		break;
 
 	}
@@ -183,9 +194,18 @@ void CBullet2::Update(void)
 	//ライフが0以下の時
 	if (m_nLife <= 0)
 	{
-		// 衝撃を生成
-		CShock::Create(D3DXVECTOR3(m_pos.x, 0.0f, m_pos.z), D3DXVECTOR3(0.0f, 0.0f, 0.0f),
-			D3DXVECTOR3(SHOCK_SIZE_X, SHOCK_SIZE_Y, SHOCK_SIZE_Z));
+		switch (m_type)
+		{
+		case BULLET2_TYPE_NONE:
+			break;
+		case BULLET2_TYPE_BOMB:
+			CExplosion::Create(D3DXVECTOR3(m_pos.x, 0.0f, m_pos.z), D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+				D3DXVECTOR3(EXPLOSION_SIZE_X, EXPLOSION_SIZE_Y, EXPLOSION_SIZE_Z));
+			break;
+		default:
+
+			break;
+		}
 
 		//終了処理呼び出し
 		Uninit();
@@ -227,44 +247,84 @@ bool CBullet2::Collision(void)
 
 	//位置の取得
 	D3DXVECTOR3 targetPos = pPlayer->GetPos();
+	bool bLife = pPlayer->GetLife(0)->GetbLife();
 
-	// 当たり判定
-	if (targetPos.x >= m_pos.x - PLAYER_COLLISION_X / 2 &&
-		targetPos.x <= m_pos.x + PLAYER_COLLISION_X / 2 &&
-		targetPos.y >= m_pos.y - PLAYER_COLLISION_Y / 2 &&
-		targetPos.y <= m_pos.y + PLAYER_COLLISION_Y / 2 &&
-		targetPos.z >= m_pos.z - PLAYER_COLLISION_Z / 2 &&
-		targetPos.z <= m_pos.z + PLAYER_COLLISION_Z / 2)
-	{
-		for (int nCount = 0; nCount < LIFE_NUM; nCount++)
+		// 当たり判定
+		if (targetPos.x + PLAYER_COLLISION_X / 2 >= m_pos.x - 50.0f &&
+			targetPos.x - PLAYER_COLLISION_X / 2 <= m_pos.x + 50.0f &&
+			targetPos.y + PLAYER_COLLISION_Y >= m_pos.y - 50.0f &&
+			targetPos.y - 0.0f <= m_pos.y + 50.0f &&
+			targetPos.z + PLAYER_COLLISION_Z / 2 >= m_pos.z - 50.0f &&
+			targetPos.z - PLAYER_COLLISION_Z / 2 <= m_pos.z + 50.0f)
 		{
-			//　プレイヤーのライフを減らす
-
-			if (m_pTargetPL != NULL)
+			for (int nCount = 0; nCount < LIFE_NUM; nCount++)
 			{
-				m_pTargetPL->GetLife(nCount)->Decrease(50, m_user, true);
+				//　プレイヤーのライフを減らす
+				if (m_pTargetPL != NULL)
+				{
+					switch (m_type)
+					{
+					case BULLET2_TYPE_NONE:
+						// 通常の場合
+						m_nDamage = 20;
+						break;
+					case BULLET2_TYPE_BOMB:
+						// ボムの時
+						m_nDamage = 100;
+						break;
+					case BULLET2_TYPE_LASER:
+						// ボムの時
+						m_nDamage = 160;
+						break;
+					}
+					if (pPlayer->GetArmor() == false)
+					{
+						if (bLife == false)
+						{
+
+							m_pTargetPL->GetLife(nCount)->Decrease(m_nDamage, m_user, true);
+							m_pTargetPL->GetLife(1)->Decrease(m_nDamage, m_user, true);
+
+							if (m_type != BULLET2_TYPE_NONE)
+							{
+								m_pTargetPL->SetMotion(MOTION_DAMAGE);
+							}
+
+						}
+
+						// プレイヤー情報の取得
+						switch (m_user)
+						{
+						case BULLET2_USER_PL1:
+							CGame::GetCamera(1)->SetTarget(false);
+							break;
+						case BULLET2_USER_PL2:
+							CGame::GetCamera(0)->SetTarget(false);
+							break;
+						}
+					}
+
+					// 爆発生成
+					C2dExplosion::Create(D3DXVECTOR3(m_pTargetPL->GetPos().x, m_pos.y, m_pTargetPL->GetPos().z),
+						D3DXVECTOR3(EXPLOSION_SIZE_X_2D, EXPLOSION_SIZE_Y_2D, EXPLOSION_SIZE_Z_2D));
+
+
+				
 			}
 
-			// 爆発生成
-			C2dExplosion::Create(m_pos,
-				D3DXVECTOR3(EXPLOSION_SIZE_X_2D, EXPLOSION_SIZE_Y_2D, EXPLOSION_SIZE_Z_2D));
-
-			CExplosion::Create(D3DXVECTOR3(m_pos.x, 0.0f, m_pos.z), D3DXVECTOR3(0.0f, 0.0f, 0.0f),
-				D3DXVECTOR3(EXPLOSION_SIZE_X, EXPLOSION_SIZE_Y, EXPLOSION_SIZE_Z));
+			m_nLife = 0;
+			return true;
 		}
 
-		m_nLife = 0;
-		return true;
 	}
 
-	for (int nCount = 0; nCount < MAX_NUM; nCount++)
+	for (int nCount = 0; nCount < PRIORITY_MAX; nCount++)
 	{
-		CScene *pScene = NULL;
+		//先頭情報を取得
+		CScene *pScene = CScene::GetTop(nCount);
 
-		// 取得
-		pScene = CScene::GetScene(nCount);
-
-		if (pScene != NULL)
+		//NULLになるまで繰り返す
+		while (pScene)
 		{
 			// オブジェクトタイプを取得
 			OBJTYPE type = pScene->GetObjType();
@@ -302,9 +362,11 @@ bool CBullet2::Collision(void)
 					}
 				}
 			}
-
+			//次の情報を取得
+			pScene = pScene->GetNext();
 		}
 	}
+	
 	return false;
 }
 

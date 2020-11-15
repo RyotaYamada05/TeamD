@@ -1,53 +1,96 @@
+//=============================================================================
+//
+// ミサイル処理 [missile.h]
+// Author : 山田陵太
+//
+//=============================================================================
 #ifndef _MISSILE_H_
 #define _MISSILE_H_
-//=============================================================================
-//
-// ビームのクラスヘッダー [missile.h]
-// Author : Konishi Yuuto
-//
-//=============================================================================
 
 //=============================================================================
-// インクルードファイル
+//インクルードファイル
 //=============================================================================
-#include "main.h"
-#include "bullet2.h"
+#include "scene.h"
 
 //=============================================================================
-// マクロ定義
+//マクロ定義
 //=============================================================================
-#define MISSILE_SIZE_X				(1)		// ミサイルのサイズ
-#define MISSILE_SIZE_Y				(1)		// ミサイルのサイズ
-#define MISSILE_SIZE_Z				(1)		// ミサイルのサイズ
-#define MISSILE_SPEED				(100)	// ミサイルのスピード
+#define MAX_MODEL_MISSILE_PARTS 2
+#define MISSILE_SPPED			(50)
 
-#define MAX_MISSILE_TEXTURE			(1)		// テクスチャの数
+#define MISSILE_SIZE_X			(3.0f)
+#define MISSILE_SIZE_Y			(3.0f)
+#define MISSILE_SIZE_Z			(3.0f)
 
 //=============================================================================
-// 背景クラス
+//前方宣言
 //=============================================================================
-class CMissile : public CBullet2
+class CModelAnime;
+class CPlayer;
+
+//=============================================================================
+//ミサイルクラス
+//=============================================================================
+class CMissile : public CScene
 {
 public:
-	CMissile();		// コンストラクタ
-	~CMissile();		// デストラクタ
+	//=============================================================================
+	//　モデルファイル情報の構造体
+	//=============================================================================
+	typedef struct
+	{
+		char xFileName[1024];	//ファイルネーム
+		D3DXVECTOR3 offsetPos;	//位置のオフセット情報
+		D3DXVECTOR3 offsetRot;	//向きのオフセット情報
+		int nParent;	//親情報
+	}MODELFILLEs;
 
-	HRESULT Init(D3DXVECTOR3 pos, D3DXVECTOR3 rot,
-		D3DXVECTOR3 size, BULLET2_USER user);							// 初期化処理
-	void Uninit(void);													// 終了処理
-	void Update(void);													// 更新処理
-	void Draw(void);													// 描画処理
+	//=========================================================================
+	//弾の使用者判別用の列挙型
+	//=========================================================================
+	typedef enum
+	{
+		MISSILE_USER_NONE = -1,
+		MISSILE_USER_PL1,	//PL1
+		MISSILE_USER_PL2,	//PL2
+		MISSILE_USER_MAX		//最大数
+	}MISSILE_USER;
 
-	static CMissile *Create(D3DXVECTOR3 pos, D3DXVECTOR3 move,
-		D3DXVECTOR3 size, BULLET2_USER user);							// インスタンス生成
-	static HRESULT Load(void);											// テクスチャロード
-	static void UnLoad(void);											// テクスチャアンロード
+	//=========================================================================
+	//メンバ関数宣言
+	//=========================================================================
+	CMissile(int nPriority = PRIORITY_0);
+	~CMissile();
+
+	static CMissile *Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 size,
+		const MISSILE_USER user, float fSpeed);
+
+	HRESULT Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size);
+	void Uninit(void);
+	void Update(void);
+	void Draw(void);
+	void SetRot(D3DXVECTOR3 rot);
+	void SetMove(D3DXVECTOR3 move);
+	HRESULT ReadFile(void);
+	bool Collision(void);									// 当たり判定
+	D3DXVECTOR3 VectorMath(D3DXVECTOR3 TargetPos,			// 追従
+		float fSpeed);
 
 private:
-	static LPDIRECT3DTEXTURE9 m_apTexture[MAX_MISSILE_TEXTURE];	// テクスチャ情報のポインタ
-	static LPD3DXMESH m_pMesh;									// メッシュ情報へのポインタ
-	static LPD3DXBUFFER m_pBuffMat;								// マテリアル情報へのポインタ
-	static DWORD m_nNumMat;										// マテリアル情報
+	D3DXVECTOR3 m_pos;										// 位置
+	D3DXVECTOR3 m_rot;										// 向き
+	D3DXVECTOR3 m_move;										// 移動量
+	D3DXVECTOR3 m_size;										// サイズ
+	int m_nLife;											// ライフ
+	CModelAnime *m_apModelAnime[MAX_MODEL_MISSILE_PARTS];	// 階層モデルクラスのポインタ変数
+	int m_nCounter;											// 追従カウンター
+	D3DXMATRIX m_mtxWorld;									// ワールドマトリックス
+	MISSILE_USER m_user;	// 使用者
+	CPlayer *m_pTargetPL;	//敵プレイヤーのポインタ
+	int m_nDamage;			//ダメージ数
+	float m_fSpeed;			// 速さ
+	float m_fHeight;		// 高さ
+
 };
 
-#endif
+#endif 

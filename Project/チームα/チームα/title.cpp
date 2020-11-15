@@ -1,7 +1,7 @@
 //=======================================================================================
 //
 // 背景描画処理 [bg.cpp]
-// Author : 伊藤　航
+// Author : Konishi Yuuto
 //
 //=======================================================================================
 
@@ -30,7 +30,7 @@ CTitlelogo *CTitle::m_apTitlelogo[MAX_TITLE] = {};
 //=======================================================================================
 // タイトルクラスのコンストラクタ
 //=======================================================================================
-CTitle::CTitle()
+CTitle::CTitle(int nPriority) : CScene(nPriority)
 {
 	m_pScene = NULL;
 	m_bModechenge = false;
@@ -110,7 +110,6 @@ HRESULT CTitle::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 		//テクスチャの設定
 		m_pScene->BindTexture(m_pTexture[0]);
 	}
-
 	
 	if (m_apTitlelogo[0] == NULL)
 	{
@@ -136,6 +135,7 @@ HRESULT CTitle::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 //=======================================================================================
 void CTitle::Uninit(void)
 {
+
 	for (int nCount = 0; nCount < TITLELOGO_TYPE; nCount++)
 	{
 		if (m_apTitlelogo[nCount] != NULL)
@@ -144,6 +144,7 @@ void CTitle::Uninit(void)
 			m_apTitlelogo[nCount] = NULL;
 		}
 	}
+
 	if (m_pScene != NULL)
 	{
 		m_pScene->Uninit();
@@ -151,10 +152,10 @@ void CTitle::Uninit(void)
 
 	//BGMを止める処理
 	CSound *pSound = CManager::GetSound();
-	pSound->Stop(CSound::SOUND_LABEL_BGM_TITLE);
+	//pSound->Stop(CSound::SOUND_LABEL_BGM_TITLE);
 
 	//オブジェクトの破棄
-	Release();
+	SetDeathFlag();
 }
 
 //=======================================================================================

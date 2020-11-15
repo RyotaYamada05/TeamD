@@ -63,7 +63,6 @@ private:
 	CModelAnime *m_pParent;	//親情報のポインタ
 	D3DXMATRIX m_OldMtxWorld;
 	D3DXMATRIX m_OldMtxWorld1[5];
-
 };
 
 #endif 
