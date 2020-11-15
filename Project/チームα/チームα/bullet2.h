@@ -59,8 +59,8 @@ public:
 	void Draw(void);										// •`‰æˆ—
 
 	bool Collision(void);									// “–‚½‚è”»’è
-	D3DXVECTOR3 VectorMath(D3DXVECTOR3 TargetPos,			// ’Ç]
-		float fSpeed);
+	D3DXVECTOR3 VectorMath(D3DXVECTOR3 TargetPos,float fSpeed);		// ’Ç]
+		
 
 	void SetLife(int nLife);								// ‘Ì—Í‚Ìİ’è
 	void SetMove(D3DXVECTOR3 move);							// ˆÚ“®—Ê‰ÁZ

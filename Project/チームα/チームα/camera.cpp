@@ -109,7 +109,6 @@ HRESULT CCamera::Init(void)
 		m_fMove = 5.0f;
 		m_fDistance = DISTANCE;
 		m_rot.y = 0.0f;
-
 		m_fθ = CAMERA_DEFAULT_Fθ;	
 		m_fφ = D3DXToRadian(180.0f);						// 初期値敵のほう向ける
 		m_posR = D3DXVECTOR3(0.0f, PLAYER_HEIGHT, 0.0f);	// 注視点設定
@@ -358,7 +357,6 @@ void CCamera::EndUpdate(D3DXVECTOR3 PlayerPos[], D3DXVECTOR3 PlayerRot[], int nW
 //=============================================================================
 void CCamera::NomalUpdate(D3DXVECTOR3 PlayerPos[], D3DXVECTOR3 PlayerRot[])
 {
-
 	int nCameraSecond = 0;	//プレイヤー2カメラ保存用
 	//カメラ番号から敵のカメラ番号の設定
 	if (m_nCameraNum == 0)
@@ -376,16 +374,17 @@ void CCamera::NomalUpdate(D3DXVECTOR3 PlayerPos[], D3DXVECTOR3 PlayerRot[])
 	// ジョイパッドの取得
 	DIJOYSTATE js = CInputJoypad::GetStick(m_nCameraNum);
 
-	//入力処理
-
-	if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_Y, m_nCameraNum) || pKeyInput->GetTrigger(DIK_TAB) && !m_bTarget&&CGame::GetPlayer(m_nCameraNum)->GetJump() == false)
-	{
-		
-		if (CGame::GetPlayer(m_nCameraNum)->GetJump() == false)
+	// ゲーム開始後
+	if (CLife::GetReadey() == false)
+	{		//入力処理
+		if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_Y, m_nCameraNum) || pKeyInput->GetTrigger(DIK_TAB) && !m_bTarget&&CGame::GetPlayer(m_nCameraNum)->GetJump() == false)
 		{
-			//ターゲット機能OFF
-			m_fθ = CAMERA_DEFAULT_Fθ;	//縦回転角固定
-			m_bTarget = true;			//ターゲットON
+			if (CGame::GetPlayer(m_nCameraNum)->GetJump() == false)
+			{
+				//ターゲット機能OFF
+				m_fθ = CAMERA_DEFAULT_Fθ;	//縦回転角固定
+				m_bTarget = true;			//ターゲットON
+			}
 		}
 	}
 

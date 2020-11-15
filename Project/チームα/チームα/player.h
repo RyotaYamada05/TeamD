@@ -20,6 +20,7 @@
 #define WIN_LOSE_NUM		(2)
 #define MAX_PARTS			(10)		// パーツの数
 #define MOTION_KEYSET_MAX	(32)		// キーセット最大数
+
 #define PLAYER2_POS_X		(0.0f)		// 座標
 #define PLAYER2_POS_Y		(171.0f)	// 座標
 #define PLAYER2_POS_Z		(500)		// 座標
@@ -27,6 +28,7 @@
 #define PLAYER_SIZE_X		(1)			// サイズ
 #define PLAYER_SIZE_Y		(1)			// サイズ
 #define PLAYER_SIZE_Z		(1)			// サイズ
+
 #define MAX_MODEL_PARTS			(21)		//モデルのパーツの最大数
 
 #define PLAYER_COLLISION_X	(200)		// 当たり判定
@@ -38,7 +40,7 @@
 #define WEAPON_COLLISION_Z	(100)		// 武器の当たり判定
 
 #define PLAYER_RADIUS		(150)		// 半径
-#define PLAYER_BOMB			(100)		// ボム撃つのに必要なゲージ数
+#define PLAYER_BOMB			(80)		// ボム撃つのに必要なゲージ数
 #define PLAYER_LASER		(35)		// レーザー撃つのに必要なゲージ数
 
 #define MAX_BOOST			(2)

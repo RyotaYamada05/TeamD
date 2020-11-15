@@ -39,6 +39,8 @@ CUi* CUi::Create(D3DXVECTOR3 pos, D3DXVECTOR3 size, UITYPE type)
 
 		return pUi;
 	}
+
+	return NULL;
 }
 
 //================================================

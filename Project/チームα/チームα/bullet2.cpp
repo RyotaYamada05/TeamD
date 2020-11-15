@@ -23,8 +23,8 @@
 //マクロ定義
 //=============================================================================
 #define BULLET2_ATK			(20)		// 攻撃力
-#define FOLLOW_TIME_NONE	(10)		// 通常弾の追従タイム
-#define FOLLOW_TIME_BOMB	(50)		// ボムの追従タイム
+#define FOLLOW_TIME_NONE	(50)		// 通常弾の追従タイム
+#define FOLLOW_TIME_BOMB	(200)		// ボムの追従タイム
 
 //=============================================================================
 // コンストラクタ
@@ -247,15 +247,15 @@ bool CBullet2::Collision(void)
 
 	//位置の取得
 	D3DXVECTOR3 targetPos = pPlayer->GetPos();
+	bool bLife = pPlayer->GetLife(0)->GetbLife();
 
-
-	// 当たり判定
-	if (targetPos.x +PLAYER_COLLISION_X / 2 >= m_pos.x - 50.0f &&
-		targetPos.x -PLAYER_COLLISION_X / 2 <= m_pos.x + 50.0f &&
-		targetPos.y +PLAYER_COLLISION_Y >= m_pos.y - 50.0f &&
-		targetPos.y -0.0f <= m_pos.y + 50.0f &&
-		targetPos.z +PLAYER_COLLISION_Z / 2 >= m_pos.z - 50.0f &&
-		targetPos.z -PLAYER_COLLISION_Z / 2 <= m_pos.z + 50.0f )
+		// 当たり判定
+	if (targetPos.x + PLAYER_COLLISION_X / 2 >= m_pos.x - 50.0f &&
+		targetPos.x - PLAYER_COLLISION_X / 2 <= m_pos.x + 50.0f &&
+		targetPos.y + PLAYER_COLLISION_Y >= m_pos.y - 50.0f &&
+		targetPos.y - 0.0f <= m_pos.y + 50.0f &&
+		targetPos.z + PLAYER_COLLISION_Z / 2 >= m_pos.z - 50.0f &&
+		targetPos.z - PLAYER_COLLISION_Z / 2 <= m_pos.z + 50.0f)
 	{
 		for (int nCount = 0; nCount < LIFE_NUM; nCount++)
 		{
@@ -277,39 +277,41 @@ bool CBullet2::Collision(void)
 					m_nDamage = 160;
 					break;
 				}
+
 				if (pPlayer->GetArmor() == false)
 				{
-					m_pTargetPL->GetLife(nCount)->Decrease(m_nDamage, m_user, true);
-					m_pTargetPL->GetLife(1)->Decrease(m_nDamage, m_user, true);
-
-					m_pTargetPL->SetMotion(MOTION_DAMAGE);
-					if (m_type != BULLET2_TYPE_NONE)
+					if (bLife == false)
 					{
-						
+						m_pTargetPL->GetLife(nCount)->Decrease(m_nDamage, m_user, true);
+						m_pTargetPL->GetLife(1)->Decrease(m_nDamage, m_user, true);
+
+						if (m_type != BULLET2_TYPE_NONE)
+						{
+							m_pTargetPL->SetMotion(MOTION_DAMAGE);
+						}
 					}
-				}
 
-				// プレイヤー情報の取得
-				switch (m_user)
-				{
-				case BULLET2_USER_PL1:
-					CGame::GetCamera(1)->SetTarget(false);
-					break;
-				case BULLET2_USER_PL2:
-					CGame::GetCamera(0)->SetTarget(false);
-					break;
-				}
+					// プレイヤー情報の取得
+					switch (m_user)
+					{
+					case BULLET2_USER_PL1:
+						CGame::GetCamera(1)->SetTarget(false);
+						break;
+					case BULLET2_USER_PL2:
+						CGame::GetCamera(0)->SetTarget(false);
+						break;
+					}
 
-					// 爆発生成
-					C2dExplosion::Create(D3DXVECTOR3(m_pTargetPL->GetPos().x, m_pos.y, m_pTargetPL->GetPos().z),
-						D3DXVECTOR3(EXPLOSION_SIZE_X_2D, EXPLOSION_SIZE_Y_2D, EXPLOSION_SIZE_Z_2D));
 
-		
+
+
+				}// 爆発生成
+				C2dExplosion::Create(D3DXVECTOR3(m_pTargetPL->GetPos().x, m_pos.y, m_pTargetPL->GetPos().z),
+					D3DXVECTOR3(EXPLOSION_SIZE_X_2D, EXPLOSION_SIZE_Y_2D, EXPLOSION_SIZE_Z_2D));
 			}
+			m_nLife = 0;
+			return true;
 		}
-
-		m_nLife = 0;
-		return true;
 	}
 
 	for (int nCount = 0; nCount < PRIORITY_MAX; nCount++)

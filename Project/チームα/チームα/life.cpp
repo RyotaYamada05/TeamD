@@ -327,7 +327,13 @@ bool CLife::GetReadey(void)
 	return m_bStart;
 }
 
+
 float CLife::GetLife(void)
 {
 	return m_fLife;
+}
+
+bool CLife::GetbLife(void)
+{
+	return m_bLife;
 }

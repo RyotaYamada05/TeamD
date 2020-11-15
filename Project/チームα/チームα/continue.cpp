@@ -45,6 +45,7 @@ CContinue::CContinue(int nPriority) : CScene(nPriority)
 	memset(m_apContinue, 0, sizeof(m_apContinue));
 	m_pUiEnd = NULL;
 	m_bEnd = false;
+	m_bTimeUp = false;
 }
 
 //=============================================================================
@@ -110,26 +111,70 @@ void CContinue::Update(void)
 	CFade::FADE_MODE mode = CManager::GetFade()->GetFade();
 	CSound *pSound = CManager::GetSound();
 
-	m_nContinueCount++;
-	if (m_nContinueCount % 60 == 0)
+	if (m_bTimeUp == false)
 	{
-		if (m_nContinue > 0)
+
+		m_nContinueCount++;
+		if (m_nContinueCount % 60 == 0)
 		{
-			AddTime(1);
+			if (m_nContinue > 0)
+			{
+				AddTime(1);
+			}
+			else
+			{
+				if (m_pUiEnd != NULL)
+				{
+					m_pUiEnd->Uninit();
+					m_pUiEnd = NULL;
+				}
+
+				CUiEnd::Create(D3DXVECTOR3(UI_CONTINUE_POS_X, 500.0f, 0.0f), D3DXVECTOR3(400, 40, 0.0f), CUiEnd::UIENDTYPE_THANKS);
+				m_bTimeUp = true;
+				// èIóπèàóù
+				m_bEnd = true;
+				return;
+			}
 		}
-		else
+
+		if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_START, 0) && mode == CFade::FADE_MODE_NONE
+			|| pKeyboard->GetTrigger(DIK_RETURN) && mode == CFade::FADE_MODE_NONE)
 		{
+			m_bEnd = true;
+
 			if (m_pUiEnd != NULL)
 			{
 				m_pUiEnd->Uninit();
 				m_pUiEnd = NULL;
 			}
 
-			CUiEnd::Create(D3DXVECTOR3(UI_CONTINUE_POS_X, 500.0f, 0.0f), D3DXVECTOR3(400, 40, 0.0f), CUiEnd::UIENDTYPE_THANKS);
-
-			// èIóπèàóù
-			m_bEnd = true;
+			CFade *pFade = CManager::GetFade();
+			pFade->SetFade(CManager::MODE_TYPE_GAME);
+			pSound->Play(CSound::SOUND_LABEL_SE_START);
 			return;
+		}
+
+		if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_A, 0) && mode == CFade::FADE_MODE_NONE
+			|| pKeyboard->GetTrigger(DIK_A) && mode == CFade::FADE_MODE_NONE)
+		{
+			if (m_nContinue > 0)
+			{
+				AddTime(1);
+			}
+			else
+			{
+				if (m_pUiEnd != NULL)
+				{
+					m_pUiEnd->Uninit();
+					m_pUiEnd = NULL;
+				}
+
+				CUiEnd::Create(D3DXVECTOR3(UI_CONTINUE_POS_X, 500.0f, 0.0f), D3DXVECTOR3(400, 40, 0.0f), CUiEnd::UIENDTYPE_THANKS);
+				m_bTimeUp = true;
+				// èIóπèàóù
+				m_bEnd = true;
+				return;
+			}
 		}
 	}
 
@@ -170,13 +215,16 @@ void CContinue::Draw(void)
 //=============================================================================
 void CContinue::AddTime(int nValue)
 {
-	m_nContinue -= nValue;
-
-	for (int nCount = 0; nCount < MAX_CONTINUE; nCount++)
+	if (m_bTimeUp == false)
 	{
-		if (m_apContinue[nCount] != NULL)
+		m_nContinue -= nValue;
+
+		for (int nCount = 0; nCount < MAX_CONTINUE; nCount++)
 		{
-			m_apContinue[nCount]->SetNumber(m_nContinue % (int)powf(10, MAX_CONTINUE - nCount) / powf(10, MAX_CONTINUE - nCount - 1));
+			if (m_apContinue[nCount] != NULL)
+			{
+				m_apContinue[nCount]->SetNumber(m_nContinue % (int)powf(10, MAX_CONTINUE - nCount) / powf(10, MAX_CONTINUE - nCount - 1));
+			}
 		}
 	}
 }

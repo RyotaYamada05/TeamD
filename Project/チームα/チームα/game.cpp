@@ -1,6 +1,5 @@
 //=======================================================================================
 //
-
 // ゲーム処理 [game.cpp]
 // Author : Konishi Yuuto
 //
@@ -375,12 +374,12 @@ void CGame::Update(void)
 		m_pSphere->Update();
 	}
 
-	for (int nCount = 0; nCount < FIRE_NUM; nCount++)
-	{
-		// 炎の生成
-		CFire::Create(D3DXVECTOR3(0.0f, 50.0f, 0.0f),
-			D3DXVECTOR3(FIRE_SIZE_X, FIRE_SIZE_Y, 0.0f), FIRE_LIFE);
-	}
+	//for (int nCount = 0; nCount < FIRE_NUM; nCount++)
+	//{
+	//	// 炎の生成
+	//	CFire::Create(D3DXVECTOR3(0.0f, 50.0f, 0.0f),
+	//		D3DXVECTOR3(FIRE_SIZE_X, FIRE_SIZE_Y, 0.0f), FIRE_LIFE);
+	//}
 
 	//コンテニューのタイム
 	if (m_pContinue != NULL)
@@ -395,9 +394,11 @@ void CGame::Update(void)
 
 	if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_START, 0) || pKey->GetTrigger(DIK_I))
 	{
-		m_pPause = CPause::Create();
+		if (m_bGameEnd == false)
+		{
+			m_pPause = CPause::Create();
+		}
 	}
-
 	// ゲームの設定
 	SetGame();
 

@@ -49,7 +49,6 @@ HRESULT CBill::LoadModel(void)
 	LPDIRECT3DDEVICE9 pD3DDevice = CManager::GetRenderer()->GetDevice();
 
 	// ƒ‚ƒfƒ‹‚Ì¶¬
-
 	D3DXLoadMeshFromX("data/model/bill.x", D3DXMESH_SYSTEMMEM,
 		pD3DDevice,
 		NULL,
@@ -57,7 +56,6 @@ HRESULT CBill::LoadModel(void)
 		NULL,
 		&m_nNumMat,
 		&m_pMesh);
-
 
 	// ³íI—¹
 	return S_OK;

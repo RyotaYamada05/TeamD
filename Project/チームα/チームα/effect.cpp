@@ -56,7 +56,7 @@ HRESULT CEffect::Load(void)
 	LPDIRECT3DDEVICE9 pDevice = pRenderer->GetDevice();
 
 	// テクスチャの読み込み
-	D3DXCreateTextureFromFile(pDevice, "data/Texture/effect000.jpg",
+	D3DXCreateTextureFromFile(pDevice, "data/Texture/effect003.png",
 		&m_apTexture[0]);
 
 	return S_OK;
@@ -153,20 +153,21 @@ void CEffect::Draw(void)
 	pRenderer = CManager::GetRenderer();
 	LPDIRECT3DDEVICE9 pDevice = pRenderer->GetDevice();
 
-	pDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
-	pDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
-	pDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_CURRENT);
+//	pDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+//	pDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+//	pDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_CURRENT);
 
 	// かぶさらないようにする　(Zバッファ)
-	pDevice->SetRenderState(D3DRS_ZENABLE, false);
+	//pDevice->SetRenderState(D3DRS_ZENABLE, false);
 
 	// 加算合成を行う
 	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);			// aデスティネーションカラー
 
 	D3DMATERIAL9 material, OldMaterial;
 	ZeroMemory(&material, sizeof(D3DMATERIAL9));
-	material.Ambient = D3DXCOLOR(0.1f, 0.4f, 1.0f, 1.0f);
-	material.Diffuse = D3DXCOLOR(0.1f, 0.1f, 0.1f, 1.0f);
+	material.Ambient = D3DXCOLOR(0.1f, 0.3f, 1.0f, 1.0f);
+	material.Diffuse = D3DXCOLOR(0.3f, 0.3f, 0.3f, 1.0f);
+	pDevice->GetMaterial(&OldMaterial);
 	pDevice->GetMaterial(&OldMaterial);
 	pDevice->SetMaterial(&material);
 	pDevice->SetRenderState(D3DRS_AMBIENT, 0x44444444);
@@ -176,14 +177,26 @@ void CEffect::Draw(void)
 	pDevice->SetRenderState(D3DRS_AMBIENT, 0xffffffff);
 	pDevice->LightEnable(0, FALSE);
 
+	// アルファテストを有力化
+	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+
+	// アルファテスト基準値の設定
+	pDevice->SetRenderState(D3DRS_ALPHAREF, 75);
+
 	// 2Dポリゴン描画処理
 	CBillboard::Draw();
+
+	// アルファテスト基準値の設定
+	pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
+
+	// アルファテストを有力化
+//	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
 
 	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);	// aデスティネーションカラー
 
 
 	// Zバッファ戻す
-	pDevice->SetRenderState(D3DRS_ZENABLE, true);
+	//pDevice->SetRenderState(D3DRS_ZENABLE, true);
 
 	pDevice->SetRenderState(D3DRS_AMBIENT, ambient);
 	pDevice->SetMaterial(&OldMaterial);					// マテリアルを元に戻す

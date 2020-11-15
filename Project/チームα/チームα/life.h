@@ -57,6 +57,7 @@ public:
 	static void SetReady(bool bReady);
 	static bool GetReadey(void);
 	float GetLife(void);
+	bool GetbLife(void);
 	//bool GetLife(void);
 private:
 	static LPDIRECT3DTEXTURE9 m_apTexture[LIFE_TYPE];	// テクスチャーのポインタ

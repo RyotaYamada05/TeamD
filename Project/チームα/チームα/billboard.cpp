@@ -141,10 +141,10 @@ void CBillboard::Draw(void)
 	DWORD ambient;
 
 	//現在アンビエント情報を保存
-	pDevice->GetRenderState(D3DRS_AMBIENT, &ambient);
+	//pDevice->GetRenderState(D3DRS_AMBIENT, &ambient);
 
-	pDevice->SetRenderState(D3DRS_AMBIENT, 0xff030303);   // ちょっと白く照らす	//ライティングをOFFにする
-	pDevice->SetRenderState(D3DRS_AMBIENT, ambient);
+	//pDevice->SetRenderState(D3DRS_AMBIENT, 0xff030303);   // ちょっと白く照らす	//ライティングをOFFにする
+	//pDevice->SetRenderState(D3DRS_AMBIENT, ambient);
 
 	//pDevice->SetRenderState(D3DRS_AMBIENT, 0xffffffff);
 	//pDevice->LightEnable(0, TRUE);
@@ -170,13 +170,10 @@ void CBillboard::Draw(void)
 	m_mtxWorld._43 = 0;
 
 	// アルファテストを有力化
-	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
-
-	// アルファテスト基準値の設定
-	pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
+//	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
 
 	// アルファテストの比較方法の設定(GREATERは基準値より大きい場合)
-	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
+//	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
 
 	// 位置を反映、ワールドマトリクス設定、ポリゴン描画
 	D3DXMatrixTranslation(&mtxTrans, m_Pos.x, m_Pos.y, m_Pos.z);
@@ -198,11 +195,11 @@ void CBillboard::Draw(void)
 	pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
 
 	// アルファテストを無効化
-	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+//	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
 
 	pDevice->SetTexture(0, NULL);
 
-	pDevice->SetRenderState(D3DRS_AMBIENT, ambient);
+//	pDevice->SetRenderState(D3DRS_AMBIENT, ambient);
 	pDevice->LightEnable(0, TRUE);
 }
 

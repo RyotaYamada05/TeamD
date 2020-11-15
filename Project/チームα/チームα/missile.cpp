@@ -1,8 +1,8 @@
 //=============================================================================
 //
-// ミサイル処理 [missile.cpp]
-// Author : 山田陵太
-//
+// Author : Konishi Yuuto
+//=============================================================================
+// インクルード
 //=============================================================================
 #include "missile.h"
 #include "modelanime.h"
@@ -26,6 +26,7 @@
 #define MISSILE_XFAILE_NAME "data/Text/motionMissile.txt"	//ミサイルのデータファイルパス
 #define FOLLOW_TIME_MISSILE		(30)						// ミサイルの追従
 #define MISSILE_LIFE			(1000)						// ミサイルのライフ
+#define MISSILE_ATTACK			(100)
 
 //=============================================================================
 //グローバル変数宣言
@@ -101,6 +102,8 @@ HRESULT CMissile::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 	//向きの設定
 	m_size = size;
 
+	m_nDamage = MISSILE_ATTACK;
+
 	//ファイル読み込み
 	if (FAILED(ReadFile()))
 	{
@@ -136,7 +139,6 @@ HRESULT CMissile::Init(const D3DXVECTOR3 pos, const D3DXVECTOR3 size)
 	case MISSILE_USER_PL1:
 		//2Pの情報取得
 		m_pTargetPL = CGame::GetPlayer(1);
-
 		break;
 	case MISSILE_USER_PL2:
 		//1Pの情報取得
@@ -177,20 +179,19 @@ void CMissile::Uninit(void)
 //ミサイルクラスの更新処理
 //=============================================================================
 void CMissile::Update(void)
-{
-	m_rot.y = atan2f(m_pos.x - CGame::GetPlayer(1)->GetPos().x, m_pos.z - CGame::GetPlayer(1)->GetPos().z);
-
-	if (m_rot.y < 0)
-	{
-		m_rot.y = D3DXToRadian(360.0f + D3DXToDegree(m_rot.y));
-	}
-
-	//位置の取得
+{	//位置の取得
 	m_nCounter++;
 
 	// 通常の場合
 	if (m_nCounter <= FOLLOW_TIME_MISSILE)
 	{
+		m_rot.y = atan2f(m_pos.x - CGame::GetPlayer(1)->GetPos().x, m_pos.z - CGame::GetPlayer(1)->GetPos().z);
+
+		if (m_rot.y < 0)
+		{
+			m_rot.y = D3DXToRadian(360.0f + D3DXToDegree(m_rot.y));
+		}
+
 		if (m_pTargetPL != NULL)
 		{
 			//移動量の計算
@@ -296,24 +297,28 @@ bool CMissile::Collision(void)
 				{
 					if (m_pTargetPL->GetArmor() == false)
 					{
-						m_pTargetPL->GetLife(nCount)->Decrease(m_nDamage, m_user, true);
-						m_pTargetPL->GetLife(1)->Decrease(m_nDamage, m_user, true);
+						bool bLife = m_pTargetPL->GetLife(0)->GetbLife();
+
+						if (bLife == false)
+						{
+							m_pTargetPL->GetLife(nCount)->Decrease(m_nDamage, m_user, true);
+							m_pTargetPL->GetLife(1)->Decrease(m_nDamage, m_user, true);
+
+							m_pTargetPL->SetMotion(MOTION_DAMAGE);
+						}
 
 
-						m_pTargetPL->SetMotion(MOTION_DAMAGE);
+						// プレイヤー情報の取得
+						switch (m_user)
+						{
+						case MISSILE_USER_PL1:
+							CGame::GetCamera(1)->SetTarget(false);
+							break;
+						case MISSILE_USER_PL2:
+							CGame::GetCamera(0)->SetTarget(false);
+							break;
+						}
 					}
-
-					// プレイヤー情報の取得
-					switch (m_user)
-					{
-					case MISSILE_USER_PL1:
-						CGame::GetCamera(1)->SetTarget(false);
-						break;
-					case MISSILE_USER_PL2:
-						CGame::GetCamera(0)->SetTarget(false);
-						break;
-					}
-
 					// 爆発生成
 					C2dExplosion::Create(D3DXVECTOR3(m_pTargetPL->GetPos().x, m_pos.y, m_pTargetPL->GetPos().z),
 						D3DXVECTOR3(EXPLOSION_SIZE_X_2D, EXPLOSION_SIZE_Y_2D, EXPLOSION_SIZE_Z_2D));
@@ -384,7 +389,6 @@ bool CMissile::Collision(void)
 //=============================================================================
 D3DXVECTOR3 CMissile::VectorMath(D3DXVECTOR3 TargetPos, float fSpeed)
 {
-
 	//2点間のベクトルを求める（終点[目標地点] - 始点[自身の位置]）
 	D3DXVECTOR3 Vector = TargetPos - m_pos;
 
@@ -505,5 +509,4 @@ HRESULT CMissile::ReadFile(void)
 		MessageBox(NULL, "モーションファイルを開くのに失敗しました", "ミサイルクラスでのエラー", MB_OK | MB_ICONEXCLAMATION);
 
 		return	E_FAIL;
-	}
-}
+	}}

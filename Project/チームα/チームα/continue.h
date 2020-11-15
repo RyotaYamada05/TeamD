@@ -59,6 +59,7 @@ private:
 	static CUi *m_pUi;							// uiのポインタ
 	CUiEnd *m_pUiEnd;			// コンティニュー
 	bool m_bEnd;
+	bool m_bTimeUp;
 };
 #endif // !_CONTINUE_H_
 
