@@ -1187,7 +1187,7 @@ void CPlayer::Walk(void)
 	CInputKeyboard *pKeyboard = CManager::GetKeyboard();
 
 	// ジョイパッドの取得
-	DIJOYSTATE js = CInputJoypad::GetStick(0);
+	DIJOYSTATE js = CInputJoypad::GetStick(m_nPlayerNum);
 
 	CSound *pSound = CManager::GetSound();
 
