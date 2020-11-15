@@ -24,20 +24,25 @@ public:
 	{
 		SOUND_LABEL_BGM_TITLE = 0,		// BGM0
 		SOUND_LABEL_BGM_GAME,			// BGM1
-		//SOUND_LABEL_BGM_RESULT,		// BGM2
-		SOUND_LABEL_SE_EXPLOSION_DEAH,		// 爆発音
+		SOUND_LABEL_SE_EXPLOSION_DEAH,	// 爆発音
 		SOUND_LABEL_SE_START,			// タイトルのスタート音
 		SOUND_LABEL_SE_WALK,			// 歩くときの音
-		SOUND_LABEL_SE_BOMB,
-		SOUND_LABEL_SE_SAND,
-		SOUND_LABEL_SE_JUMP,
-		SOUND_LABEL_SE_BULLET,
-		SOUND_LABEL_SE_BULLET2,
-		SOUND_LABEL_SE_TURBO,
-		SOUND_LABEL_SE_COUNTDOWN,
-		SOUND_LABEL_SE_SLASH,	//斬撃音
+		SOUND_LABEL_SE_BOMB,			// 弾があたったときの音
+		SOUND_LABEL_SE_SAND,			// 着地音
+		SOUND_LABEL_SE_JUMP,			// ジャンプ
+		SOUND_LABEL_SE_BULLET,			// 弾発射
+		SOUND_LABEL_SE_BULLET2,			// 弾発射
+		SOUND_LABEL_SE_TURBO,			// ターボ発射
+		SOUND_LABEL_SE_COUNTDOWN,		// カウントダウン音
+		SOUND_LABEL_SE_SLASH,			// 斬撃音
 		SOUND_LABEL_MAX,
 	} SOUND_LABEL;
+
+	typedef enum
+	{
+		SOUND_LOOP_ON = -1,	//ループする
+		SOUND_LOOP_OFF,		//ループしない
+	}SOUND_LOOP;
 
 	HRESULT Init(HWND hWnd);
 	void Uninit(void);
@@ -48,7 +53,7 @@ private:
 	typedef struct
 	{
 		char *m_pFilename;	// ファイル名
-		int m_nCntLoop;		// ループカウント
+		SOUND_LOOP isLoop;		// ループするかどうか
 	}PARAM;
 
 	HRESULT CheckChunk(HANDLE hFile, DWORD format, DWORD *pChunkSize, DWORD *pChunkDataPosition);

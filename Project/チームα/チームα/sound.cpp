@@ -11,20 +11,19 @@
 CSound::PARAM CSound::m_aParam[SOUND_LABEL_MAX] =
 {
 	//BGM
-	{ "data/BGM/title001.wav", -1 },			// タイトルBGM
-	{ "data/BGM/game001.wav", -1 },				// ゲームBGM
-	//{ "data/BGM/game001.wav", -1 },			// リザルト
-	{ "data/SE/playerdeath.wav", -1 },			// 爆発音												//SE
-	{ "data/SE/PressEntre.wav", 0 },			// PressEnter
-	{ "data/SE/walk.wav", 0 },					//足音音
-	{ "data/SE/bomb.wav", 0 },					// 弾があたったときの音
-	{ "data/SE/Fall.wav", 0 },					// 着地音
-	{ "data/SE/jump.wav", 0 },					// ジャンプ
-	{ "data/SE/bullet.wav", 0 },				// 弾発射
-	{ "data/SE/bullet001.wav", 0 },				// 弾発射
-	{ "data/SE/turbo001.wav", 0 },				// ターボ発射
-	{ "data/SE/countdown.wav", 0 },				// カウントダウン音
-	{ "data/SE/Slash.wav", 0 },					// 斬撃音
+	{ "data/BGM/title001.wav", SOUND_LOOP_ON },			// タイトルBGM
+	{ "data/BGM/game001.wav", SOUND_LOOP_ON },			// ゲームBGM
+	{ "data/SE/playerdeath.wav", SOUND_LOOP_ON },		// 爆発音
+	{ "data/SE/PressEntre.wav", SOUND_LOOP_OFF },		// PressEnter
+	{ "data/SE/walk.wav", SOUND_LOOP_OFF },				//足音音
+	{ "data/SE/bomb.wav", SOUND_LOOP_OFF },				// 弾があたったときの音
+	{ "data/SE/Fall.wav", SOUND_LOOP_OFF },				// 着地音
+	{ "data/SE/jump.wav", SOUND_LOOP_OFF },				// ジャンプ
+	{ "data/SE/bullet.wav", SOUND_LOOP_OFF },			// 弾発射
+	{ "data/SE/bullet001.wav", SOUND_LOOP_OFF },		// 弾発射
+	{ "data/SE/turbo001.wav", SOUND_LOOP_OFF },			// ターボ発射
+	{ "data/SE/countdown.wav", SOUND_LOOP_OFF },		// カウントダウン音
+	{ "data/SE/Slash.wav", SOUND_LOOP_OFF },			// 斬撃音
 
 };
 //================================================
@@ -32,7 +31,11 @@ CSound::PARAM CSound::m_aParam[SOUND_LABEL_MAX] =
 //================================================
 CSound::CSound()
 {
-
+	m_pXAudio2 = NULL;	// XAudio2オブジェクトへのインターフェイス
+	m_pMasteringVoice = NULL;	// マスターボイス
+	memset(m_apSourceVoice, 0, sizeof(m_apSourceVoice));	// ソースボイス
+	memset(m_apDataAudio, 0, sizeof(m_apDataAudio));	// オーディオデータ
+	memset(m_aSizeAudio, 0, sizeof(m_aSizeAudio));
 }
 
 //================================================
@@ -158,7 +161,7 @@ HRESULT CSound::Init(HWND hWnd)
 		buffer.AudioBytes = m_aSizeAudio[nCntSound];
 		buffer.pAudioData = m_apDataAudio[nCntSound];
 		buffer.Flags = XAUDIO2_END_OF_STREAM;
-		buffer.LoopCount = m_aParam[nCntSound].m_nCntLoop;
+		buffer.LoopCount = m_aParam[nCntSound].isLoop;
 
 		// オーディオバッファの登録
 		m_apSourceVoice[nCntSound]->SubmitSourceBuffer(&buffer);
@@ -170,6 +173,8 @@ HRESULT CSound::Init(HWND hWnd)
 		CloseHandle(hFile);
 	}
 
+	//斬撃音のボリュームを設定
+	m_apSourceVoice[SOUND_LABEL_SE_SLASH]->SetVolume(0.1f);
 	return S_OK;
 
 }
@@ -225,7 +230,7 @@ HRESULT CSound::Play(SOUND_LABEL label)
 	buffer.AudioBytes = m_aSizeAudio[label];
 	buffer.pAudioData = m_apDataAudio[label];
 	buffer.Flags = XAUDIO2_END_OF_STREAM;
-	buffer.LoopCount = m_aParam[label].m_nCntLoop;
+	buffer.LoopCount = m_aParam[label].isLoop;
 
 	// 状態取得
 	m_apSourceVoice[label]->GetState(&xa2state);
