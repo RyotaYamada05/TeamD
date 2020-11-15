@@ -178,6 +178,13 @@ void CMissile::Uninit(void)
 //=============================================================================
 void CMissile::Update(void)
 {
+	m_rot.y = atan2f(m_pos.x - CGame::GetPlayer(1)->GetPos().x, m_pos.z - CGame::GetPlayer(1)->GetPos().z);
+
+	if (m_rot.y < 0)
+	{
+		m_rot.y = D3DXToRadian(360.0f + D3DXToDegree(m_rot.y));
+	}
+
 	//ˆÊ’u‚ÌŽæ“¾
 	m_nCounter++;
 

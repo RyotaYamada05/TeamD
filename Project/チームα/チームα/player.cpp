@@ -181,7 +181,7 @@ HRESULT CPlayer::Init(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 	m_nBombInter = 0;							// ボムのインターバル
 	m_nLaserInter = 0;;							// レーザーのインターバル
 	m_bAttack = false;
-	m_bWin = true;
+	m_bWin = false;
 	m_pDraw = NULL;
 
 	for (int nCount = 0; nCount < MAX_PLAYER; nCount++)
@@ -1422,7 +1422,7 @@ void CPlayer::Dush(void)
 				{
 					// 砂の生成
 					CSand::Create(D3DXVECTOR3(m_pos.x, 0.0f, m_pos.z),
-						D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(m_rot.x + 0.0f, m_rot.y, m_rot.z+0.0f),
+						D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(m_rot.x + 0.0f, m_rot.y, m_rot.z + 0.0f),
 						D3DXVECTOR3(SAND_SIZE_X, SAND_SIZE_Y, SAND_SIZE_Z));
 				}
 			}
@@ -1762,12 +1762,12 @@ void CPlayer::Laser(void)
 	{
 		float fSizeX = m_pLife[0]->GetSize().x;
 
-		if (m_nLaserInter >= PLAYER_LASER_INTER && fSizeX <= 200.0f)
+		if (m_nLaserInter >= PLAYER_LASER_INTER /*&& fSizeX <= 200.0f*/)
 		{
 			// キーボード更新
 			CInputKeyboard *pKeyboard = CManager::GetKeyboard();
 
-			// Mキーを押したとき・コントローラのR1を押したとき
+			// Mキーを押したとき・コントローラのL2を押したとき
 			if (CManager::GetJoypad()->GetJoystickTrigger(CInputJoypad::JOY_BUTTON_L2_TRIGGER, m_nPlayerNum) && m_bJump == false
 				|| pKeyboard->GetTrigger(DIK_M) && m_bJump == false)
 			{
@@ -1776,6 +1776,27 @@ void CPlayer::Laser(void)
 				switch (m_nPlayerNum)
 				{
 				case 0:
+					m_fAngle = atan2f(m_pos.x - CGame::GetPlayer(1)->GetPos().x, m_pos.z - CGame::GetPlayer(1)->GetPos().z);
+
+					if (m_fAngle < 0)
+					{
+						m_fAngle = D3DXToRadian(360.0f + D3DXToDegree(m_fAngle));
+					}
+
+					m_rotDest.y = m_fAngle;
+
+					while (m_rotDest.y - m_rot.y > D3DXToRadian(180))
+					{
+						m_rotDest.y -= D3DXToRadian(360);
+					}
+
+					while (m_rotDest.y - m_rot.y < D3DXToRadian(-180))
+					{
+						m_rotDest.y += D3DXToRadian(360);
+					}
+
+					m_rot += (m_rotDest - m_rot);
+
 					//バレットの生成
 					CLaser::Create(/*D3DXVECTOR3(m_pos.x + sinf(m_rot.z)+200.0f, m_pos.y, m_pos.z + cosf(m_rot.z)+200.0f)*/m_pos,
 						D3DXVECTOR3(0.0f, 0.0f, -LASER_SPEED),
@@ -1793,6 +1814,27 @@ void CPlayer::Laser(void)
 					break;
 
 				case 1:
+					m_fAngle = atan2f(m_pos.x - CGame::GetPlayer(0)->GetPos().x, m_pos.z - CGame::GetPlayer(0)->GetPos().z);
+
+					if (m_fAngle < 0)
+					{
+						m_fAngle = D3DXToRadian(360.0f + D3DXToDegree(m_fAngle));
+					}
+
+					m_rotDest.y = m_fAngle;
+
+					while (m_rotDest.y - m_rot.y > D3DXToRadian(180))
+					{
+						m_rotDest.y -= D3DXToRadian(360);
+					}
+
+					while (m_rotDest.y - m_rot.y < D3DXToRadian(-180))
+					{
+						m_rotDest.y += D3DXToRadian(360);
+					}
+
+					m_rot += (m_rotDest - m_rot);
+
 					//バレットの生成
 
 					CLaser::Create(m_pos,
