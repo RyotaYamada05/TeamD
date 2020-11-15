@@ -75,5 +75,8 @@ private:
 	CAMERASTATE m_state;					//ステータス
 	static int m_nCameraAll;				//カメラの数
 	CLockon *m_pLockon[2];
+	int m_nWinPlayer;						//Winプレイヤー番号
+	float m_fDifference;					//勝利カメラ回転開始角から終了角の差
+	float m_fEndVertical;					//勝利カメラ終了角度
 };
 #endif 
