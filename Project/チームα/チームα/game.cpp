@@ -11,10 +11,8 @@
 #include "game.h"
 #include "camera.h"
 #include "light.h"
-#include "board.h"
 #include "model.h"
 #include "manager.h"
-#include "conection.h"
 #include "renderer.h"
 #include "player.h"
 #include "meshfield.h"
@@ -335,8 +333,6 @@ void CGame::Uninit(void)
 	//ƒQ[ƒ€BGM’âŽ~
 	pSound->Stop(CSound::SOUND_LABEL_BGM_GAME);
 
-	CManager::GetConection()->Uninit();
-
 	//ƒIƒuƒWƒFƒNƒg‚Ì”jŠü
 	SetDeathFlag();
 }
@@ -401,8 +397,6 @@ void CGame::Update(void)
 	}
 	// ƒQ[ƒ€‚ÌÝ’è
 	SetGame();
-
-	CManager::GetConection()->Update();
 }
 
 //=======================================================================================

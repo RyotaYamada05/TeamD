@@ -24,14 +24,12 @@
     <ClCompile Include="bg.cpp" />
     <ClCompile Include="bill.cpp" />
     <ClCompile Include="billboard.cpp" />
-    <ClCompile Include="board.cpp" />
     <ClCompile Include="bomb.cpp" />
     <ClCompile Include="boost.cpp" />
     <ClCompile Include="bullet.cpp" />
     <ClCompile Include="bullet2.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="charge.cpp" />
-    <ClCompile Include="conection.cpp" />
     <ClCompile Include="continue.cpp" />
     <ClCompile Include="effect.cpp" />
     <ClCompile Include="explosion.cpp" />
@@ -71,7 +69,6 @@
     <ClCompile Include="smoke.cpp" />
     <ClCompile Include="sound.cpp" />
     <ClCompile Include="splash.cpp" />
-    <ClCompile Include="tcp_client.cpp" />
     <ClCompile Include="time.cpp" />
     <ClCompile Include="title.cpp" />
     <ClCompile Include="titlelogo.cpp" />
@@ -87,14 +84,12 @@
     <ClInclude Include="bg.h" />
     <ClInclude Include="bill.h" />
     <ClInclude Include="billboard.h" />
-    <ClInclude Include="board.h" />
     <ClInclude Include="bomb.h" />
     <ClInclude Include="boost.h" />
     <ClInclude Include="bullet.h" />
     <ClInclude Include="bullet2.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="charge.h" />
-    <ClInclude Include="conection.h" />
     <ClInclude Include="continue.h" />
     <ClInclude Include="effect.h" />
     <ClInclude Include="explosion.h" />
@@ -134,7 +129,6 @@
     <ClInclude Include="smoke.h" />
     <ClInclude Include="sound.h" />
     <ClInclude Include="splash.h" />
-    <ClInclude Include="tcp_client.h" />
     <ClInclude Include="time.h" />
     <ClInclude Include="title.h" />
     <ClInclude Include="titlelogo.h" />

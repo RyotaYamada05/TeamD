@@ -21,12 +21,6 @@
     <ClCompile Include="bill.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
-    <ClCompile Include="billboard.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="board.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
     <ClCompile Include="bomb.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
@@ -43,9 +37,6 @@
       <Filter>ソースファイル</Filter>
     </ClCompile>
     <ClCompile Include="charge.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="conection.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
     <ClCompile Include="continue.cpp">
@@ -162,9 +153,6 @@
     <ClCompile Include="splash.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
-    <ClCompile Include="tcp_client.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
     <ClCompile Include="time.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
@@ -192,6 +180,9 @@
     <ClCompile Include="uipause.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
+    <ClCompile Include="billboard.cpp">
+      <Filter>ソースファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="2d_explosion.h">
@@ -207,9 +198,6 @@
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
     <ClInclude Include="billboard.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="board.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
     <ClInclude Include="bomb.h">
@@ -228,9 +216,6 @@
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
     <ClInclude Include="charge.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="conection.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
     <ClInclude Include="continue.h">
@@ -345,9 +330,6 @@
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
     <ClInclude Include="splash.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="tcp_client.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
     <ClInclude Include="time.h">

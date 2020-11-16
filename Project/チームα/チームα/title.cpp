@@ -14,8 +14,6 @@
 #include "keyboard.h"
 #include "manager.h"
 #include "renderer.h"
-#include "conection.h"
-#include "tcp_client.h"
 #include "fade.h"
 #include "titlelogo.h"
 #include "sound.h"

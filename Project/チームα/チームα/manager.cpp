@@ -14,12 +14,9 @@
 #include "keyboard.h"
 #include "scene3D.h"
 #include "billboard.h"
-#include "board.h"
 #include "model.h"
-#include "tcp_client.h"
 #include "title.h"
 #include "game.h"
-#include "conection.h"
 #include "result.h"
 #include "fade.h"
 #include "player.h"
@@ -132,16 +129,6 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindow)
 	if (m_pSound != NULL)
 	{
 		m_pSound->Init(hWnd);
-	}
-
-	m_pConection = new CConection;
-	if (m_pConection != NULL)
-	{
-		if (FAILED(m_pConection->Init()))
-		{
-			m_pConection->Uninit();
-			return -1;
-		}
 	}
 
 	//タイトルクラスのクリエイト
@@ -275,8 +262,6 @@ void CManager::Draw(void)
 //=============================================================================
 void CManager::LoadAll(void)
 {
-
-	CBoard::Load();
 	CTitle::Load();
 	CResult::Load();
 	CMeshField::Load();
@@ -317,7 +302,6 @@ void CManager::LoadAll(void)
 //=============================================================================
 void CManager::UnLoadAll(void)
 {
-	CBoard::UnLoad();
 	CMeshField::UnLoad();
 	CBg::UnLoad();
 	CLife::Unload();

@@ -10,7 +10,6 @@
 //====================================================
 CSound::PARAM CSound::m_aParam[SOUND_LABEL_MAX] =
 {
-	//BGM
 	{ "data/BGM/title001.wav", SOUND_LOOP_ON },			// タイトルBGM
 	{ "data/BGM/game001.wav", SOUND_LOOP_ON },			// ゲームBGM
 	{ "data/SE/playerdeath.wav", SOUND_LOOP_ON },		// 爆発音
@@ -24,8 +23,8 @@ CSound::PARAM CSound::m_aParam[SOUND_LABEL_MAX] =
 	{ "data/SE/turbo001.wav", SOUND_LOOP_OFF },			// ターボ発射
 	{ "data/SE/countdown.wav", SOUND_LOOP_OFF },		// カウントダウン音
 	{ "data/SE/Slash.wav", SOUND_LOOP_OFF },			// 斬撃音
-
 };
+
 //================================================
 //コンストラクタ
 //================================================
